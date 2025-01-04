@@ -27,12 +27,15 @@ interface TagSelectorProps {
 }
 
 export function TagSelector({ tags, onTagsChange }: TagSelectorProps) {
+  console.log("Current tags:", tags); // Debug log
+
   const handleToggleTag = (tagLabel: string) => {
-    if (tags.includes(tagLabel)) {
-      onTagsChange(tags.filter(t => t !== tagLabel));
-    } else {
-      onTagsChange([...tags, tagLabel]);
-    }
+    console.log("Toggling tag:", tagLabel); // Debug log
+    const newTags = tags.includes(tagLabel)
+      ? tags.filter(t => t !== tagLabel)
+      : [...tags, tagLabel];
+    console.log("New tags:", newTags); // Debug log
+    onTagsChange(newTags);
   };
 
   return (
@@ -68,7 +71,7 @@ export function TagSelector({ tags, onTagsChange }: TagSelectorProps) {
         </DropdownMenuTrigger>
         <DropdownMenuContent 
           align="start" 
-          className="bg-white border shadow-md z-50"
+          className="bg-white border shadow-md"
         >
           {TAG_OPTIONS.map((tag) => (
             <DropdownMenuItem

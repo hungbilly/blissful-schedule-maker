@@ -43,6 +43,8 @@ export function TimelineEvent({
   const [tempValue, setTempValue] = useState("");
   const [isHighlighted, setIsHighlighted] = useState(false);
 
+  console.log("TimelineEvent tags:", tags); // Debug log
+
   const handleEdit = (field: typeof editingField, value: string) => {
     if (field) {
       let updates: Partial<TimelineEventProps> = {};
@@ -80,6 +82,11 @@ export function TimelineEvent({
   const startEditing = (field: typeof editingField, currentValue: string) => {
     setEditingField(field);
     setTempValue(currentValue);
+  };
+
+  const handleTagsChange = (newTags: string[]) => {
+    console.log("Handling tags change:", newTags); // Debug log
+    onEdit({ tags: newTags });
   };
 
   return (
@@ -125,7 +132,7 @@ export function TimelineEvent({
             <div className="mt-4">
               <TagSelector
                 tags={tags || []}
-                onTagsChange={(newTags) => onEdit({ tags: newTags })}
+                onTagsChange={handleTagsChange}
               />
             </div>
           </div>
