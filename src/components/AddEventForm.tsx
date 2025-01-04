@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,15 +13,23 @@ interface EventFormData {
 
 interface AddEventFormProps {
   onSubmit: (event: EventFormData) => void;
+  defaultTime?: string;
 }
 
-export function AddEventForm({ onSubmit }: AddEventFormProps) {
+export function AddEventForm({ onSubmit, defaultTime }: AddEventFormProps) {
   const [formData, setFormData] = useState<EventFormData>({
-    time: "",
+    time: defaultTime || "",
     title: "",
     description: "",
     category: "",
   });
+
+  // Update time when defaultTime prop changes
+  useEffect(() => {
+    if (defaultTime) {
+      setFormData(prev => ({ ...prev, time: defaultTime }));
+    }
+  }, [defaultTime]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
