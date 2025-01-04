@@ -4,6 +4,7 @@ import { Button } from "./ui/button";
 import { AddEventForm } from "./AddEventForm";
 import { Dialog, DialogContent } from "./ui/dialog";
 import { Plus } from "lucide-react";
+import { useToast } from "./ui/use-toast";
 
 interface TimelineEvent {
   id: number;
@@ -24,6 +25,7 @@ interface TimelineProps {
 export function Timeline({ events, onAddEvent, use24Hour }: TimelineProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedTime, setSelectedTime] = useState<string>("");
+  const { toast } = useToast();
   const sortedEvents = [...events].sort((a, b) => a.time.localeCompare(b.time));
 
   const handleAddEventClick = (time: string) => {
@@ -35,9 +37,24 @@ export function Timeline({ events, onAddEvent, use24Hour }: TimelineProps) {
     const updatedEvents = events.map(event => 
       event.id === eventId ? { ...event, ...updates } : event
     );
-    // Since we're working with a controlled component, we need to update the parent state
-    // This assumes the parent component has a way to update the events array
     onAddEvent(updatedEvents.find(e => e.id === eventId) as TimelineEvent);
+  };
+
+  const handleDeleteEvent = (eventId: number) => {
+    const updatedEvents = events.filter(event => event.id !== eventId);
+    const eventToDelete = events.find(event => event.id === eventId);
+    
+    if (eventToDelete) {
+      onAddEvent({
+        ...eventToDelete,
+        id: -1 // This will be filtered out by the parent component
+      });
+      
+      toast({
+        title: "Event Deleted",
+        description: `"${eventToDelete.title}" has been removed from the timeline.`,
+      });
+    }
   };
 
   return (
@@ -65,6 +82,7 @@ export function Timeline({ events, onAddEvent, use24Hour }: TimelineProps) {
             description={event.description}
             category={event.category}
             onEdit={(updates) => handleEditEvent(event.id, updates)}
+            onDelete={() => handleDeleteEvent(event.id)}
             use24Hour={use24Hour}
           />
           <div className="relative pl-12 pb-8">
