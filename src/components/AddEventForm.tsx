@@ -35,6 +35,53 @@ export function AddEventForm({ onSubmit, defaultTime, defaultValues }: AddEventF
     }
   }, [defaultTime, defaultValues]);
 
+  // Calculate duration when start and end time change
+  useEffect(() => {
+    if (formData.time && formData.endTime) {
+      const duration = calculateDuration(formData.time, formData.endTime);
+      setFormData(prev => ({ ...prev, duration }));
+    }
+  }, [formData.time, formData.endTime]);
+
+  // Calculate end time when duration changes
+  useEffect(() => {
+    if (formData.time && formData.duration && !formData.endTime) {
+      const endTime = calculateEndTime(formData.time, formData.duration);
+      setFormData(prev => ({ ...prev, endTime }));
+    }
+  }, [formData.time, formData.duration]);
+
+  const calculateDuration = (startTime: string, endTime: string) => {
+    const [startHours, startMinutes] = startTime.split(":").map(Number);
+    const [endHours, endMinutes] = endTime.split(":").map(Number);
+    
+    let totalMinutes = (endHours * 60 + endMinutes) - (startHours * 60 + startMinutes);
+    if (totalMinutes < 0) totalMinutes += 24 * 60; // Handle overnight events
+    
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    
+    return `${hours}h ${minutes}m`;
+  };
+
+  const calculateEndTime = (startTime: string, duration: string) => {
+    const [startHours, startMinutes] = startTime.split(":").map(Number);
+    const durationMatch = duration.match(/(\d+)h\s*(?:(\d+)m)?/);
+    
+    if (!durationMatch) return "";
+    
+    const hours = parseInt(durationMatch[1] || "0");
+    const minutes = parseInt(durationMatch[2] || "0");
+    
+    let totalMinutes = startHours * 60 + startMinutes + hours * 60 + minutes;
+    totalMinutes = totalMinutes % (24 * 60); // Keep within 24 hours
+    
+    const endHours = Math.floor(totalMinutes / 60);
+    const endMinutes = totalMinutes % 60;
+    
+    return `${endHours.toString().padStart(2, "0")}:${endMinutes.toString().padStart(2, "0")}`;
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(formData);
