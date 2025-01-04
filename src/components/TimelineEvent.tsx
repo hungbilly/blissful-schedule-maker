@@ -7,6 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { useState } from "react";
 import { TimeField } from "./TimeField";
 import { calculateDurationInMinutes, calculateEndTimeFromMinutes, formatDuration, parseDuration } from "@/utils/timeCalculations";
+import { Switch } from "./ui/switch";
+import { Label } from "./ui/label";
 
 interface TimelineEventProps {
   time: string;
@@ -21,6 +23,7 @@ interface TimelineEventProps {
 export function TimelineEvent({ time, endTime, duration, title, description, category, onEdit }: TimelineEventProps) {
   const [editingField, setEditingField] = useState<"time" | "endTime" | "duration" | "title" | "description" | "category" | null>(null);
   const [tempValue, setTempValue] = useState("");
+  const [use24Hour, setUse24Hour] = useState(true);
 
   const handleEdit = (field: typeof editingField, value: string) => {
     if (field) {
@@ -67,50 +70,70 @@ export function TimelineEvent({ time, endTime, duration, title, description, cat
     }
   };
 
+  const formatTime = (timeString: string) => {
+    if (!use24Hour) {
+      const [hours, minutes] = timeString.split(':').map(Number);
+      const period = hours >= 12 ? 'PM' : 'AM';
+      const displayHours = hours % 12 || 12;
+      return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
+    }
+    return timeString;
+  };
+
   return (
     <div className="relative pl-12 pb-8">
       <div className="timeline-dot" />
       <div className="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow group">
-        <div className="flex flex-col gap-1 mb-4">
-          <div className="flex items-baseline gap-2">
-            {editingField === "time" ? (
-              <TimeField
-                value={tempValue}
-                onChange={setTempValue}
-                onBlur={() => handleEdit("time", tempValue)}
-                label="Start Time"
-                className="text-3xl font-serif text-wedding-purple"
-              />
-            ) : (
-              <span 
-                className="text-3xl font-serif text-wedding-purple cursor-pointer hover:underline" 
-                onClick={() => startEditing("time", time)}
-              >
-                {time}
-              </span>
-            )}
-            <span className="text-2xl font-serif text-wedding-gray">-</span>
-            {editingField === "endTime" ? (
-              <TimeField
-                value={tempValue}
-                onChange={setTempValue}
-                onBlur={() => handleEdit("endTime", tempValue)}
-                label="End Time"
-                className="text-3xl font-serif text-wedding-purple"
-              />
-            ) : (
-              <span 
-                className="text-3xl font-serif text-wedding-purple cursor-pointer hover:underline" 
-                onClick={() => startEditing("endTime", endTime)}
-              >
-                {endTime}
-              </span>
-            )}
-            <span className="text-2xl font-serif text-wedding-gray">am</span>
+        <div className="flex justify-between items-start mb-4">
+          <div className="flex flex-col gap-1">
+            <div className="flex items-baseline gap-2">
+              {editingField === "time" ? (
+                <TimeField
+                  value={tempValue}
+                  onChange={setTempValue}
+                  onBlur={() => handleEdit("time", tempValue)}
+                  label="Start Time"
+                  className="text-3xl font-serif text-wedding-purple"
+                />
+              ) : (
+                <span 
+                  className="text-3xl font-serif text-wedding-purple cursor-pointer hover:underline" 
+                  onClick={() => startEditing("time", time)}
+                >
+                  {formatTime(time)}
+                </span>
+              )}
+              <span className="text-2xl font-serif text-wedding-gray">-</span>
+              {editingField === "endTime" ? (
+                <TimeField
+                  value={tempValue}
+                  onChange={setTempValue}
+                  onBlur={() => handleEdit("endTime", tempValue)}
+                  label="End Time"
+                  className="text-3xl font-serif text-wedding-purple"
+                />
+              ) : (
+                <span 
+                  className="text-3xl font-serif text-wedding-purple cursor-pointer hover:underline" 
+                  onClick={() => startEditing("endTime", endTime)}
+                >
+                  {formatTime(endTime)}
+                </span>
+              )}
+            </div>
+            
+            <div className="text-sm text-wedding-gray">
+              Duration: {duration}
+            </div>
           </div>
-          
-          <div className="text-sm text-wedding-gray">
-            Duration: {duration}
+
+          <div className="flex items-center space-x-2">
+            <Label htmlFor="24h-mode">24h</Label>
+            <Switch
+              id="24h-mode"
+              checked={use24Hour}
+              onCheckedChange={setUse24Hour}
+            />
           </div>
         </div>
 
