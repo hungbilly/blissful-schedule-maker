@@ -45,13 +45,8 @@ export function Timeline({ events, onAddEvent, use24Hour }: TimelineProps) {
     
     if (eventToDelete) {
       onAddEvent({
-        time: eventToDelete.time,
-        endTime: eventToDelete.endTime,
-        duration: eventToDelete.duration,
-        title: eventToDelete.title,
-        description: eventToDelete.description,
-        category: eventToDelete.category,
-        id: -1 // This will be filtered out by the parent component
+        ...eventToDelete,
+        id: -1 // This signals to the parent component that this event should be deleted
       });
       
       toast({

@@ -48,10 +48,15 @@ const Index = () => {
 
   const handleAddEvent = (eventData: Omit<TimelineEvent, "id"> | TimelineEvent) => {
     if ('id' in eventData) {
-      // This is an update to an existing event
-      setEvents(events.map(event => 
-        event.id === eventData.id ? eventData : event
-      ));
+      if (eventData.id === -1) {
+        // This is a delete operation
+        setEvents(events.filter(event => event.time !== eventData.time));
+      } else {
+        // This is an update to an existing event
+        setEvents(events.map(event => 
+          event.id === eventData.id ? eventData : event
+        ));
+      }
     } else {
       // This is a new event
       const newEvent = {
