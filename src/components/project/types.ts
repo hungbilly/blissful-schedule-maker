@@ -6,7 +6,6 @@ export interface TimelineEvent {
   title: string;
   description?: string;
   location?: string;
-  tags?: string[];
 }
 
 export interface Project {

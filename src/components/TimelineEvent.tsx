@@ -4,7 +4,6 @@ import { EventOptionsMenu } from "./EventOptionsMenu";
 import { EventHeader } from "./EventHeader";
 import { EventDescription } from "./EventDescription";
 import { calculateDuration, calculateEndTime } from "@/utils/timeCalculations";
-import { TagSelector } from "./TagSelector";
 
 interface TimelineEventProps {
   time: string;
@@ -13,17 +12,8 @@ interface TimelineEventProps {
   title: string;
   description?: string;
   location?: string;
-  tags?: string[];
   use24Hour: boolean;
-  onEdit: (updates: Partial<{ 
-    time: string; 
-    endTime: string; 
-    duration: string; 
-    title: string; 
-    description?: string; 
-    location?: string;
-    tags?: string[];
-  }>) => void;
+  onEdit: (updates: Partial<{ time: string; endTime: string; duration: string; title: string; description?: string; location?: string; }>) => void;
   onDelete?: () => void;
 }
 
@@ -34,7 +24,6 @@ export function TimelineEvent({
   title, 
   description,
   location,
-  tags = [],
   use24Hour, 
   onEdit,
   onDelete
@@ -42,8 +31,6 @@ export function TimelineEvent({
   const [editingField, setEditingField] = useState<"time" | "endTime" | "duration" | "title" | "description" | "location" | null>(null);
   const [tempValue, setTempValue] = useState("");
   const [isHighlighted, setIsHighlighted] = useState(false);
-
-  console.log("TimelineEvent tags:", tags); // Debug log
 
   const handleEdit = (field: typeof editingField, value: string) => {
     if (field) {
@@ -82,11 +69,6 @@ export function TimelineEvent({
   const startEditing = (field: typeof editingField, currentValue: string) => {
     setEditingField(field);
     setTempValue(currentValue);
-  };
-
-  const handleTagsChange = (newTags: string[]) => {
-    console.log("Handling tags change:", newTags); // Debug log
-    onEdit({ tags: newTags });
   };
 
   return (
@@ -128,13 +110,6 @@ export function TimelineEvent({
               onEdit={handleEdit}
               setTempValue={setTempValue}
             />
-            
-            <div className="mt-4">
-              <TagSelector
-                tags={tags || []}
-                onTagsChange={handleTagsChange}
-              />
-            </div>
           </div>
         </div>
       </div>
