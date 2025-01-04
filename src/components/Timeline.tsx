@@ -18,7 +18,7 @@ interface TimelineEvent {
 
 interface TimelineProps {
   events: TimelineEvent[];
-  onAddEvent: (event: Omit<TimelineEvent, "id">) => void;
+  onAddEvent: (event: Omit<TimelineEvent, "id"> | TimelineEvent) => void;
   use24Hour: boolean;
 }
 
@@ -41,12 +41,16 @@ export function Timeline({ events, onAddEvent, use24Hour }: TimelineProps) {
   };
 
   const handleDeleteEvent = (eventId: number) => {
-    const updatedEvents = events.filter(event => event.id !== eventId);
     const eventToDelete = events.find(event => event.id === eventId);
     
     if (eventToDelete) {
       onAddEvent({
-        ...eventToDelete,
+        time: eventToDelete.time,
+        endTime: eventToDelete.endTime,
+        duration: eventToDelete.duration,
+        title: eventToDelete.title,
+        description: eventToDelete.description,
+        category: eventToDelete.category,
         id: -1 // This will be filtered out by the parent component
       });
       
