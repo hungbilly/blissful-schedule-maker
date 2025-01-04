@@ -59,13 +59,13 @@ export function Timeline({ events, onAddEvent, use24Hour }: TimelineProps) {
     <div className="relative">
       <div className="timeline-line" />
       
-      <div className="relative pl-12 pb-4">
+      <div className="relative pl-12 -mb-4">
         <Button
           variant="ghost"
-          className="w-full text-wedding-purple/70 hover:text-wedding-purple hover:bg-wedding-pink/30"
+          className="w-full text-wedding-purple/50 hover:text-wedding-purple hover:bg-wedding-pink/30 h-8"
           onClick={() => handleAddEventClick("00:00")}
         >
-          <Plus className="mr-2 h-4 w-4" />
+          <Plus className="mr-2 h-3 w-3" />
           Add First Event
         </Button>
       </div>
@@ -82,10 +82,10 @@ export function Timeline({ events, onAddEvent, use24Hour }: TimelineProps) {
             onDelete={() => handleDeleteEvent(event.id)}
             use24Hour={use24Hour}
           />
-          <div className="relative pl-12 pb-4">
+          <div className="relative pl-12 -mt-4 -mb-4">
             <Button
               variant="ghost"
-              className="w-full text-wedding-purple/70 hover:text-wedding-purple hover:bg-wedding-pink/30"
+              className="w-full text-wedding-purple/50 hover:text-wedding-purple hover:bg-wedding-pink/30 h-8"
               onClick={() => {
                 const currentTime = event.time;
                 const nextTime = index < sortedEvents.length - 1 
@@ -95,7 +95,7 @@ export function Timeline({ events, onAddEvent, use24Hour }: TimelineProps) {
                 handleAddEventClick(suggestedTime);
               }}
             >
-              <Plus className="mr-2 h-4 w-4" />
+              <Plus className="mr-2 h-3 w-3" />
               Add Event
             </Button>
           </div>
