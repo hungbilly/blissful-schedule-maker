@@ -5,12 +5,10 @@ export interface TimelineEvent {
   duration: string;
   title: string;
   description?: string;
-  category: string;
 }
 
 export interface Project {
   id: number;
   name: string;
   events: TimelineEvent[];
-  categories: string[];
 }
