@@ -143,6 +143,15 @@ export function AddEventForm({ onSubmit, defaultTime, defaultValues }: AddEventF
           <SelectItem value="Reception">Reception</SelectItem>
           <SelectItem value="Photos">Photos</SelectItem>
           <SelectItem value="Setup">Setup</SelectItem>
+          <SelectItem value="Rehearsal">Rehearsal</SelectItem>
+          <SelectItem value="Dinner">Dinner</SelectItem>
+          <SelectItem value="Dance">Dance</SelectItem>
+          <SelectItem value="Speech">Speech</SelectItem>
+          <SelectItem value="Transportation">Transportation</SelectItem>
+          <SelectItem value="Break">Break</SelectItem>
+          <SelectItem value="Vendor Setup">Vendor Setup</SelectItem>
+          <SelectItem value="Entertainment">Entertainment</SelectItem>
+          <SelectItem value="Other">Other</SelectItem>
         </SelectContent>
       </Select>
       <Button type="submit" className="w-full bg-wedding-purple hover:bg-wedding-purple/90">
