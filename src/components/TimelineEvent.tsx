@@ -89,11 +89,28 @@ export function TimelineEvent({ time, endTime, duration, title, description, cat
                 {time}
               </span>
             )}
+            <span className="text-2xl font-serif text-wedding-gray">-</span>
+            {editingField === "endTime" ? (
+              <TimeField
+                value={tempValue}
+                onChange={setTempValue}
+                onBlur={() => handleEdit("endTime", tempValue)}
+                label="End Time"
+                className="text-3xl font-serif text-wedding-purple"
+              />
+            ) : (
+              <span 
+                className="text-3xl font-serif text-wedding-purple cursor-pointer hover:underline" 
+                onClick={() => startEditing("endTime", endTime)}
+              >
+                {endTime}
+              </span>
+            )}
             <span className="text-2xl font-serif text-wedding-gray">am</span>
           </div>
           
           <div className="text-sm text-wedding-gray">
-            Duration {duration}
+            Duration: {duration}
           </div>
         </div>
 
