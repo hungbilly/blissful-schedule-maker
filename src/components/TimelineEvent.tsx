@@ -80,7 +80,7 @@ export function TimelineEvent({
           />
         </div>
 
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col md:flex-row md:gap-8">
           <EventHeader
             time={time}
             endTime={endTime}
@@ -93,7 +93,7 @@ export function TimelineEvent({
             setTempValue={setTempValue}
           />
           
-          <div className="flex-1">
+          <div className="flex-1 mt-4 md:mt-0">
             <EventDescription
               title={title}
               description={description}
