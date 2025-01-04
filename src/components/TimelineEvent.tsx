@@ -7,8 +7,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { useState } from "react";
 import { TimeField } from "./TimeField";
 import { calculateDurationInMinutes, calculateEndTimeFromMinutes, formatDuration, parseDuration } from "@/utils/timeCalculations";
-import { Switch } from "./ui/switch";
-import { Label } from "./ui/label";
 
 interface TimelineEventProps {
   time: string;
@@ -17,13 +15,13 @@ interface TimelineEventProps {
   title: string;
   description?: string;
   category: string;
+  use24Hour: boolean;
   onEdit: (updates: Partial<{ time: string; endTime: string; duration: string; title: string; description?: string; category: string }>) => void;
 }
 
-export function TimelineEvent({ time, endTime, duration, title, description, category, onEdit }: TimelineEventProps) {
+export function TimelineEvent({ time, endTime, duration, title, description, category, use24Hour, onEdit }: TimelineEventProps) {
   const [editingField, setEditingField] = useState<"time" | "endTime" | "duration" | "title" | "description" | "category" | null>(null);
   const [tempValue, setTempValue] = useState("");
-  const [use24Hour, setUse24Hour] = useState(true);
 
   const handleEdit = (field: typeof editingField, value: string) => {
     if (field) {
@@ -125,15 +123,6 @@ export function TimelineEvent({ time, endTime, duration, title, description, cat
             <div className="text-sm text-wedding-gray">
               Duration: {duration}
             </div>
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <Label htmlFor="24h-mode">24h</Label>
-            <Switch
-              id="24h-mode"
-              checked={use24Hour}
-              onCheckedChange={setUse24Hour}
-            />
           </div>
         </div>
 

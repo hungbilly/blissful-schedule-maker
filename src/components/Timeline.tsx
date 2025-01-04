@@ -18,9 +18,10 @@ interface TimelineEvent {
 interface TimelineProps {
   events: TimelineEvent[];
   onAddEvent: (event: Omit<TimelineEvent, "id">) => void;
+  use24Hour: boolean;
 }
 
-export function Timeline({ events, onAddEvent }: TimelineProps) {
+export function Timeline({ events, onAddEvent, use24Hour }: TimelineProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedTime, setSelectedTime] = useState<string>("");
   const sortedEvents = [...events].sort((a, b) => a.time.localeCompare(b.time));
@@ -64,6 +65,7 @@ export function Timeline({ events, onAddEvent }: TimelineProps) {
             description={event.description}
             category={event.category}
             onEdit={(updates) => handleEditEvent(event.id, updates)}
+            use24Hour={use24Hour}
           />
           <div className="relative pl-12 pb-8">
             <Button

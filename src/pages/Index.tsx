@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Timeline } from "@/components/Timeline";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 interface TimelineEvent {
   id: number;
@@ -42,6 +44,8 @@ const Index = () => {
     },
   ]);
 
+  const [use24Hour, setUse24Hour] = useState(true);
+
   const handleAddEvent = (eventData: Omit<TimelineEvent, "id"> | TimelineEvent) => {
     if ('id' in eventData) {
       // This is an update to an existing event
@@ -61,10 +65,20 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-wedding-pink py-12">
       <div className="container max-w-3xl">
-        <h1 className="text-4xl md:text-5xl text-wedding-purple text-center font-serif mb-12">
-          Wedding Day Timeline
-        </h1>
-        <Timeline events={events} onAddEvent={handleAddEvent} />
+        <div className="flex justify-between items-center mb-12">
+          <h1 className="text-4xl md:text-5xl text-wedding-purple text-center font-serif">
+            Wedding Day Timeline
+          </h1>
+          <div className="flex items-center space-x-2">
+            <Label htmlFor="24h-mode">24h</Label>
+            <Switch
+              id="24h-mode"
+              checked={use24Hour}
+              onCheckedChange={setUse24Hour}
+            />
+          </div>
+        </div>
+        <Timeline events={events} onAddEvent={handleAddEvent} use24Hour={use24Hour} />
       </div>
     </div>
   );
