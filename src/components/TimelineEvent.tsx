@@ -4,6 +4,7 @@ import { EventOptionsMenu } from "./EventOptionsMenu";
 import { EventHeader } from "./EventHeader";
 import { EventDescription } from "./EventDescription";
 import { calculateDuration, calculateEndTime } from "@/utils/timeCalculations";
+import { TagSelector } from "./TagSelector";
 
 interface TimelineEventProps {
   time: string;
@@ -12,8 +13,17 @@ interface TimelineEventProps {
   title: string;
   description?: string;
   location?: string;
+  tags?: string[];
   use24Hour: boolean;
-  onEdit: (updates: Partial<{ time: string; endTime: string; duration: string; title: string; description?: string; location?: string; }>) => void;
+  onEdit: (updates: Partial<{ 
+    time: string; 
+    endTime: string; 
+    duration: string; 
+    title: string; 
+    description?: string; 
+    location?: string;
+    tags?: string[];
+  }>) => void;
   onDelete?: () => void;
 }
 
@@ -24,6 +34,7 @@ export function TimelineEvent({
   title, 
   description,
   location,
+  tags = [],
   use24Hour, 
   onEdit,
   onDelete
@@ -110,6 +121,13 @@ export function TimelineEvent({
               onEdit={handleEdit}
               setTempValue={setTempValue}
             />
+            
+            <div className="mt-4">
+              <TagSelector
+                tags={tags || []}
+                onTagsChange={(newTags) => onEdit({ tags: newTags })}
+              />
+            </div>
           </div>
         </div>
       </div>
