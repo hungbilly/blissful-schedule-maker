@@ -24,35 +24,35 @@ export function TimelineEvent({ time, endTime, duration, title, description, cat
 
   const handleEdit = (field: typeof editingField, value: string) => {
     if (field) {
+      let updates: Partial<TimelineEventProps> = {};
+
       if (field === "time") {
-        // When start time changes, update both start time and duration
         const durationMinutes = calculateDurationInMinutes(value, endTime);
-        onEdit({ 
+        updates = {
           time: value,
           duration: formatDuration(durationMinutes)
-        });
+        };
       } else if (field === "endTime") {
-        // When end time changes, update both end time and duration
         const durationMinutes = calculateDurationInMinutes(time, value);
-        onEdit({ 
+        updates = {
           endTime: value,
           duration: formatDuration(durationMinutes)
-        });
+        };
       } else if (field === "duration") {
-        // Convert minutes input to duration format and calculate new end time
         const minutes = parseInt(value);
         if (!isNaN(minutes)) {
           const formattedDuration = formatDuration(minutes);
           const newEndTime = calculateEndTimeFromMinutes(time, minutes);
-          
-          onEdit({ 
+          updates = {
             duration: formattedDuration,
             endTime: newEndTime
-          });
+          };
         }
       } else {
-        onEdit({ [field]: value });
+        updates = { [field]: value };
       }
+
+      onEdit(updates);
       setEditingField(null);
     }
   };
@@ -60,7 +60,6 @@ export function TimelineEvent({ time, endTime, duration, title, description, cat
   const startEditing = (field: typeof editingField, currentValue: string) => {
     setEditingField(field);
     if (field === "duration") {
-      // Convert duration format (Xmins) to number for the input
       const minutes = parseDuration(currentValue);
       setTempValue(minutes.toString());
     } else {
@@ -77,6 +76,7 @@ export function TimelineEvent({ time, endTime, duration, title, description, cat
             <TimeField
               value={tempValue}
               onChange={setTempValue}
+              onBlur={() => handleEdit("time", tempValue)}
               label="Start Time"
               className="text-sm font-medium text-wedding-purple"
             />
@@ -93,6 +93,7 @@ export function TimelineEvent({ time, endTime, duration, title, description, cat
             <TimeField
               value={tempValue}
               onChange={setTempValue}
+              onBlur={() => handleEdit("endTime", tempValue)}
               label="End Time"
               className="text-sm font-medium text-wedding-purple"
             />
@@ -195,4 +196,4 @@ export function TimelineEvent({ time, endTime, duration, title, description, cat
       </div>
     </div>
   );
-};
+}
