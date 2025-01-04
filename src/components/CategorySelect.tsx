@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
 
 interface CategorySelectProps {
   category: string;
@@ -20,7 +20,8 @@ export function CategorySelect({
   const [isNewCategoryDialogOpen, setIsNewCategoryDialogOpen] = useState(false);
   const [newCategory, setNewCategory] = useState("");
 
-  const handleAddCategory = () => {
+  const handleAddCategory = (e: React.FormEvent) => {
+    e.preventDefault();
     if (newCategory.trim() && onAddCategory) {
       onAddCategory(newCategory.trim());
       onCategoryChange(newCategory.trim());
@@ -58,17 +59,21 @@ export function CategorySelect({
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Add New Category</DialogTitle>
+            <DialogDescription>
+              Enter a name for your new category
+            </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
+          <form onSubmit={handleAddCategory} className="space-y-4">
             <Input
               placeholder="Category name"
               value={newCategory}
               onChange={(e) => setNewCategory(e.target.value)}
+              autoFocus
             />
-            <Button onClick={handleAddCategory} className="w-full">
+            <Button type="submit" className="w-full">
               Add Category
             </Button>
-          </div>
+          </form>
         </DialogContent>
       </Dialog>
     </div>
