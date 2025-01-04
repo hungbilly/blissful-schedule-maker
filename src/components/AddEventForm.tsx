@@ -14,22 +14,22 @@ interface EventFormData {
 interface AddEventFormProps {
   onSubmit: (event: EventFormData) => void;
   defaultTime?: string;
+  defaultValues?: EventFormData;
 }
 
-export function AddEventForm({ onSubmit, defaultTime }: AddEventFormProps) {
+export function AddEventForm({ onSubmit, defaultTime, defaultValues }: AddEventFormProps) {
   const [formData, setFormData] = useState<EventFormData>({
-    time: defaultTime || "",
-    title: "",
-    description: "",
-    category: "",
+    time: defaultValues?.time || defaultTime || "",
+    title: defaultValues?.title || "",
+    description: defaultValues?.description || "",
+    category: defaultValues?.category || "",
   });
 
-  // Update time when defaultTime prop changes
   useEffect(() => {
-    if (defaultTime) {
+    if (defaultTime && !defaultValues) {
       setFormData(prev => ({ ...prev, time: defaultTime }));
     }
-  }, [defaultTime]);
+  }, [defaultTime, defaultValues]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,7 +78,7 @@ export function AddEventForm({ onSubmit, defaultTime }: AddEventFormProps) {
         </SelectContent>
       </Select>
       <Button type="submit" className="w-full bg-wedding-purple hover:bg-wedding-purple/90">
-        Add Event
+        {defaultValues ? "Update Event" : "Add Event"}
       </Button>
     </form>
   );

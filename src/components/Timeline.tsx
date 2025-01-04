@@ -21,23 +21,30 @@ interface TimelineProps {
 export function Timeline({ events, onAddEvent }: TimelineProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedTime, setSelectedTime] = useState<string>("");
+  const [editingEvent, setEditingEvent] = useState<TimelineEvent | null>(null);
   const sortedEvents = [...events].sort((a, b) => a.time.localeCompare(b.time));
 
   const handleAddEventClick = (time: string) => {
     setSelectedTime(time);
+    setEditingEvent(null);
+    setIsDialogOpen(true);
+  };
+
+  const handleEditEvent = (event: TimelineEvent) => {
+    setEditingEvent(event);
     setIsDialogOpen(true);
   };
 
   const handleAddEvent = (eventData: Omit<TimelineEvent, "id">) => {
     onAddEvent(eventData);
     setIsDialogOpen(false);
+    setEditingEvent(null);
   };
 
   return (
     <div className="relative">
       <div className="timeline-line" />
       
-      {/* Add button at the start */}
       <div className="relative pl-12 pb-8">
         <Button
           variant="outline"
@@ -56,6 +63,7 @@ export function Timeline({ events, onAddEvent }: TimelineProps) {
             title={event.title}
             description={event.description}
             category={event.category}
+            onEdit={() => handleEditEvent(event)}
           />
           <div className="relative pl-12 pb-8">
             <Button
@@ -79,7 +87,11 @@ export function Timeline({ events, onAddEvent }: TimelineProps) {
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
-          <AddEventForm onSubmit={handleAddEvent} defaultTime={selectedTime} />
+          <AddEventForm 
+            onSubmit={handleAddEvent} 
+            defaultTime={editingEvent ? editingEvent.time : selectedTime}
+            defaultValues={editingEvent}
+          />
         </DialogContent>
       </Dialog>
     </div>
