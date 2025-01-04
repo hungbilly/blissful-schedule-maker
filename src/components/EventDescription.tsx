@@ -28,11 +28,11 @@ export function EventDescription({
           onChange={(e) => setTempValue(e.target.value)}
           onBlur={() => onEdit("title", tempValue)}
           autoFocus
-          className="text-lg font-serif mt-2 text-gray-800"
+          className="text-base md:text-lg font-serif mt-2 text-gray-800"
         />
       ) : (
         <h3 
-          className="text-lg font-serif mt-2 text-gray-800 cursor-pointer hover:underline"
+          className="text-base md:text-lg font-serif mt-2 text-gray-800 cursor-pointer hover:underline"
           onClick={() => onStartEditing("title", title)}
         >
           {title}
@@ -45,18 +45,18 @@ export function EventDescription({
           onChange={(e) => setTempValue(e.target.value)}
           onBlur={() => onEdit("description", tempValue)}
           autoFocus
-          className="mt-2 text-gray-600 text-sm"
+          className="mt-2 text-gray-600 text-xs md:text-sm"
         />
       ) : description ? (
         <p 
-          className="mt-2 text-gray-600 text-sm cursor-pointer hover:underline"
+          className="mt-2 text-gray-600 text-xs md:text-sm cursor-pointer hover:underline"
           onClick={() => onStartEditing("description", description)}
         >
           {description}
         </p>
       ) : (
         <p 
-          className="mt-2 text-gray-600 text-sm cursor-pointer hover:underline italic"
+          className="mt-2 text-gray-600 text-xs md:text-sm cursor-pointer hover:underline italic"
           onClick={() => onStartEditing("description", "")}
         >
           Add description...

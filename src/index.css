@@ -38,11 +38,11 @@
 }
 
 .timeline-line {
-  @apply absolute left-4 top-0 h-full w-0.5 bg-wedding-purple/20;
+  @apply absolute left-2 md:left-4 top-0 h-full w-0.5 bg-wedding-purple/20;
 }
 
 @layer utilities {
   .timeline-dot {
-    @apply absolute left-4 w-4 h-4 rounded-full bg-wedding-purple -translate-x-1.5;
+    @apply absolute left-2 md:left-4 w-3 md:w-4 h-3 md:h-4 rounded-full bg-wedding-purple -translate-x-1.5;
   }
 }

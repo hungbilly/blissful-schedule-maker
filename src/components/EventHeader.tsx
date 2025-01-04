@@ -43,28 +43,28 @@ export function EventHeader({
             onChange={setTempValue}
             onBlur={() => onEdit("time", tempValue)}
             label="Start Time"
-            className="text-3xl font-serif text-wedding-purple"
+            className="text-2xl md:text-3xl font-serif text-wedding-purple"
           />
         ) : (
           <span 
-            className="text-3xl font-serif text-wedding-purple cursor-pointer hover:underline" 
+            className="text-2xl md:text-3xl font-serif text-wedding-purple cursor-pointer hover:underline" 
             onClick={() => onStartEditing("time", time)}
           >
             {formatTime(time)}
           </span>
         )}
-        <span className="text-2xl font-serif text-wedding-gray">-</span>
+        <span className="text-xl md:text-2xl font-serif text-wedding-gray">-</span>
         {editingField === "endTime" ? (
           <TimeField
             value={tempValue}
             onChange={setTempValue}
             onBlur={() => onEdit("endTime", tempValue)}
             label="End Time"
-            className="text-3xl font-serif text-wedding-purple"
+            className="text-2xl md:text-3xl font-serif text-wedding-purple"
           />
         ) : (
           <span 
-            className="text-3xl font-serif text-wedding-purple cursor-pointer hover:underline" 
+            className="text-2xl md:text-3xl font-serif text-wedding-purple cursor-pointer hover:underline" 
             onClick={() => onStartEditing("endTime", endTime)}
           >
             {formatTime(endTime)}
@@ -72,7 +72,7 @@ export function EventHeader({
         )}
       </div>
       
-      <div className="text-sm text-wedding-gray">
+      <div className="text-xs md:text-sm text-wedding-gray">
         Duration: {' '}
         {editingField === "duration" ? (
           <Input
@@ -80,7 +80,7 @@ export function EventHeader({
             value={tempValue}
             onChange={(e) => setTempValue(e.target.value)}
             onBlur={() => onEdit("duration", tempValue)}
-            className="inline-block w-20 h-6 px-1 py-0"
+            className="inline-block w-16 md:w-20 h-6 px-1 py-0"
             min="1"
           />
         ) : (

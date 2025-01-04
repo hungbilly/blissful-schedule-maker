@@ -66,13 +66,13 @@ export function TimelineEvent({
   };
 
   return (
-    <div className="relative pl-12 pb-8">
+    <div className="relative pl-8 md:pl-12 pb-8">
       <div className="timeline-dot" />
       <div className={cn(
-        "bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow group",
+        "bg-white rounded-lg p-4 md:p-6 shadow-sm hover:shadow-md transition-shadow group",
         isHighlighted && "ring-2 ring-wedding-purple bg-wedding-pink/20"
       )}>
-        <div className="flex justify-between items-start gap-8">
+        <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 md:gap-8">
           <EventHeader
             time={time}
             endTime={endTime}
