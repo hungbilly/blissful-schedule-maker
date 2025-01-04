@@ -6,9 +6,9 @@ import { useToast } from "@/hooks/use-toast";
 import { ProjectSelector } from "@/components/project/ProjectSelector";
 import { ProjectDialog } from "@/components/project/ProjectDialog";
 import { Project, TimelineEvent } from "@/components/project/types";
-import { Edit2, Heart } from "lucide-react";
+import { Edit2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { CoupleInfo } from "@/components/CoupleInfo";
 
 const Index = () => {
   const [projects, setProjects] = useState<Project[]>([
@@ -50,6 +50,7 @@ const Index = () => {
   const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
   const [bride, setBride] = useState("");
   const [groom, setGroom] = useState("");
+  const [date, setDate] = useState("");
   const { toast } = useToast();
 
   const currentProject = projects.find((p) => p.id === currentProjectId);
@@ -164,29 +165,14 @@ const Index = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg p-6 mb-12 shadow-sm">
-          <div className="flex flex-col md:flex-row items-center justify-center gap-4 relative">
-            <div className="flex-1 w-full md:w-auto">
-              <Input
-                placeholder="Bride's Name"
-                value={bride}
-                onChange={(e) => setBride(e.target.value)}
-                className="bg-[#FFDEE2]/30 border-[#FFDEE2] focus:border-[#FFDEE2] text-center font-serif"
-              />
-            </div>
-            <div className="absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 hidden md:block">
-              <Heart className="text-wedding-purple h-6 w-6" />
-            </div>
-            <div className="flex-1 w-full md:w-auto">
-              <Input
-                placeholder="Groom's Name"
-                value={groom}
-                onChange={(e) => setGroom(e.target.value)}
-                className="bg-[#D3E4FD]/30 border-[#D3E4FD] focus:border-[#D3E4FD] text-center font-serif"
-              />
-            </div>
-          </div>
-        </div>
+        <CoupleInfo
+          bride={bride}
+          groom={groom}
+          date={date}
+          onBrideChange={setBride}
+          onGroomChange={setGroom}
+          onDateChange={setDate}
+        />
 
         <h1 className="text-4xl md:text-5xl text-wedding-purple text-center font-serif mb-12">
           {currentProject?.name || "Timeline"}
