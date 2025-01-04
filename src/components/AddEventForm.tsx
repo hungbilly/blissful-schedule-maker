@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { MapPin } from "lucide-react";
 
 interface EventFormData {
   time: string;
@@ -9,6 +10,7 @@ interface EventFormData {
   duration: string;
   title: string;
   description?: string;
+  location?: string;
 }
 
 interface AddEventFormProps {
@@ -24,6 +26,7 @@ export function AddEventForm({ onSubmit, defaultTime, defaultValues }: AddEventF
     duration: defaultValues?.duration || "",
     title: defaultValues?.title || "",
     description: defaultValues?.description || "",
+    location: defaultValues?.location || "",
   });
 
   useEffect(() => {
@@ -58,7 +61,7 @@ export function AddEventForm({ onSubmit, defaultTime, defaultValues }: AddEventF
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(formData);
-    setFormData({ time: "", endTime: "", duration: "", title: "", description: "" });
+    setFormData({ time: "", endTime: "", duration: "", title: "", description: "", location: "" });
   };
 
   return (
@@ -102,6 +105,17 @@ export function AddEventForm({ onSubmit, defaultTime, defaultValues }: AddEventF
           required
           className="bg-white"
         />
+      </div>
+      <div className="space-y-2">
+        <div className="relative">
+          <Input
+            placeholder="Location"
+            value={formData.location}
+            onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+            className="bg-white pl-9"
+          />
+          <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+        </div>
       </div>
       <div className="space-y-2">
         <Textarea

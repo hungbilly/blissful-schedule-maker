@@ -1,19 +1,22 @@
 import { Textarea } from "./ui/textarea";
 import { Input } from "./ui/input";
+import { MapPin } from "lucide-react";
 
 interface EventDescriptionProps {
   title: string;
   description?: string;
-  editingField: "title" | "description" | null;
+  location?: string;
+  editingField: "title" | "description" | "location" | null;
   tempValue: string;
-  onStartEditing: (field: "title" | "description", value: string) => void;
-  onEdit: (field: "title" | "description", value: string) => void;
+  onStartEditing: (field: "title" | "description" | "location", value: string) => void;
+  onEdit: (field: "title" | "description" | "location", value: string) => void;
   setTempValue: (value: string) => void;
 }
 
 export function EventDescription({
   title,
   description,
+  location,
   editingField,
   tempValue,
   onStartEditing,
@@ -37,6 +40,35 @@ export function EventDescription({
         >
           {title}
         </h3>
+      )}
+
+      {editingField === "location" ? (
+        <div className="relative">
+          <Input
+            value={tempValue}
+            onChange={(e) => setTempValue(e.target.value)}
+            onBlur={() => onEdit("location", tempValue)}
+            autoFocus
+            className="pl-7 text-xs md:text-sm text-gray-600"
+          />
+          <MapPin className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+        </div>
+      ) : location ? (
+        <div 
+          className="flex items-center gap-1 text-xs md:text-sm text-gray-600 cursor-pointer hover:underline"
+          onClick={() => onStartEditing("location", location)}
+        >
+          <MapPin className="h-4 w-4" />
+          <span>{location}</span>
+        </div>
+      ) : (
+        <div 
+          className="flex items-center gap-1 text-xs md:text-sm text-gray-600 cursor-pointer hover:underline italic"
+          onClick={() => onStartEditing("location", "")}
+        >
+          <MapPin className="h-4 w-4" />
+          <span>Add location...</span>
+        </div>
       )}
 
       {editingField === "description" ? (

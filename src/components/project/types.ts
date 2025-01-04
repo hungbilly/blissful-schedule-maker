@@ -5,6 +5,7 @@ export interface TimelineEvent {
   duration: string;
   title: string;
   description?: string;
+  location?: string;
 }
 
 export interface Project {
