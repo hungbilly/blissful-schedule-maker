@@ -24,7 +24,21 @@ export function TimelineEvent({ time, endTime, duration, title, description, cat
 
   const handleEdit = (field: typeof editingField, value: string) => {
     if (field) {
-      if (field === "duration") {
+      if (field === "time") {
+        // When start time changes, update both start time and duration
+        const durationMinutes = calculateDurationInMinutes(value, endTime);
+        onEdit({ 
+          time: value,
+          duration: formatDuration(durationMinutes)
+        });
+      } else if (field === "endTime") {
+        // When end time changes, update both end time and duration
+        const durationMinutes = calculateDurationInMinutes(time, value);
+        onEdit({ 
+          endTime: value,
+          duration: formatDuration(durationMinutes)
+        });
+      } else if (field === "duration") {
         // Convert minutes input to duration format and calculate new end time
         const minutes = parseInt(value);
         if (!isNaN(minutes)) {
@@ -36,13 +50,6 @@ export function TimelineEvent({ time, endTime, duration, title, description, cat
             endTime: newEndTime
           });
         }
-      } else if (field === "endTime") {
-        // When end time changes, update both end time and duration
-        const durationMinutes = calculateDurationInMinutes(time, value);
-        onEdit({ 
-          endTime: value,
-          duration: formatDuration(durationMinutes)
-        });
       } else {
         onEdit({ [field]: value });
       }
@@ -188,4 +195,4 @@ export function TimelineEvent({ time, endTime, duration, title, description, cat
       </div>
     </div>
   );
-}
+};
