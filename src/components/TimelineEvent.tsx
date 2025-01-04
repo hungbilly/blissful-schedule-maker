@@ -5,6 +5,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { useState } from "react";
 import { EventOptionsMenu } from "./EventOptionsMenu";
 import { EventHeader } from "./EventHeader";
+import { Button } from "./ui/button";
+import { Plus } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
 
 interface TimelineEventProps {
   time: string;
@@ -17,6 +20,7 @@ interface TimelineEventProps {
   categories: string[];
   onEdit: (updates: Partial<{ time: string; endTime: string; duration: string; title: string; description?: string; category: string }>) => void;
   onDelete?: () => void;
+  onAddCategory?: (category: string) => void;
 }
 
 export function TimelineEvent({ 
@@ -29,11 +33,14 @@ export function TimelineEvent({
   categories, 
   use24Hour, 
   onEdit,
-  onDelete 
+  onDelete,
+  onAddCategory 
 }: TimelineEventProps) {
   const [editingField, setEditingField] = useState<"time" | "endTime" | "duration" | "title" | "description" | "category" | null>(null);
   const [tempValue, setTempValue] = useState("");
   const [isHighlighted, setIsHighlighted] = useState(false);
+  const [isNewCategoryDialogOpen, setIsNewCategoryDialogOpen] = useState(false);
+  const [newCategory, setNewCategory] = useState("");
 
   const handleEdit = (field: typeof editingField, value: string) => {
     if (field) {
@@ -63,6 +70,15 @@ export function TimelineEvent({
 
       onEdit(updates);
       setEditingField(null);
+    }
+  };
+
+  const handleAddCategory = () => {
+    if (newCategory.trim() && onAddCategory) {
+      onAddCategory(newCategory.trim());
+      handleEdit("category", newCategory.trim());
+      setNewCategory("");
+      setIsNewCategoryDialogOpen(false);
     }
   };
 
@@ -138,30 +154,60 @@ export function TimelineEvent({
           </p>
         )}
 
-        {editingField === "category" ? (
-          <Select
-            value={tempValue}
-            onValueChange={(value) => {
-              handleEdit("category", value);
-            }}
-          >
-            <SelectTrigger className="w-32 mt-3">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {categories.map((cat) => (
-                <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        ) : (
-          <span 
-            className="inline-block mt-3 px-3 py-1 bg-wedding-pink rounded-full text-xs font-medium text-wedding-purple cursor-pointer hover:underline"
-            onClick={() => startEditing("category", category)}
-          >
-            {category}
-          </span>
-        )}
+        <div className="flex gap-2 mt-3">
+          {editingField === "category" ? (
+            <Select
+              value={tempValue}
+              onValueChange={(value) => {
+                handleEdit("category", value);
+              }}
+            >
+              <SelectTrigger className="w-32">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((cat) => (
+                  <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ) : (
+            <span 
+              className="inline-block px-3 py-1 bg-wedding-pink rounded-full text-xs font-medium text-wedding-purple cursor-pointer hover:underline"
+              onClick={() => startEditing("category", category)}
+            >
+              {category}
+            </span>
+          )}
+          
+          <Dialog open={isNewCategoryDialogOpen} onOpenChange={setIsNewCategoryDialogOpen}>
+            <DialogTrigger asChild>
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                className="h-7 w-7"
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add New Category</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <Input
+                  placeholder="Category name"
+                  value={newCategory}
+                  onChange={(e) => setNewCategory(e.target.value)}
+                />
+                <Button onClick={handleAddCategory} className="w-full">
+                  Add Category
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
     </div>
   );
