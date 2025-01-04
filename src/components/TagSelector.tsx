@@ -70,7 +70,10 @@ export function TagSelector({ tags, onTagsChange }: TagSelectorProps) {
           {TAG_OPTIONS.map((tag) => (
             <DropdownMenuItem
               key={tag.label}
-              onClick={() => handleToggleTag(tag.label)}
+              onSelect={(e) => {
+                e.preventDefault();
+                handleToggleTag(tag.label);
+              }}
               className="flex items-center gap-2"
             >
               <div className={cn(
