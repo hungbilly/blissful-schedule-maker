@@ -6,9 +6,10 @@ import { useToast } from "@/hooks/use-toast";
 import { ProjectSelector } from "@/components/project/ProjectSelector";
 import { ProjectDialog } from "@/components/project/ProjectDialog";
 import { Project, TimelineEvent } from "@/components/project/types";
-import { Edit2 } from "lucide-react";
+import { Edit2, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CoupleInfo } from "@/components/CoupleInfo";
+import { exportToCSV } from "@/utils/exportUtils";
 
 const Index = () => {
   const [projects, setProjects] = useState<Project[]>([
@@ -138,6 +139,16 @@ const Index = () => {
     setIsProjectDialogOpen(true);
   };
 
+  const handleExport = () => {
+    if (!currentProject) return;
+    
+    exportToCSV(currentProject.events, use24Hour);
+    toast({
+      title: "Success",
+      description: "Event rundown has been downloaded",
+    });
+  };
+
   return (
     <div className="min-h-screen bg-wedding-pink py-12">
       <div className="container max-w-3xl">
@@ -149,6 +160,15 @@ const Index = () => {
             onNewProjectClick={handleNewProject}
           />
           <div className="flex items-center space-x-4">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleExport}
+              className="h-10 w-10"
+              title="Download rundown"
+            >
+              <Download className="h-4 w-4" />
+            </Button>
             <Button
               variant="outline"
               size="icon"
