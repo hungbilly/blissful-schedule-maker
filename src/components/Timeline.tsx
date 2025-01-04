@@ -65,9 +65,7 @@ export function Timeline({ events, onAddEvent, use24Hour }: TimelineProps) {
           size="icon"
           className="w-8 h-8 rounded-full text-wedding-purple hover:text-wedding-purple hover:bg-wedding-pink/30"
           onClick={() => handleAddEventClick("00:00")}
-        >
-          <Plus className="h-4 w-4 font-bold" />
-        </Button>
+        />
       </div>
 
       {sortedEvents.map((event, index) => (
@@ -95,9 +93,7 @@ export function Timeline({ events, onAddEvent, use24Hour }: TimelineProps) {
                 const suggestedTime = calculateMiddleTime(currentTime, nextTime);
                 handleAddEventClick(suggestedTime);
               }}
-            >
-              <Plus className="h-4 w-4 font-bold" />
-            </Button>
+            />
           </div>
         </div>
       ))}
