@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 interface EventFormData {
   time: string;
   title: string;
-  description: string;
+  description?: string;  // Made optional to match TimelineEvent
   category: string;
 }
 
