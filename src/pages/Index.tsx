@@ -23,6 +23,7 @@ const Index = () => {
           duration: "30m",
           title: "Wedding Ceremony",
           description: "Exchange of vows at the main chapel",
+          location: "Main Chapel",
         },
         {
           id: 2,
@@ -31,6 +32,7 @@ const Index = () => {
           duration: "45m",
           title: "Photo Session",
           description: "Family and couple photos in the garden",
+          location: "Garden",
         },
         {
           id: 3,
@@ -39,6 +41,7 @@ const Index = () => {
           duration: "4h",
           title: "Reception",
           description: "Cocktail hour and dinner",
+          location: "Grand Ballroom",
         },
       ],
     },

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { TimelineEvent } from "./TimelineEvent";
 import { Button } from "./ui/button";
 import { AddEventForm } from "./AddEventForm";
-import { Dialog, DialogContent } from "./ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
 import { Plus } from "lucide-react";
 import { useToast } from "./ui/use-toast";
 
@@ -13,6 +13,7 @@ interface TimelineEvent {
   duration: string;
   title: string;
   description?: string;
+  location?: string;
 }
 
 interface TimelineProps {
@@ -79,6 +80,7 @@ export function Timeline({ events, onAddEvent, use24Hour }: TimelineProps) {
             duration={event.duration}
             title={event.title}
             description={event.description}
+            location={event.location}
             onEdit={(updates) => handleEditEvent(event.id, updates)}
             onDelete={() => handleDeleteEvent(event.id)}
             use24Hour={use24Hour}
@@ -120,6 +122,7 @@ export function Timeline({ events, onAddEvent, use24Hour }: TimelineProps) {
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
+          <DialogTitle>Add Event</DialogTitle>
           <AddEventForm 
             onSubmit={(eventData) => {
               onAddEvent(eventData);
