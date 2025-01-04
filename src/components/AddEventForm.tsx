@@ -6,8 +6,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 interface EventFormData {
   time: string;
+  endTime: string;
+  duration: string;
   title: string;
-  description?: string;  // Made optional to match TimelineEvent
+  description?: string;
   category: string;
 }
 
@@ -20,6 +22,8 @@ interface AddEventFormProps {
 export function AddEventForm({ onSubmit, defaultTime, defaultValues }: AddEventFormProps) {
   const [formData, setFormData] = useState<EventFormData>({
     time: defaultValues?.time || defaultTime || "",
+    endTime: defaultValues?.endTime || "",
+    duration: defaultValues?.duration || "",
     title: defaultValues?.title || "",
     description: defaultValues?.description || "",
     category: defaultValues?.category || "",
@@ -34,18 +38,39 @@ export function AddEventForm({ onSubmit, defaultTime, defaultValues }: AddEventF
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(formData);
-    setFormData({ time: "", title: "", description: "", category: "" });
+    setFormData({ time: "", endTime: "", duration: "", title: "", description: "", category: "" });
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-lg shadow-sm">
+      <div className="flex gap-4">
+        <div className="space-y-2 flex-1">
+          <Input
+            type="time"
+            value={formData.time}
+            onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+            required
+            className="font-sans"
+            placeholder="Start Time"
+          />
+        </div>
+        <div className="space-y-2 flex-1">
+          <Input
+            type="time"
+            value={formData.endTime}
+            onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
+            required
+            className="font-sans"
+            placeholder="End Time"
+          />
+        </div>
+      </div>
       <div className="space-y-2">
         <Input
-          type="time"
-          value={formData.time}
-          onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+          placeholder="Duration (e.g. 1h 30m)"
+          value={formData.duration}
+          onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
           required
-          className="font-sans"
         />
       </div>
       <div className="space-y-2">

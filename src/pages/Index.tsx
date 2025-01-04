@@ -4,6 +4,8 @@ import { Timeline } from "@/components/Timeline";
 interface TimelineEvent {
   id: number;
   time: string;
+  endTime: string;
+  duration: string;
   title: string;
   description?: string;
   category: string;
@@ -14,6 +16,8 @@ const Index = () => {
     {
       id: 1,
       time: "14:00",
+      endTime: "14:30",
+      duration: "30m",
       title: "Wedding Ceremony",
       description: "Exchange of vows at the main chapel",
       category: "Ceremony",
@@ -21,6 +25,8 @@ const Index = () => {
     {
       id: 2,
       time: "15:00",
+      endTime: "15:45",
+      duration: "45m",
       title: "Photo Session",
       description: "Family and couple photos in the garden",
       category: "Photos",
@@ -28,6 +34,8 @@ const Index = () => {
     {
       id: 3,
       time: "16:00",
+      endTime: "20:00",
+      duration: "4h",
       title: "Reception",
       description: "Cocktail hour and dinner",
       category: "Reception",

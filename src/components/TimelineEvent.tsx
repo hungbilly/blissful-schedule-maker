@@ -8,14 +8,16 @@ import { useState } from "react";
 
 interface TimelineEventProps {
   time: string;
+  endTime: string;
+  duration: string;
   title: string;
   description?: string;
   category: string;
-  onEdit: (updates: Partial<{ time: string; title: string; description?: string; category: string }>) => void;
+  onEdit: (updates: Partial<{ time: string; endTime: string; duration: string; title: string; description?: string; category: string }>) => void;
 }
 
-export function TimelineEvent({ time, title, description, category, onEdit }: TimelineEventProps) {
-  const [editingField, setEditingField] = useState<"time" | "title" | "description" | "category" | null>(null);
+export function TimelineEvent({ time, endTime, duration, title, description, category, onEdit }: TimelineEventProps) {
+  const [editingField, setEditingField] = useState<"time" | "endTime" | "duration" | "title" | "description" | "category" | null>(null);
   const [tempValue, setTempValue] = useState("");
 
   const handleEdit = (field: typeof editingField, value: string) => {
@@ -34,23 +36,62 @@ export function TimelineEvent({ time, title, description, category, onEdit }: Ti
     <div className="relative pl-12 pb-8">
       <div className="timeline-dot" />
       <div className="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow group">
-        {editingField === "time" ? (
-          <Input
-            type="time"
-            value={tempValue}
-            onChange={(e) => setTempValue(e.target.value)}
-            onBlur={() => handleEdit("time", tempValue)}
-            autoFocus
-            className="w-24 font-medium text-wedding-purple"
-          />
-        ) : (
-          <span 
-            className="text-sm font-medium text-wedding-purple cursor-pointer hover:underline" 
-            onClick={() => startEditing("time", time)}
-          >
-            {time}
-          </span>
-        )}
+        <div className="flex items-center gap-4">
+          {editingField === "time" ? (
+            <Input
+              type="time"
+              value={tempValue}
+              onChange={(e) => setTempValue(e.target.value)}
+              onBlur={() => handleEdit("time", tempValue)}
+              autoFocus
+              className="w-24 font-medium text-wedding-purple"
+            />
+          ) : (
+            <span 
+              className="text-sm font-medium text-wedding-purple cursor-pointer hover:underline" 
+              onClick={() => startEditing("time", time)}
+            >
+              {time}
+            </span>
+          )}
+
+          {editingField === "endTime" ? (
+            <Input
+              type="time"
+              value={tempValue}
+              onChange={(e) => setTempValue(e.target.value)}
+              onBlur={() => handleEdit("endTime", tempValue)}
+              autoFocus
+              className="w-24 font-medium text-wedding-purple"
+            />
+          ) : (
+            <span 
+              className="text-sm font-medium text-wedding-purple cursor-pointer hover:underline" 
+              onClick={() => startEditing("endTime", endTime)}
+            >
+              {endTime}
+            </span>
+          )}
+
+          {editingField === "duration" ? (
+            <Input
+              type="text"
+              value={tempValue}
+              onChange={(e) => setTempValue(e.target.value)}
+              onBlur={() => handleEdit("duration", tempValue)}
+              autoFocus
+              className="w-24 font-medium text-gray-500"
+              placeholder="e.g. 1h 30m"
+            />
+          ) : (
+            <span 
+              className="text-sm font-medium text-gray-500 cursor-pointer hover:underline" 
+              onClick={() => startEditing("duration", duration)}
+            >
+              ({duration})
+            </span>
+          )}
+        </div>
 
         {editingField === "title" ? (
           <Input
