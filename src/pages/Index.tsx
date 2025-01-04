@@ -2,27 +2,12 @@ import { useState } from "react";
 import { Timeline } from "@/components/Timeline";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-
-interface TimelineEvent {
-  id: number;
-  time: string;
-  endTime: string;
-  duration: string;
-  title: string;
-  description?: string;
-  category: string;
-}
-
-interface Project {
-  id: number;
-  name: string;
-  events: TimelineEvent[];
-}
+import { ProjectSelector } from "@/components/project/ProjectSelector";
+import { ProjectDialog } from "@/components/project/ProjectDialog";
+import { Project, TimelineEvent } from "@/components/project/types";
+import { Edit2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const Index = () => {
   const [projects, setProjects] = useState<Project[]>([
@@ -63,8 +48,8 @@ const Index = () => {
 
   const [currentProjectId, setCurrentProjectId] = useState(1);
   const [use24Hour, setUse24Hour] = useState(true);
-  const [isNewProjectDialogOpen, setIsNewProjectDialogOpen] = useState(false);
-  const [newProjectName, setNewProjectName] = useState("");
+  const [isProjectDialogOpen, setIsProjectDialogOpen] = useState(false);
+  const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
   const { toast } = useToast();
 
   const currentProject = projects.find((p) => p.id === currentProjectId);
@@ -78,16 +63,13 @@ const Index = () => {
       let updatedEvents;
       if ('id' in eventData) {
         if (eventData.id === -1) {
-          // This is a delete operation
           updatedEvents = project.events.filter(event => event.time !== eventData.time);
         } else {
-          // This is an update to an existing event
           updatedEvents = project.events.map(event => 
             event.id === eventData.id ? eventData : event
           );
         }
       } else {
-        // This is a new event
         const newEvent = {
           ...eventData,
           id: project.events.length + 1,
@@ -104,8 +86,8 @@ const Index = () => {
     setProjects(updatedProjects);
   };
 
-  const handleAddProject = () => {
-    if (!newProjectName.trim()) {
+  const handleProjectSubmit = (name: string) => {
+    if (!name.trim()) {
       toast({
         title: "Error",
         description: "Please enter a project name",
@@ -114,54 +96,71 @@ const Index = () => {
       return;
     }
 
-    const newProject: Project = {
-      id: projects.length + 1,
-      name: newProjectName,
-      events: [],
-    };
+    if (dialogMode === "create") {
+      const newProject: Project = {
+        id: projects.length + 1,
+        name,
+        events: [],
+      };
+      setProjects([...projects, newProject]);
+      setCurrentProjectId(newProject.id);
+      toast({
+        title: "Success",
+        description: `Project "${name}" has been created`,
+      });
+    } else {
+      setProjects(
+        projects.map((project) =>
+          project.id === currentProjectId
+            ? { ...project, name }
+            : project
+        )
+      );
+      toast({
+        title: "Success",
+        description: `Project name has been updated to "${name}"`,
+      });
+    }
+    setIsProjectDialogOpen(false);
+  };
 
-    setProjects([...projects, newProject]);
-    setCurrentProjectId(newProject.id);
-    setNewProjectName("");
-    setIsNewProjectDialogOpen(false);
+  const handleEditProject = () => {
+    setDialogMode("edit");
+    setIsProjectDialogOpen(true);
+  };
 
-    toast({
-      title: "Success",
-      description: `Project "${newProjectName}" has been created`,
-    });
+  const handleNewProject = () => {
+    setDialogMode("create");
+    setIsProjectDialogOpen(true);
   };
 
   return (
     <div className="min-h-screen bg-wedding-pink py-12">
       <div className="container max-w-3xl">
         <div className="flex justify-between items-center mb-8">
-          <div className="flex items-center gap-4">
-            <select
-              value={currentProjectId}
-              onChange={(e) => setCurrentProjectId(Number(e.target.value))}
-              className="px-3 py-2 border rounded-md bg-white"
-            >
-              {projects.map((project) => (
-                <option key={project.id} value={project.id}>
-                  {project.name}
-                </option>
-              ))}
-            </select>
+          <ProjectSelector
+            projects={projects}
+            currentProjectId={currentProjectId}
+            onProjectChange={setCurrentProjectId}
+            onNewProjectClick={handleNewProject}
+          />
+          <div className="flex items-center space-x-4">
             <Button
               variant="outline"
-              onClick={() => setIsNewProjectDialogOpen(true)}
+              size="icon"
+              onClick={handleEditProject}
+              className="h-10 w-10"
             >
-              <Plus className="h-4 w-4 mr-2" />
-              New Project
+              <Edit2 className="h-4 w-4" />
             </Button>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Label htmlFor="24h-mode">24h</Label>
-            <Switch
-              id="24h-mode"
-              checked={use24Hour}
-              onCheckedChange={setUse24Hour}
-            />
+            <div className="flex items-center space-x-2">
+              <Label htmlFor="24h-mode">24h</Label>
+              <Switch
+                id="24h-mode"
+                checked={use24Hour}
+                onCheckedChange={setUse24Hour}
+              />
+            </div>
           </div>
         </div>
 
@@ -178,28 +177,13 @@ const Index = () => {
         )}
       </div>
 
-      <Dialog open={isNewProjectDialogOpen} onOpenChange={setIsNewProjectDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Create New Project</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 pt-4">
-            <Input
-              placeholder="Enter project name"
-              value={newProjectName}
-              onChange={(e) => setNewProjectName(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  handleAddProject();
-                }
-              }}
-            />
-            <Button onClick={handleAddProject} className="w-full">
-              Create Project
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <ProjectDialog
+        open={isProjectDialogOpen}
+        onOpenChange={setIsProjectDialogOpen}
+        onSubmit={handleProjectSubmit}
+        initialName={dialogMode === "edit" ? currentProject?.name : ""}
+        mode={dialogMode}
+      />
     </div>
   );
 };
