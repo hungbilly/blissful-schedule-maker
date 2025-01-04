@@ -10,8 +10,9 @@ interface TimelineEventProps {
   duration: string;
   title: string;
   description?: string;
+  location?: string;
   use24Hour: boolean;
-  onEdit: (updates: Partial<{ time: string; endTime: string; duration: string; title: string; description?: string; }>) => void;
+  onEdit: (updates: Partial<{ time: string; endTime: string; duration: string; title: string; description?: string; location?: string; }>) => void;
   onDelete?: () => void;
 }
 
@@ -21,11 +22,12 @@ export function TimelineEvent({
   duration, 
   title, 
   description,
+  location,
   use24Hour, 
   onEdit,
   onDelete
 }: TimelineEventProps) {
-  const [editingField, setEditingField] = useState<"time" | "endTime" | "duration" | "title" | "description" | null>(null);
+  const [editingField, setEditingField] = useState<"time" | "endTime" | "duration" | "title" | "description" | "location" | null>(null);
   const [tempValue, setTempValue] = useState("");
   const [isHighlighted, setIsHighlighted] = useState(false);
 
@@ -97,7 +99,8 @@ export function TimelineEvent({
             <EventDescription
               title={title}
               description={description}
-              editingField={editingField === "title" || editingField === "description" ? editingField : null}
+              location={location}
+              editingField={editingField === "title" || editingField === "description" || editingField === "location" ? editingField : null}
               tempValue={tempValue}
               onStartEditing={startEditing}
               onEdit={handleEdit}
