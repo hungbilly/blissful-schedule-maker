@@ -66,7 +66,7 @@ export function TagSelector({ tags, onTagsChange }: TagSelectorProps) {
             Add Tag
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start">
+        <DropdownMenuContent align="start" className="bg-white border shadow-md">
           {TAG_OPTIONS.map((tag) => (
             <DropdownMenuItem
               key={tag.label}
