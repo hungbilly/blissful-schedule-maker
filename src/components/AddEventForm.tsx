@@ -58,22 +58,18 @@ export function AddEventForm({ onSubmit, defaultTime, defaultValues }: AddEventF
     let totalMinutes = (endHours * 60 + endMinutes) - (startHours * 60 + startMinutes);
     if (totalMinutes < 0) totalMinutes += 24 * 60; // Handle overnight events
     
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = totalMinutes % 60;
-    
-    return `${hours}h ${minutes}m`;
+    return `${totalMinutes}mins`;
   };
 
   const calculateEndTime = (startTime: string, duration: string) => {
     const [startHours, startMinutes] = startTime.split(":").map(Number);
-    const durationMatch = duration.match(/(\d+)h\s*(?:(\d+)m)?/);
+    const durationMatch = duration.match(/(\d+)mins/);
     
     if (!durationMatch) return "";
     
-    const hours = parseInt(durationMatch[1] || "0");
-    const minutes = parseInt(durationMatch[2] || "0");
+    const minutes = parseInt(durationMatch[1] || "0");
     
-    let totalMinutes = startHours * 60 + startMinutes + hours * 60 + minutes;
+    let totalMinutes = startHours * 60 + startMinutes + minutes;
     totalMinutes = totalMinutes % (24 * 60); // Keep within 24 hours
     
     const endHours = Math.floor(totalMinutes / 60);
@@ -114,7 +110,7 @@ export function AddEventForm({ onSubmit, defaultTime, defaultValues }: AddEventF
       </div>
       <div className="space-y-2">
         <Input
-          placeholder="Duration (e.g. 1h 30m)"
+          placeholder="Duration (e.g. 180mins)"
           value={formData.duration}
           onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
           required
