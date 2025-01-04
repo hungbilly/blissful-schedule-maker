@@ -44,11 +44,11 @@ export function CategorySelect({
         <SelectTrigger>
           <SelectValue />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="bg-white border border-gray-200 shadow-md">
           {categories.map((cat) => (
-            <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+            <SelectItem key={cat} value={cat} className="hover:bg-wedding-pink/50">{cat}</SelectItem>
           ))}
-          <SelectItem value="add_new" className="text-wedding-purple font-medium">
+          <SelectItem value="add_new" className="text-wedding-purple font-medium hover:bg-wedding-pink/50">
             + Add New
           </SelectItem>
         </SelectContent>
