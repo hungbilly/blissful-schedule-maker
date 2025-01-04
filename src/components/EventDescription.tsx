@@ -23,6 +23,13 @@ export function EventDescription({
   onEdit,
   setTempValue,
 }: EventDescriptionProps) {
+  const handleKeyPress = (e: React.KeyboardEvent, field: "title" | "description" | "location") => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      onEdit(field, tempValue);
+    }
+  };
+
   return (
     <div className="space-y-2">
       {editingField === "title" ? (
@@ -30,6 +37,7 @@ export function EventDescription({
           value={tempValue}
           onChange={(e) => setTempValue(e.target.value)}
           onBlur={() => onEdit("title", tempValue)}
+          onKeyDown={(e) => handleKeyPress(e, "title")}
           autoFocus
           className="text-base md:text-lg font-serif mt-2 text-gray-800"
         />
@@ -48,6 +56,7 @@ export function EventDescription({
             value={tempValue}
             onChange={(e) => setTempValue(e.target.value)}
             onBlur={() => onEdit("location", tempValue)}
+            onKeyDown={(e) => handleKeyPress(e, "location")}
             autoFocus
             className="pl-7 text-xs md:text-sm text-gray-600"
           />
@@ -76,6 +85,7 @@ export function EventDescription({
           value={tempValue}
           onChange={(e) => setTempValue(e.target.value)}
           onBlur={() => onEdit("description", tempValue)}
+          onKeyDown={(e) => handleKeyPress(e, "description")}
           autoFocus
           className="mt-2 text-gray-600 text-xs md:text-sm"
         />
