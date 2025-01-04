@@ -2,11 +2,6 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useToast } from "./ui/use-toast";
-import { calculateDuration, calculateEndTime, formatDuration, parseDuration } from "@/utils/timeCalculations";
 
 interface EventFormData {
   time: string;
@@ -14,29 +9,22 @@ interface EventFormData {
   duration: string;
   title: string;
   description?: string;
-  category: string;
 }
 
 interface AddEventFormProps {
   onSubmit: (event: EventFormData) => void;
   defaultTime?: string;
   defaultValues?: EventFormData;
-  categories: string[];
-  onAddCategory: (category: string) => void;
 }
 
-export function AddEventForm({ onSubmit, defaultTime, defaultValues, categories, onAddCategory }: AddEventFormProps) {
+export function AddEventForm({ onSubmit, defaultTime, defaultValues }: AddEventFormProps) {
   const [formData, setFormData] = useState<EventFormData>({
     time: defaultValues?.time || defaultTime || "",
     endTime: defaultValues?.endTime || "",
     duration: defaultValues?.duration || "",
     title: defaultValues?.title || "",
     description: defaultValues?.description || "",
-    category: defaultValues?.category || "",
   });
-  const [isNewCategoryDialogOpen, setIsNewCategoryDialogOpen] = useState(false);
-  const [newCategory, setNewCategory] = useState("");
-  const { toast } = useToast();
 
   useEffect(() => {
     if (defaultTime && !defaultValues) {
@@ -70,120 +58,85 @@ export function AddEventForm({ onSubmit, defaultTime, defaultValues, categories,
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(formData);
-    setFormData({ time: "", endTime: "", duration: "", title: "", description: "", category: "" });
-  };
-
-  const handleAddCategory = () => {
-    if (newCategory.trim()) {
-      onAddCategory(newCategory.trim());
-      setNewCategory("");
-      setIsNewCategoryDialogOpen(false);
-      toast({
-        title: "Category Added",
-        description: `${newCategory} has been added to the categories list.`,
-      });
-    }
+    setFormData({ time: "", endTime: "", duration: "", title: "", description: "" });
   };
 
   return (
-    <>
-      <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-lg shadow-sm">
-        <div className="flex gap-4">
-          <div className="space-y-2 flex-1">
-            <Input
-              type="time"
-              value={formData.time}
-              onChange={(e) => setFormData({ ...formData, time: e.target.value })}
-              required
-              className="font-sans bg-white"
-              placeholder="Start Time"
-            />
-          </div>
-          <div className="space-y-2 flex-1">
-            <Input
-              type="time"
-              value={formData.endTime}
-              onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
-              required
-              className="font-sans bg-white"
-              placeholder="End Time"
-            />
-          </div>
-        </div>
-        <div className="space-y-2">
+    <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-lg shadow-sm">
+      <div className="flex gap-4">
+        <div className="space-y-2 flex-1">
           <Input
-            placeholder="Duration (minutes)"
-            value={formData.duration}
-            onChange={(e) => handleDurationChange(e.target.value)}
+            type="time"
+            value={formData.time}
+            onChange={(e) => setFormData({ ...formData, time: e.target.value })}
             required
-            className="bg-white"
+            className="font-sans bg-white"
+            placeholder="Start Time"
           />
         </div>
-        <div className="space-y-2">
+        <div className="space-y-2 flex-1">
           <Input
-            placeholder="Event Title"
-            value={formData.title}
-            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+            type="time"
+            value={formData.endTime}
+            onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
             required
-            className="bg-white"
+            className="font-sans bg-white"
+            placeholder="End Time"
           />
         </div>
-        <div className="space-y-2">
-          <Textarea
-            placeholder="Description"
-            value={formData.description}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            className="bg-white"
-          />
-        </div>
-        <div className="flex gap-2">
-          <Select
-            value={formData.category}
-            onValueChange={(value) => setFormData({ ...formData, category: value })}
-          >
-            <SelectTrigger className="flex-1 bg-white">
-              <SelectValue placeholder="Select category" />
-            </SelectTrigger>
-            <SelectContent className="bg-white">
-              {categories.map((category) => (
-                <SelectItem key={category} value={category} className="bg-white">
-                  {category}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setIsNewCategoryDialogOpen(true)}
-            className="bg-white"
-          >
-            <Plus className="h-4 w-4" />
-          </Button>
-        </div>
-        <Button type="submit" className="w-full bg-wedding-purple hover:bg-wedding-purple/90">
-          {defaultValues ? "Update Event" : "Add Event"}
-        </Button>
-      </form>
-
-      <Dialog open={isNewCategoryDialogOpen} onOpenChange={setIsNewCategoryDialogOpen}>
-        <DialogContent className="bg-white">
-          <DialogHeader>
-            <DialogTitle>Add New Category</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <Input
-              placeholder="Category name"
-              value={newCategory}
-              onChange={(e) => setNewCategory(e.target.value)}
-              className="bg-white"
-            />
-            <Button onClick={handleAddCategory} className="w-full">
-              Add Category
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </>
+      </div>
+      <div className="space-y-2">
+        <Input
+          placeholder="Duration (minutes)"
+          value={formData.duration}
+          onChange={(e) => handleDurationChange(e.target.value)}
+          required
+          className="bg-white"
+        />
+      </div>
+      <div className="space-y-2">
+        <Input
+          placeholder="Event Title"
+          value={formData.title}
+          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+          required
+          className="bg-white"
+        />
+      </div>
+      <div className="space-y-2">
+        <Textarea
+          placeholder="Description"
+          value={formData.description}
+          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+          className="bg-white"
+        />
+      </div>
+      <Button type="submit" className="w-full bg-wedding-purple hover:bg-wedding-purple/90">
+        {defaultValues ? "Update Event" : "Add Event"}
+      </Button>
+    </form>
   );
+}
+
+function calculateDuration(startTime: string, endTime: string): string {
+  const [startHours, startMinutes] = startTime.split(':').map(Number);
+  const [endHours, endMinutes] = endTime.split(':').map(Number);
+  
+  let durationInMinutes = (endHours * 60 + endMinutes) - (startHours * 60 + startMinutes);
+  if (durationInMinutes < 0) durationInMinutes += 24 * 60; // Handle overnight events
+  
+  return `${durationInMinutes}mins`;
+}
+
+function calculateEndTime(startTime: string, duration: string): string {
+  const [hours, minutes] = startTime.split(':').map(Number);
+  const durationMinutes = parseInt(duration);
+  
+  if (isNaN(durationMinutes)) return '';
+  
+  const totalMinutes = hours * 60 + minutes + durationMinutes;
+  const endHours = Math.floor(totalMinutes / 60) % 24;
+  const endMinutes = totalMinutes % 60;
+  
+  return `${endHours.toString().padStart(2, '0')}:${endMinutes.toString().padStart(2, '0')}`;
 }

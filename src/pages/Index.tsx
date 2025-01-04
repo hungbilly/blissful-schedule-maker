@@ -14,7 +14,6 @@ const Index = () => {
     {
       id: 1,
       name: "Wedding Day",
-      categories: ["Ceremony", "Photos", "Reception", "Setup"],
       events: [
         {
           id: 1,
@@ -23,7 +22,6 @@ const Index = () => {
           duration: "30m",
           title: "Wedding Ceremony",
           description: "Exchange of vows at the main chapel",
-          category: "Ceremony",
         },
         {
           id: 2,
@@ -32,7 +30,6 @@ const Index = () => {
           duration: "45m",
           title: "Photo Session",
           description: "Family and couple photos in the garden",
-          category: "Photos",
         },
         {
           id: 3,
@@ -41,7 +38,6 @@ const Index = () => {
           duration: "4h",
           title: "Reception",
           description: "Cocktail hour and dinner",
-          category: "Reception",
         },
       ],
     },
@@ -102,7 +98,6 @@ const Index = () => {
         id: projects.length + 1,
         name,
         events: [],
-        categories: ["Ceremony", "Photos", "Reception", "Setup"],
       };
       setProjects([...projects, newProject]);
       setCurrentProjectId(newProject.id);
@@ -124,25 +119,6 @@ const Index = () => {
       });
     }
     setIsProjectDialogOpen(false);
-  };
-
-  const handleAddCategory = (category: string) => {
-    if (!currentProject) return;
-
-    const updatedProjects = projects.map((project) => {
-      if (project.id !== currentProjectId) return project;
-
-      return {
-        ...project,
-        categories: [...project.categories, category],
-      };
-    });
-
-    setProjects(updatedProjects);
-    toast({
-      title: "Success",
-      description: `Category "${category}" has been added`,
-    });
   };
 
   const handleEditProject = () => {
@@ -194,8 +170,6 @@ const Index = () => {
             events={currentProject.events}
             onAddEvent={handleAddEvent}
             use24Hour={use24Hour}
-            categories={currentProject.categories}
-            onAddCategory={handleAddCategory}
           />
         )}
       </div>

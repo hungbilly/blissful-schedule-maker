@@ -3,7 +3,6 @@ import { useState } from "react";
 import { EventOptionsMenu } from "./EventOptionsMenu";
 import { EventHeader } from "./EventHeader";
 import { EventDescription } from "./EventDescription";
-import { CategorySelect } from "./CategorySelect";
 
 interface TimelineEventProps {
   time: string;
@@ -11,12 +10,9 @@ interface TimelineEventProps {
   duration: string;
   title: string;
   description?: string;
-  category: string;
   use24Hour: boolean;
-  categories: string[];
-  onEdit: (updates: Partial<{ time: string; endTime: string; duration: string; title: string; description?: string; category: string }>) => void;
+  onEdit: (updates: Partial<{ time: string; endTime: string; duration: string; title: string; description?: string; }>) => void;
   onDelete?: () => void;
-  onAddCategory?: (category: string) => void;
 }
 
 export function TimelineEvent({ 
@@ -24,15 +20,12 @@ export function TimelineEvent({
   endTime, 
   duration, 
   title, 
-  description, 
-  category,
-  categories, 
+  description,
   use24Hour, 
   onEdit,
-  onDelete,
-  onAddCategory 
+  onDelete
 }: TimelineEventProps) {
-  const [editingField, setEditingField] = useState<"time" | "endTime" | "duration" | "title" | "description" | "category" | null>(null);
+  const [editingField, setEditingField] = useState<"time" | "endTime" | "duration" | "title" | "description" | null>(null);
   const [tempValue, setTempValue] = useState("");
   const [isHighlighted, setIsHighlighted] = useState(false);
 
@@ -107,15 +100,6 @@ export function TimelineEvent({
           onEdit={handleEdit}
           setTempValue={setTempValue}
         />
-
-        <div className="mt-3">
-          <CategorySelect
-            category={category}
-            categories={categories}
-            onCategoryChange={(value) => handleEdit("category", value)}
-            onAddCategory={onAddCategory}
-          />
-        </div>
       </div>
     </div>
   );
