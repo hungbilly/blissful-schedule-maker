@@ -3,6 +3,7 @@ import { useState } from "react";
 import { EventOptionsMenu } from "./EventOptionsMenu";
 import { EventHeader } from "./EventHeader";
 import { EventDescription } from "./EventDescription";
+import { calculateDuration } from "@/utils/timeCalculations";
 
 interface TimelineEventProps {
   time: string;
@@ -36,20 +37,22 @@ export function TimelineEvent({
       let updates: Partial<TimelineEventProps> = {};
 
       if (field === "time") {
+        const newDuration = calculateDuration(value, endTime);
         updates = {
           time: value,
-          duration: duration
+          duration: newDuration
         };
       } else if (field === "endTime") {
+        const newDuration = calculateDuration(time, value);
         updates = {
           endTime: value,
-          duration: duration
+          duration: newDuration
         };
       } else if (field === "duration") {
         const minutes = parseInt(value);
         if (!isNaN(minutes)) {
           updates = {
-            duration: `${minutes}m`,
+            duration: `${minutes}mins`,
             endTime: endTime
           };
         }
