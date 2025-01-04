@@ -121,7 +121,24 @@ export function TimelineEvent({ time, endTime, duration, title, description, cat
             </div>
             
             <div className="text-sm text-wedding-gray">
-              Duration: {duration}
+              Duration: {' '}
+              {editingField === "duration" ? (
+                <Input
+                  type="number"
+                  value={tempValue}
+                  onChange={(e) => setTempValue(e.target.value)}
+                  onBlur={() => handleEdit("duration", tempValue)}
+                  className="inline-block w-20 h-6 px-1 py-0"
+                  min="1"
+                />
+              ) : (
+                <span
+                  className="cursor-pointer hover:underline"
+                  onClick={() => startEditing("duration", duration)}
+                >
+                  {duration}
+                </span>
+              )}
             </div>
           </div>
         </div>
