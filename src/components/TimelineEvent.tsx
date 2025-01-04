@@ -14,6 +14,7 @@ interface TimelineEventProps {
   description?: string;
   category: string;
   use24Hour: boolean;
+  categories: string[];
   onEdit: (updates: Partial<{ time: string; endTime: string; duration: string; title: string; description?: string; category: string }>) => void;
   onDelete?: () => void;
 }
@@ -24,7 +25,8 @@ export function TimelineEvent({
   duration, 
   title, 
   description, 
-  category, 
+  category,
+  categories, 
   use24Hour, 
   onEdit,
   onDelete 
@@ -147,19 +149,9 @@ export function TimelineEvent({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="Ceremony">Ceremony</SelectItem>
-              <SelectItem value="Reception">Reception</SelectItem>
-              <SelectItem value="Photos">Photos</SelectItem>
-              <SelectItem value="Setup">Setup</SelectItem>
-              <SelectItem value="Rehearsal">Rehearsal</SelectItem>
-              <SelectItem value="Dinner">Dinner</SelectItem>
-              <SelectItem value="Dance">Dance</SelectItem>
-              <SelectItem value="Speech">Speech</SelectItem>
-              <SelectItem value="Transportation">Transportation</SelectItem>
-              <SelectItem value="Break">Break</SelectItem>
-              <SelectItem value="Vendor Setup">Vendor Setup</SelectItem>
-              <SelectItem value="Entertainment">Entertainment</SelectItem>
-              <SelectItem value="Other">Other</SelectItem>
+              {categories.map((cat) => (
+                <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+              ))}
             </SelectContent>
           </Select>
         ) : (

@@ -3,6 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Plus } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useToast } from "./ui/use-toast";
 
 interface EventFormData {
   time: string;
@@ -17,9 +20,11 @@ interface AddEventFormProps {
   onSubmit: (event: EventFormData) => void;
   defaultTime?: string;
   defaultValues?: EventFormData;
+  categories: string[];
+  onAddCategory: (category: string) => void;
 }
 
-export function AddEventForm({ onSubmit, defaultTime, defaultValues }: AddEventFormProps) {
+export function AddEventForm({ onSubmit, defaultTime, defaultValues, categories, onAddCategory }: AddEventFormProps) {
   const [formData, setFormData] = useState<EventFormData>({
     time: defaultValues?.time || defaultTime || "",
     endTime: defaultValues?.endTime || "",
@@ -28,6 +33,9 @@ export function AddEventForm({ onSubmit, defaultTime, defaultValues }: AddEventF
     description: defaultValues?.description || "",
     category: defaultValues?.category || "",
   });
+  const [isNewCategoryDialogOpen, setIsNewCategoryDialogOpen] = useState(false);
+  const [newCategory, setNewCategory] = useState("");
+  const { toast } = useToast();
 
   useEffect(() => {
     if (defaultTime && !defaultValues) {
@@ -84,79 +92,112 @@ export function AddEventForm({ onSubmit, defaultTime, defaultValues }: AddEventF
     setFormData({ time: "", endTime: "", duration: "", title: "", description: "", category: "" });
   };
 
+  const handleAddCategory = () => {
+    if (newCategory.trim()) {
+      onAddCategory(newCategory.trim());
+      setNewCategory("");
+      setIsNewCategoryDialogOpen(false);
+      toast({
+        title: "Category Added",
+        description: `${newCategory} has been added to the categories list.`,
+      });
+    }
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-lg shadow-sm">
-      <div className="flex gap-4">
-        <div className="space-y-2 flex-1">
+    <>
+      <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-lg shadow-sm">
+        <div className="flex gap-4">
+          <div className="space-y-2 flex-1">
+            <Input
+              type="time"
+              value={formData.time}
+              onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+              required
+              className="font-sans"
+              placeholder="Start Time"
+            />
+          </div>
+          <div className="space-y-2 flex-1">
+            <Input
+              type="time"
+              value={formData.endTime}
+              onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
+              required
+              className="font-sans"
+              placeholder="End Time"
+            />
+          </div>
+        </div>
+        <div className="space-y-2">
           <Input
-            type="time"
-            value={formData.time}
-            onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+            placeholder="Duration (e.g. 180mins)"
+            value={formData.duration}
+            onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
             required
-            className="font-sans"
-            placeholder="Start Time"
           />
         </div>
-        <div className="space-y-2 flex-1">
+        <div className="space-y-2">
           <Input
-            type="time"
-            value={formData.endTime}
-            onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
+            placeholder="Event Title"
+            value={formData.title}
+            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
             required
-            className="font-sans"
-            placeholder="End Time"
           />
         </div>
-      </div>
-      <div className="space-y-2">
-        <Input
-          placeholder="Duration (e.g. 180mins)"
-          value={formData.duration}
-          onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
-          required
-        />
-      </div>
-      <div className="space-y-2">
-        <Input
-          placeholder="Event Title"
-          value={formData.title}
-          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-          required
-        />
-      </div>
-      <div className="space-y-2">
-        <Textarea
-          placeholder="Description"
-          value={formData.description}
-          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-        />
-      </div>
-      <Select
-        value={formData.category}
-        onValueChange={(value) => setFormData({ ...formData, category: value })}
-      >
-        <SelectTrigger>
-          <SelectValue placeholder="Select category" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="Ceremony">Ceremony</SelectItem>
-          <SelectItem value="Reception">Reception</SelectItem>
-          <SelectItem value="Photos">Photos</SelectItem>
-          <SelectItem value="Setup">Setup</SelectItem>
-          <SelectItem value="Rehearsal">Rehearsal</SelectItem>
-          <SelectItem value="Dinner">Dinner</SelectItem>
-          <SelectItem value="Dance">Dance</SelectItem>
-          <SelectItem value="Speech">Speech</SelectItem>
-          <SelectItem value="Transportation">Transportation</SelectItem>
-          <SelectItem value="Break">Break</SelectItem>
-          <SelectItem value="Vendor Setup">Vendor Setup</SelectItem>
-          <SelectItem value="Entertainment">Entertainment</SelectItem>
-          <SelectItem value="Other">Other</SelectItem>
-        </SelectContent>
-      </Select>
-      <Button type="submit" className="w-full bg-wedding-purple hover:bg-wedding-purple/90">
-        {defaultValues ? "Update Event" : "Add Event"}
-      </Button>
-    </form>
+        <div className="space-y-2">
+          <Textarea
+            placeholder="Description"
+            value={formData.description}
+            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+          />
+        </div>
+        <div className="flex gap-2">
+          <Select
+            value={formData.category}
+            onValueChange={(value) => setFormData({ ...formData, category: value })}
+          >
+            <SelectTrigger className="flex-1">
+              <SelectValue placeholder="Select category" />
+            </SelectTrigger>
+            <SelectContent>
+              {categories.map((category) => (
+                <SelectItem key={category} value={category}>
+                  {category}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setIsNewCategoryDialogOpen(true)}
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
+        </div>
+        <Button type="submit" className="w-full bg-wedding-purple hover:bg-wedding-purple/90">
+          {defaultValues ? "Update Event" : "Add Event"}
+        </Button>
+      </form>
+
+      <Dialog open={isNewCategoryDialogOpen} onOpenChange={setIsNewCategoryDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add New Category</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <Input
+              placeholder="Category name"
+              value={newCategory}
+              onChange={(e) => setNewCategory(e.target.value)}
+            />
+            <Button onClick={handleAddCategory} className="w-full">
+              Add Category
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

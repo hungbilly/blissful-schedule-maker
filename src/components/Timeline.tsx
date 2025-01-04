@@ -20,9 +20,11 @@ interface TimelineProps {
   events: TimelineEvent[];
   onAddEvent: (event: Omit<TimelineEvent, "id"> | TimelineEvent) => void;
   use24Hour: boolean;
+  categories: string[];
+  onAddCategory: (category: string) => void;
 }
 
-export function Timeline({ events, onAddEvent, use24Hour }: TimelineProps) {
+export function Timeline({ events, onAddEvent, use24Hour, categories, onAddCategory }: TimelineProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedTime, setSelectedTime] = useState<string>("");
   const { toast } = useToast();
@@ -80,6 +82,7 @@ export function Timeline({ events, onAddEvent, use24Hour }: TimelineProps) {
             title={event.title}
             description={event.description}
             category={event.category}
+            categories={categories}
             onEdit={(updates) => handleEditEvent(event.id, updates)}
             onDelete={() => handleDeleteEvent(event.id)}
             use24Hour={use24Hour}
@@ -112,6 +115,8 @@ export function Timeline({ events, onAddEvent, use24Hour }: TimelineProps) {
               setIsDialogOpen(false);
             }}
             defaultTime={selectedTime}
+            categories={categories}
+            onAddCategory={onAddCategory}
           />
         </DialogContent>
       </Dialog>
