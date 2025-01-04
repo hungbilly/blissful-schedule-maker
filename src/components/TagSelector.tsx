@@ -66,15 +66,15 @@ export function TagSelector({ tags, onTagsChange }: TagSelectorProps) {
             Add Tag
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="bg-white border shadow-md">
+        <DropdownMenuContent 
+          align="start" 
+          className="bg-white border shadow-md z-50"
+        >
           {TAG_OPTIONS.map((tag) => (
             <DropdownMenuItem
               key={tag.label}
-              onSelect={(e) => {
-                e.preventDefault();
-                handleToggleTag(tag.label);
-              }}
-              className="flex items-center gap-2"
+              onClick={() => handleToggleTag(tag.label)}
+              className="flex items-center gap-2 cursor-pointer"
             >
               <div className={cn(
                 "w-3 h-3 rounded-full",

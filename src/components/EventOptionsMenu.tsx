@@ -22,23 +22,17 @@ export function EventOptionsMenu({ onDelete, onHighlight, isHighlighted }: Event
           <MoreVertical className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent align="end" className="bg-white border shadow-md z-50">
         <DropdownMenuItem 
-          onSelect={(e) => {
-            e.preventDefault();
-            onHighlight();
-          }}
-          className="gap-2"
+          onClick={onHighlight}
+          className="gap-2 cursor-pointer"
         >
           <Star className="h-4 w-4" />
           {isHighlighted ? 'Remove Highlight' : 'Highlight'}
         </DropdownMenuItem>
         <DropdownMenuItem 
-          onSelect={(e) => {
-            e.preventDefault();
-            onDelete();
-          }}
-          className="gap-2 text-red-600"
+          onClick={onDelete}
+          className="gap-2 text-red-600 cursor-pointer"
         >
           <Trash2 className="h-4 w-4" />
           Delete
