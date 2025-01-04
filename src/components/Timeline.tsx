@@ -45,7 +45,7 @@ export function Timeline({ events, onAddEvent, use24Hour }: TimelineProps) {
     if (eventToDelete) {
       onAddEvent({
         ...eventToDelete,
-        id: -1 // This signals to the parent component that this event should be deleted
+        id: -1
       });
       
       toast({
@@ -59,10 +59,10 @@ export function Timeline({ events, onAddEvent, use24Hour }: TimelineProps) {
     <div className="relative">
       <div className="timeline-line" />
       
-      <div className="relative pl-12 pb-8">
+      <div className="relative pl-12 pb-4">
         <Button
-          variant="outline"
-          className="w-full bg-white hover:bg-wedding-pink/50"
+          variant="ghost"
+          className="w-full text-wedding-purple/70 hover:text-wedding-purple hover:bg-wedding-pink/30"
           onClick={() => handleAddEventClick("00:00")}
         >
           <Plus className="mr-2 h-4 w-4" />
@@ -82,10 +82,10 @@ export function Timeline({ events, onAddEvent, use24Hour }: TimelineProps) {
             onDelete={() => handleDeleteEvent(event.id)}
             use24Hour={use24Hour}
           />
-          <div className="relative pl-12 pb-8">
+          <div className="relative pl-12 pb-4">
             <Button
-              variant="outline"
-              className="w-full bg-white hover:bg-wedding-pink/50"
+              variant="ghost"
+              className="w-full text-wedding-purple/70 hover:text-wedding-purple hover:bg-wedding-pink/30"
               onClick={() => {
                 const currentTime = event.time;
                 const nextTime = index < sortedEvents.length - 1 
