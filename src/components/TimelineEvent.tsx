@@ -4,7 +4,7 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface TimelineEventProps {
   time: string;
@@ -20,9 +20,36 @@ export function TimelineEvent({ time, endTime, duration, title, description, cat
   const [editingField, setEditingField] = useState<"time" | "endTime" | "duration" | "title" | "description" | "category" | null>(null);
   const [tempValue, setTempValue] = useState("");
 
+  const calculateEndTime = (startTime: string, duration: string) => {
+    const [startHours, startMinutes] = startTime.split(":").map(Number);
+    const durationMatch = duration.match(/(\d+)h\s*(?:(\d+)m)?/);
+    
+    if (!durationMatch) return "";
+    
+    const hours = parseInt(durationMatch[1] || "0");
+    const minutes = parseInt(durationMatch[2] || "0");
+    
+    let totalMinutes = startHours * 60 + startMinutes + hours * 60 + minutes;
+    totalMinutes = totalMinutes % (24 * 60); // Keep within 24 hours
+    
+    const endHours = Math.floor(totalMinutes / 60);
+    const endMinutes = totalMinutes % 60;
+    
+    return `${endHours.toString().padStart(2, "0")}:${endMinutes.toString().padStart(2, "0")}`;
+  };
+
   const handleEdit = (field: typeof editingField, value: string) => {
     if (field) {
-      onEdit({ [field]: value });
+      if (field === "duration") {
+        // When duration changes, update both duration and end time
+        const newEndTime = calculateEndTime(time, value);
+        onEdit({ 
+          duration: value,
+          endTime: newEndTime
+        });
+      } else {
+        onEdit({ [field]: value });
+      }
       setEditingField(null);
     }
   };
