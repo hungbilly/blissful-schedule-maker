@@ -8,6 +8,8 @@ import { Plus } from "lucide-react";
 interface TimelineEvent {
   id: number;
   time: string;
+  endTime: string;
+  duration: string;
   title: string;
   description?: string;
   category: string;
@@ -56,6 +58,8 @@ export function Timeline({ events, onAddEvent }: TimelineProps) {
         <div key={event.id}>
           <TimelineEvent
             time={event.time}
+            endTime={event.endTime}
+            duration={event.duration}
             title={event.title}
             description={event.description}
             category={event.category}
