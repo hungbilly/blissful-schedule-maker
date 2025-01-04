@@ -27,6 +27,7 @@ export function CategorySelect({
     if (newCategory.trim()) {
       if (onAddCategory) {
         onAddCategory(newCategory.trim());
+        onCategoryChange(newCategory.trim()); // Set the newly added category as selected
         toast({
           title: "Success",
           description: `Category "${newCategory}" has been added`,
