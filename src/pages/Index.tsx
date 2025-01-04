@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Timeline } from "@/components/Timeline";
-import { AddEventForm } from "@/components/AddEventForm";
 
 interface TimelineEvent {
   id: number;
@@ -45,16 +44,11 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-wedding-pink py-12">
-      <div className="container max-w-4xl">
+      <div className="container max-w-3xl">
         <h1 className="text-4xl md:text-5xl text-wedding-purple text-center font-serif mb-12">
           Wedding Day Timeline
         </h1>
-        <div className="grid md:grid-cols-[1fr,300px] gap-8">
-          <Timeline events={events} />
-          <div className="md:sticky md:top-4 h-fit">
-            <AddEventForm onSubmit={handleAddEvent} />
-          </div>
-        </div>
+        <Timeline events={events} onAddEvent={handleAddEvent} />
       </div>
     </div>
   );
