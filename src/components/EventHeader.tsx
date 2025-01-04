@@ -34,6 +34,10 @@ export function EventHeader({
     return timeString;
   };
 
+  const getDurationValue = (duration: string) => {
+    return duration.replace('mins', '');
+  };
+
   return (
     <div className="flex flex-col gap-1">
       <div className="flex items-baseline gap-2">
@@ -86,7 +90,7 @@ export function EventHeader({
         ) : (
           <span
             className="cursor-pointer hover:underline"
-            onClick={() => onStartEditing("duration", duration)}
+            onClick={() => onStartEditing("duration", getDurationValue(duration))}
           >
             {duration}
           </span>
