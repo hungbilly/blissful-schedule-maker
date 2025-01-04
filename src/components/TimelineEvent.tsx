@@ -66,26 +66,26 @@ export function TimelineEvent({
   };
 
   return (
-    <div className="relative pl-12 pb-16">
+    <div className="relative pl-12 pb-8">
       <div className="timeline-dot" />
       <div className={cn(
-        "bg-white rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow group min-h-[200px]",
+        "bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow group",
         isHighlighted && "ring-2 ring-wedding-purple bg-wedding-pink/20"
       )}>
         <div className="flex justify-between items-start gap-8">
+          <EventHeader
+            time={time}
+            endTime={endTime}
+            duration={duration}
+            editingField={editingField}
+            tempValue={tempValue}
+            use24Hour={use24Hour}
+            onStartEditing={startEditing}
+            onEdit={handleEdit}
+            setTempValue={setTempValue}
+          />
+          
           <div className="flex-1">
-            <EventHeader
-              time={time}
-              endTime={endTime}
-              duration={duration}
-              editingField={editingField}
-              tempValue={tempValue}
-              use24Hour={use24Hour}
-              onStartEditing={startEditing}
-              onEdit={handleEdit}
-              setTempValue={setTempValue}
-            />
-            
             <EventDescription
               title={title}
               description={description}

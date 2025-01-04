@@ -21,18 +21,18 @@ export function EventDescription({
   setTempValue,
 }: EventDescriptionProps) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       {editingField === "title" ? (
         <Input
           value={tempValue}
           onChange={(e) => setTempValue(e.target.value)}
           onBlur={() => onEdit("title", tempValue)}
           autoFocus
-          className="text-3xl font-serif text-gray-800"
+          className="text-lg font-serif mt-2 text-gray-800"
         />
       ) : (
         <h3 
-          className="text-3xl font-serif text-gray-800 cursor-pointer hover:underline"
+          className="text-lg font-serif mt-2 text-gray-800 cursor-pointer hover:underline"
           onClick={() => onStartEditing("title", title)}
         >
           {title}
@@ -45,18 +45,18 @@ export function EventDescription({
           onChange={(e) => setTempValue(e.target.value)}
           onBlur={() => onEdit("description", tempValue)}
           autoFocus
-          className="text-gray-600 text-lg leading-relaxed"
+          className="mt-2 text-gray-600 text-sm"
         />
       ) : description ? (
         <p 
-          className="text-gray-600 text-lg leading-relaxed cursor-pointer hover:underline"
+          className="mt-2 text-gray-600 text-sm cursor-pointer hover:underline"
           onClick={() => onStartEditing("description", description)}
         >
           {description}
         </p>
       ) : (
         <p 
-          className="text-gray-600 text-lg leading-relaxed cursor-pointer hover:underline italic"
+          className="mt-2 text-gray-600 text-sm cursor-pointer hover:underline italic"
           onClick={() => onStartEditing("description", "")}
         >
           Add description...

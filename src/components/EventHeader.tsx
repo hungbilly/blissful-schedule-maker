@@ -35,36 +35,36 @@ export function EventHeader({
   };
 
   return (
-    <div className="flex flex-col gap-2 mb-6">
-      <div className="flex items-baseline gap-4">
+    <div className="flex flex-col gap-1">
+      <div className="flex items-baseline gap-2">
         {editingField === "time" ? (
           <TimeField
             value={tempValue}
             onChange={setTempValue}
             onBlur={() => onEdit("time", tempValue)}
             label="Start Time"
-            className="text-4xl font-serif text-wedding-purple"
+            className="text-3xl font-serif text-wedding-purple"
           />
         ) : (
           <span 
-            className="text-4xl font-serif text-wedding-purple cursor-pointer hover:underline" 
+            className="text-3xl font-serif text-wedding-purple cursor-pointer hover:underline" 
             onClick={() => onStartEditing("time", time)}
           >
             {formatTime(time)}
           </span>
         )}
-        <span className="text-4xl font-serif text-wedding-gray">-</span>
+        <span className="text-2xl font-serif text-wedding-gray">-</span>
         {editingField === "endTime" ? (
           <TimeField
             value={tempValue}
             onChange={setTempValue}
             onBlur={() => onEdit("endTime", tempValue)}
             label="End Time"
-            className="text-4xl font-serif text-wedding-purple"
+            className="text-3xl font-serif text-wedding-purple"
           />
         ) : (
           <span 
-            className="text-4xl font-serif text-wedding-purple cursor-pointer hover:underline" 
+            className="text-3xl font-serif text-wedding-purple cursor-pointer hover:underline" 
             onClick={() => onStartEditing("endTime", endTime)}
           >
             {formatTime(endTime)}
@@ -72,7 +72,7 @@ export function EventHeader({
         )}
       </div>
       
-      <div className="text-base text-wedding-gray">
+      <div className="text-sm text-wedding-gray">
         Duration: {' '}
         {editingField === "duration" ? (
           <Input
