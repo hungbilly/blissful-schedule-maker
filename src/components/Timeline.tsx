@@ -63,10 +63,10 @@ export function Timeline({ events, onAddEvent, use24Hour }: TimelineProps) {
         <Button
           variant="outline"
           size="sm"
-          className="rounded-full text-wedding-purple hover:text-wedding-purple hover:bg-wedding-pink/30"
+          className="rounded-full text-wedding-purple hover:text-wedding-purple hover:bg-wedding-pink/30 text-xs px-2 py-1 h-7"
           onClick={() => handleAddEventClick("00:00")}
         >
-          <Plus className="h-4 w-4 mr-2" />
+          <Plus className="h-3 w-3 mr-1" />
           Add Event
         </Button>
       </div>
@@ -88,7 +88,7 @@ export function Timeline({ events, onAddEvent, use24Hour }: TimelineProps) {
               <Button
                 variant="outline"
                 size="sm"
-                className="rounded-full text-wedding-purple hover:text-wedding-purple hover:bg-wedding-pink/30"
+                className="rounded-full text-wedding-purple hover:text-wedding-purple hover:bg-wedding-pink/30 text-xs px-2 py-1 h-7"
                 onClick={() => {
                   const currentTime = event.time;
                   const nextTime = sortedEvents[index + 1].time;
@@ -96,7 +96,7 @@ export function Timeline({ events, onAddEvent, use24Hour }: TimelineProps) {
                   handleAddEventClick(suggestedTime);
                 }}
               >
-                <Plus className="h-4 w-4 mr-2" />
+                <Plus className="h-3 w-3 mr-1" />
                 Add Event
               </Button>
             </div>
@@ -109,10 +109,10 @@ export function Timeline({ events, onAddEvent, use24Hour }: TimelineProps) {
           <Button
             variant="outline"
             size="sm"
-            className="rounded-full text-wedding-purple hover:text-wedding-purple hover:bg-wedding-pink/30"
+            className="rounded-full text-wedding-purple hover:text-wedding-purple hover:bg-wedding-pink/30 text-xs px-2 py-1 h-7"
             onClick={() => handleAddEventClick("23:59")}
           >
-            <Plus className="h-4 w-4 mr-2" />
+            <Plus className="h-3 w-3 mr-1" />
             Add Event
           </Button>
         </div>
