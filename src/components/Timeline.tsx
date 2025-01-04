@@ -59,13 +59,16 @@ export function Timeline({ events, onAddEvent, use24Hour }: TimelineProps) {
     <div className="relative">
       <div className="timeline-line" />
       
-      <div className="absolute left-0 right-0 -mb-4 z-10 flex justify-center">
+      <div className="mb-8 flex justify-center">
         <Button
-          variant="ghost"
-          size="icon"
-          className="w-8 h-8 rounded-full text-wedding-purple hover:text-wedding-purple hover:bg-wedding-pink/30"
+          variant="outline"
+          size="sm"
+          className="rounded-full text-wedding-purple hover:text-wedding-purple hover:bg-wedding-pink/30"
           onClick={() => handleAddEventClick("00:00")}
-        />
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          Add Event
+        </Button>
       </div>
 
       {sortedEvents.map((event, index) => (
@@ -80,23 +83,40 @@ export function Timeline({ events, onAddEvent, use24Hour }: TimelineProps) {
             onDelete={() => handleDeleteEvent(event.id)}
             use24Hour={use24Hour}
           />
-          <div className="absolute left-0 right-0 -mt-4 -mb-4 z-10 flex justify-center">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="w-8 h-8 rounded-full text-wedding-purple hover:text-wedding-purple hover:bg-wedding-pink/30"
-              onClick={() => {
-                const currentTime = event.time;
-                const nextTime = index < sortedEvents.length - 1 
-                  ? sortedEvents[index + 1].time 
-                  : "23:59";
-                const suggestedTime = calculateMiddleTime(currentTime, nextTime);
-                handleAddEventClick(suggestedTime);
-              }}
-            />
-          </div>
+          {index < sortedEvents.length - 1 && (
+            <div className="absolute left-0 right-0 -mt-4 -mb-4 z-10 flex justify-center">
+              <Button
+                variant="outline"
+                size="sm"
+                className="rounded-full text-wedding-purple hover:text-wedding-purple hover:bg-wedding-pink/30"
+                onClick={() => {
+                  const currentTime = event.time;
+                  const nextTime = sortedEvents[index + 1].time;
+                  const suggestedTime = calculateMiddleTime(currentTime, nextTime);
+                  handleAddEventClick(suggestedTime);
+                }}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Event
+              </Button>
+            </div>
+          )}
         </div>
       ))}
+
+      {sortedEvents.length > 0 && (
+        <div className="mt-8 flex justify-center">
+          <Button
+            variant="outline"
+            size="sm"
+            className="rounded-full text-wedding-purple hover:text-wedding-purple hover:bg-wedding-pink/30"
+            onClick={() => handleAddEventClick("23:59")}
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Add Event
+          </Button>
+        </div>
+      )}
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
