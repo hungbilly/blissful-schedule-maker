@@ -21,24 +21,20 @@ interface TimelineProps {
 export function Timeline({ events, onAddEvent }: TimelineProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedTime, setSelectedTime] = useState<string>("");
-  const [editingEvent, setEditingEvent] = useState<TimelineEvent | null>(null);
   const sortedEvents = [...events].sort((a, b) => a.time.localeCompare(b.time));
 
   const handleAddEventClick = (time: string) => {
     setSelectedTime(time);
-    setEditingEvent(null);
     setIsDialogOpen(true);
   };
 
-  const handleEditEvent = (event: TimelineEvent) => {
-    setEditingEvent(event);
-    setIsDialogOpen(true);
-  };
-
-  const handleAddEvent = (eventData: Omit<TimelineEvent, "id">) => {
-    onAddEvent(eventData);
-    setIsDialogOpen(false);
-    setEditingEvent(null);
+  const handleEditEvent = (eventId: number, updates: Partial<TimelineEvent>) => {
+    const updatedEvents = events.map(event => 
+      event.id === eventId ? { ...event, ...updates } : event
+    );
+    // Since we're working with a controlled component, we need to update the parent state
+    // This assumes the parent component has a way to update the events array
+    onAddEvent(updatedEvents.find(e => e.id === eventId) as TimelineEvent);
   };
 
   return (
@@ -63,7 +59,7 @@ export function Timeline({ events, onAddEvent }: TimelineProps) {
             title={event.title}
             description={event.description}
             category={event.category}
-            onEdit={() => handleEditEvent(event)}
+            onEdit={(updates) => handleEditEvent(event.id, updates)}
           />
           <div className="relative pl-12 pb-8">
             <Button
@@ -88,9 +84,11 @@ export function Timeline({ events, onAddEvent }: TimelineProps) {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <AddEventForm 
-            onSubmit={handleAddEvent} 
-            defaultTime={editingEvent ? editingEvent.time : selectedTime}
-            defaultValues={editingEvent}
+            onSubmit={(eventData) => {
+              onAddEvent(eventData);
+              setIsDialogOpen(false);
+            }}
+            defaultTime={selectedTime}
           />
         </DialogContent>
       </Dialog>

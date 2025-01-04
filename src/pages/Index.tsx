@@ -34,12 +34,20 @@ const Index = () => {
     },
   ]);
 
-  const handleAddEvent = (eventData: Omit<TimelineEvent, "id">) => {
-    const newEvent = {
-      ...eventData,
-      id: events.length + 1,
-    };
-    setEvents([...events, newEvent]);
+  const handleAddEvent = (eventData: Omit<TimelineEvent, "id"> | TimelineEvent) => {
+    if ('id' in eventData) {
+      // This is an update to an existing event
+      setEvents(events.map(event => 
+        event.id === eventData.id ? eventData : event
+      ));
+    } else {
+      // This is a new event
+      const newEvent = {
+        ...eventData,
+        id: events.length + 1,
+      };
+      setEvents([...events, newEvent]);
+    }
   };
 
   return (
