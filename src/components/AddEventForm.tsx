@@ -95,7 +95,7 @@ export function AddEventForm({ onSubmit, defaultTime, defaultValues, categories,
               value={formData.time}
               onChange={(e) => setFormData({ ...formData, time: e.target.value })}
               required
-              className="font-sans"
+              className="font-sans bg-white"
               placeholder="Start Time"
             />
           </div>
@@ -105,7 +105,7 @@ export function AddEventForm({ onSubmit, defaultTime, defaultValues, categories,
               value={formData.endTime}
               onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
               required
-              className="font-sans"
+              className="font-sans bg-white"
               placeholder="End Time"
             />
           </div>
@@ -116,6 +116,7 @@ export function AddEventForm({ onSubmit, defaultTime, defaultValues, categories,
             value={formData.duration}
             onChange={(e) => handleDurationChange(e.target.value)}
             required
+            className="bg-white"
           />
         </div>
         <div className="space-y-2">
@@ -124,6 +125,7 @@ export function AddEventForm({ onSubmit, defaultTime, defaultValues, categories,
             value={formData.title}
             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
             required
+            className="bg-white"
           />
         </div>
         <div className="space-y-2">
@@ -131,6 +133,7 @@ export function AddEventForm({ onSubmit, defaultTime, defaultValues, categories,
             placeholder="Description"
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            className="bg-white"
           />
         </div>
         <div className="flex gap-2">
@@ -138,12 +141,12 @@ export function AddEventForm({ onSubmit, defaultTime, defaultValues, categories,
             value={formData.category}
             onValueChange={(value) => setFormData({ ...formData, category: value })}
           >
-            <SelectTrigger className="flex-1">
+            <SelectTrigger className="flex-1 bg-white">
               <SelectValue placeholder="Select category" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-white">
               {categories.map((category) => (
-                <SelectItem key={category} value={category}>
+                <SelectItem key={category} value={category} className="bg-white">
                   {category}
                 </SelectItem>
               ))}
@@ -153,6 +156,7 @@ export function AddEventForm({ onSubmit, defaultTime, defaultValues, categories,
             type="button"
             variant="outline"
             onClick={() => setIsNewCategoryDialogOpen(true)}
+            className="bg-white"
           >
             <Plus className="h-4 w-4" />
           </Button>
@@ -163,7 +167,7 @@ export function AddEventForm({ onSubmit, defaultTime, defaultValues, categories,
       </form>
 
       <Dialog open={isNewCategoryDialogOpen} onOpenChange={setIsNewCategoryDialogOpen}>
-        <DialogContent>
+        <DialogContent className="bg-white">
           <DialogHeader>
             <DialogTitle>Add New Category</DialogTitle>
           </DialogHeader>
@@ -172,6 +176,7 @@ export function AddEventForm({ onSubmit, defaultTime, defaultValues, categories,
               placeholder="Category name"
               value={newCategory}
               onChange={(e) => setNewCategory(e.target.value)}
+              className="bg-white"
             />
             <Button onClick={handleAddCategory} className="w-full">
               Add Category
