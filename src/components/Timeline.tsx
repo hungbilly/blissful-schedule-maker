@@ -59,7 +59,7 @@ export function Timeline({ events, onAddEvent, use24Hour }: TimelineProps) {
     <div className="relative">
       <div className="timeline-line" />
       
-      <div className="relative pl-12 -mb-4">
+      <div className="relative pl-12 -mb-4 z-10">
         <Button
           variant="ghost"
           size="icon"
@@ -82,7 +82,7 @@ export function Timeline({ events, onAddEvent, use24Hour }: TimelineProps) {
             onDelete={() => handleDeleteEvent(event.id)}
             use24Hour={use24Hour}
           />
-          <div className="relative pl-12 -mt-4 -mb-4">
+          <div className="relative pl-12 -mt-4 -mb-4 z-10">
             <Button
               variant="ghost"
               size="icon"
