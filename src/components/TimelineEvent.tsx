@@ -72,7 +72,7 @@ export function TimelineEvent({
         "bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow group",
         isHighlighted && "ring-2 ring-wedding-purple bg-wedding-pink/20"
       )}>
-        <div className="flex justify-between items-start mb-4">
+        <div className="flex justify-between items-start gap-8">
           <EventHeader
             time={time}
             endTime={endTime}
@@ -84,22 +84,25 @@ export function TimelineEvent({
             onEdit={handleEdit}
             setTempValue={setTempValue}
           />
+          
+          <div className="flex-1">
+            <EventDescription
+              title={title}
+              description={description}
+              editingField={editingField === "title" || editingField === "description" ? editingField : null}
+              tempValue={tempValue}
+              onStartEditing={startEditing}
+              onEdit={handleEdit}
+              setTempValue={setTempValue}
+            />
+          </div>
+
           <EventOptionsMenu
             onDelete={onDelete || (() => {})}
             onHighlight={() => setIsHighlighted(!isHighlighted)}
             isHighlighted={isHighlighted}
           />
         </div>
-
-        <EventDescription
-          title={title}
-          description={description}
-          editingField={editingField === "title" || editingField === "description" ? editingField : null}
-          tempValue={tempValue}
-          onStartEditing={startEditing}
-          onEdit={handleEdit}
-          setTempValue={setTempValue}
-        />
       </div>
     </div>
   );
