@@ -1,17 +1,23 @@
-export const calculateDurationInMinutes = (startTime: string, endTime: string): number => {
+export const calculateDuration = (startTime: string, endTime: string) => {
   const [startHours, startMinutes] = startTime.split(":").map(Number);
   const [endHours, endMinutes] = endTime.split(":").map(Number);
   
   let totalMinutes = (endHours * 60 + endMinutes) - (startHours * 60 + startMinutes);
   if (totalMinutes < 0) totalMinutes += 24 * 60; // Handle overnight events
   
-  return totalMinutes;
+  return `${totalMinutes}mins`;
 };
 
-export const calculateEndTimeFromMinutes = (startTime: string, durationMinutes: number): string => {
+export const calculateEndTime = (startTime: string, duration: string) => {
   const [startHours, startMinutes] = startTime.split(":").map(Number);
+  let minutes = parseInt(duration);
   
-  let totalMinutes = startHours * 60 + startMinutes + durationMinutes;
+  if (isNaN(minutes)) {
+    const durationMatch = duration.match(/(\d+)mins?/);
+    minutes = durationMatch ? parseInt(durationMatch[1]) : 0;
+  }
+  
+  let totalMinutes = startHours * 60 + startMinutes + minutes;
   totalMinutes = totalMinutes % (24 * 60); // Keep within 24 hours
   
   const endHours = Math.floor(totalMinutes / 60);
@@ -25,6 +31,6 @@ export const formatDuration = (minutes: number): string => {
 };
 
 export const parseDuration = (duration: string): number => {
-  const match = duration.match(/(\d+)mins/);
-  return match ? parseInt(match[1]) : 0;
+  const match = duration.match(/(\d+)mins?/);
+  return match ? parseInt(match[1]) : parseInt(duration) || 0;
 };

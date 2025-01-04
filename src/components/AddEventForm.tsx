@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "./ui/use-toast";
+import { calculateDuration, calculateEndTime, formatDuration, parseDuration } from "@/utils/timeCalculations";
 
 interface EventFormData {
   time: string;
@@ -53,37 +54,17 @@ export function AddEventForm({ onSubmit, defaultTime, defaultValues, categories,
 
   // Calculate end time when duration changes
   useEffect(() => {
-    if (formData.time && formData.duration && !formData.endTime) {
+    if (formData.time && formData.duration) {
       const endTime = calculateEndTime(formData.time, formData.duration);
       setFormData(prev => ({ ...prev, endTime }));
     }
   }, [formData.time, formData.duration]);
 
-  const calculateDuration = (startTime: string, endTime: string) => {
-    const [startHours, startMinutes] = startTime.split(":").map(Number);
-    const [endHours, endMinutes] = endTime.split(":").map(Number);
-    
-    let totalMinutes = (endHours * 60 + endMinutes) - (startHours * 60 + startMinutes);
-    if (totalMinutes < 0) totalMinutes += 24 * 60; // Handle overnight events
-    
-    return `${totalMinutes}mins`;
-  };
-
-  const calculateEndTime = (startTime: string, duration: string) => {
-    const [startHours, startMinutes] = startTime.split(":").map(Number);
-    const durationMatch = duration.match(/(\d+)mins/);
-    
-    if (!durationMatch) return "";
-    
-    const minutes = parseInt(durationMatch[1] || "0");
-    
-    let totalMinutes = startHours * 60 + startMinutes + minutes;
-    totalMinutes = totalMinutes % (24 * 60); // Keep within 24 hours
-    
-    const endHours = Math.floor(totalMinutes / 60);
-    const endMinutes = totalMinutes % 60;
-    
-    return `${endHours.toString().padStart(2, "0")}:${endMinutes.toString().padStart(2, "0")}`;
+  const handleDurationChange = (value: string) => {
+    // Remove any non-numeric characters as the user types
+    const numericValue = value.replace(/\D/g, '');
+    const formattedDuration = numericValue ? `${numericValue}mins` : '';
+    setFormData(prev => ({ ...prev, duration: formattedDuration }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -131,9 +112,9 @@ export function AddEventForm({ onSubmit, defaultTime, defaultValues, categories,
         </div>
         <div className="space-y-2">
           <Input
-            placeholder="Duration (e.g. 180mins)"
+            placeholder="Duration (minutes)"
             value={formData.duration}
-            onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
+            onChange={(e) => handleDurationChange(e.target.value)}
             required
           />
         </div>
