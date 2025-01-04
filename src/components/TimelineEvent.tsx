@@ -20,6 +20,19 @@ export function TimelineEvent({ time, endTime, duration, title, description, cat
   const [editingField, setEditingField] = useState<"time" | "endTime" | "duration" | "title" | "description" | "category" | null>(null);
   const [tempValue, setTempValue] = useState("");
 
+  const calculateDuration = (startTime: string, endTime: string) => {
+    const [startHours, startMinutes] = startTime.split(":").map(Number);
+    const [endHours, endMinutes] = endTime.split(":").map(Number);
+    
+    let totalMinutes = (endHours * 60 + endMinutes) - (startHours * 60 + startMinutes);
+    if (totalMinutes < 0) totalMinutes += 24 * 60; // Handle overnight events
+    
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    
+    return `${hours}h ${minutes}m`;
+  };
+
   const calculateEndTime = (startTime: string, duration: string) => {
     const [startHours, startMinutes] = startTime.split(":").map(Number);
     const durationMatch = duration.match(/(\d+)h\s*(?:(\d+)m)?/);
@@ -41,11 +54,27 @@ export function TimelineEvent({ time, endTime, duration, title, description, cat
   const handleEdit = (field: typeof editingField, value: string) => {
     if (field) {
       if (field === "duration") {
-        // When duration changes, update both duration and end time
-        const newEndTime = calculateEndTime(time, value);
+        // Format the duration input to match the expected pattern (Xh Ym)
+        const timePattern = /^(\d+):(\d+)$/;
+        const match = value.match(timePattern);
+        
+        if (match) {
+          const hours = parseInt(match[1]);
+          const minutes = parseInt(match[2]);
+          const formattedDuration = `${hours}h ${minutes}m`;
+          const newEndTime = calculateEndTime(time, formattedDuration);
+          
+          onEdit({ 
+            duration: formattedDuration,
+            endTime: newEndTime
+          });
+        }
+      } else if (field === "endTime") {
+        // When end time changes, update both end time and duration
+        const newDuration = calculateDuration(time, value);
         onEdit({ 
-          duration: value,
-          endTime: newEndTime
+          endTime: value,
+          duration: newDuration
         });
       } else {
         onEdit({ [field]: value });
@@ -56,7 +85,19 @@ export function TimelineEvent({ time, endTime, duration, title, description, cat
 
   const startEditing = (field: typeof editingField, currentValue: string) => {
     setEditingField(field);
-    setTempValue(currentValue);
+    if (field === "duration") {
+      // Convert duration format (1h 30m) to time format (01:30) for the input
+      const durationMatch = currentValue.match(/(\d+)h\s*(?:(\d+)m)?/);
+      if (durationMatch) {
+        const hours = durationMatch[1].padStart(2, '0');
+        const minutes = (durationMatch[2] || '0').padStart(2, '0');
+        setTempValue(`${hours}:${minutes}`);
+      } else {
+        setTempValue("00:00");
+      }
+    } else {
+      setTempValue(currentValue);
+    }
   };
 
   return (
@@ -102,13 +143,12 @@ export function TimelineEvent({ time, endTime, duration, title, description, cat
 
           {editingField === "duration" ? (
             <Input
-              type="text"
+              type="time"
               value={tempValue}
               onChange={(e) => setTempValue(e.target.value)}
               onBlur={() => handleEdit("duration", tempValue)}
               autoFocus
               className="w-24 font-medium text-gray-500"
-              placeholder="e.g. 1h 30m"
             />
           ) : (
             <span 
