@@ -23,7 +23,7 @@ export const useEventMutations = (currentProjectId: number | null) => {
           user_id: session.user.id,
         }])
         .select()
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error('Error adding event:', error);
@@ -61,7 +61,7 @@ export const useEventMutations = (currentProjectId: number | null) => {
         .from('events')
         .update({
           ...updates,
-          end_time: updates.end_time, // Ensure we're using end_time
+          end_time: updates.end_time,
         })
         .eq('id', id)
         .eq('user_id', session.user.id)
