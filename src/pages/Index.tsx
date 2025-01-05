@@ -6,11 +6,12 @@ import { useToast } from "@/hooks/use-toast";
 import { ProjectSelector } from "@/components/project/ProjectSelector";
 import { ProjectDialog } from "@/components/project/ProjectDialog";
 import { Project, TimelineEvent } from "@/components/project/types";
-import { Edit2, Download, Users } from "lucide-react";
+import { Edit2, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CoupleInfo } from "@/components/CoupleInfo";
 import { exportToCSV } from "@/utils/exportUtils";
-import { Link } from "react-router-dom";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/AppSidebar";
 
 const Index = () => {
   const [projects, setProjects] = useState<Project[]>([
@@ -153,84 +154,82 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-wedding-pink py-12">
-      <div className="container max-w-3xl">
-        <div className="flex justify-between items-center mb-8">
-          <ProjectSelector
-            projects={projects}
-            currentProjectId={currentProjectId}
-            onProjectChange={setCurrentProjectId}
-            onNewProjectClick={handleNewProject}
-          />
-          <div className="flex items-center space-x-4">
-            <Link to="/vendors">
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-10 w-10"
-                title="Manage vendors"
-              >
-                <Users className="h-4 w-4" />
-              </Button>
-            </Link>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={handleExport}
-              className="h-10 w-10"
-              title="Download rundown"
-            >
-              <Download className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={handleEditProject}
-              className="h-10 w-10"
-            >
-              <Edit2 className="h-4 w-4" />
-            </Button>
-            <div className="flex items-center space-x-2">
-              <Label htmlFor="24h-mode">24h</Label>
-              <Switch
-                id="24h-mode"
-                checked={use24Hour}
-                onCheckedChange={setUse24Hour}
-              />
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full">
+        <AppSidebar />
+        <div className="flex-1 bg-wedding-pink py-12">
+          <div className="container max-w-3xl">
+            <div className="flex justify-between items-center mb-8">
+              <div className="flex items-center gap-4">
+                <SidebarTrigger />
+                <ProjectSelector
+                  projects={projects}
+                  currentProjectId={currentProjectId}
+                  onProjectChange={setCurrentProjectId}
+                  onNewProjectClick={handleNewProject}
+                />
+              </div>
+              <div className="flex items-center space-x-4">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={handleExport}
+                  className="h-10 w-10"
+                  title="Download rundown"
+                >
+                  <Download className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={handleEditProject}
+                  className="h-10 w-10"
+                >
+                  <Edit2 className="h-4 w-4" />
+                </Button>
+                <div className="flex items-center space-x-2">
+                  <Label htmlFor="24h-mode">24h</Label>
+                  <Switch
+                    id="24h-mode"
+                    checked={use24Hour}
+                    onCheckedChange={setUse24Hour}
+                  />
+                </div>
+              </div>
             </div>
+
+            <CoupleInfo
+              bride={bride}
+              groom={groom}
+              date={date}
+              onBrideChange={setBride}
+              onGroomChange={setGroom}
+              onDateChange={setDate}
+            />
+
+            <h1 className="text-4xl md:text-5xl text-wedding-purple text-center font-serif mb-12">
+              {currentProject?.name || "Timeline"}
+            </h1>
+
+            {currentProject && (
+              <Timeline
+                events={currentProject.events}
+                onAddEvent={handleAddEvent}
+                use24Hour={use24Hour}
+              />
+            )}
           </div>
         </div>
 
-        <CoupleInfo
-          bride={bride}
-          groom={groom}
-          date={date}
-          onBrideChange={setBride}
-          onGroomChange={setGroom}
-          onDateChange={setDate}
+        <ProjectDialog
+          open={isProjectDialogOpen}
+          onOpenChange={setIsProjectDialogOpen}
+          onSubmit={handleProjectSubmit}
+          initialName={dialogMode === "edit" ? currentProject?.name : ""}
+          mode={dialogMode}
         />
-
-        <h1 className="text-4xl md:text-5xl text-wedding-purple text-center font-serif mb-12">
-          {currentProject?.name || "Timeline"}
-        </h1>
-
-        {currentProject && (
-          <Timeline
-            events={currentProject.events}
-            onAddEvent={handleAddEvent}
-            use24Hour={use24Hour}
-          />
-        )}
       </div>
-
-      <ProjectDialog
-        open={isProjectDialogOpen}
-        onOpenChange={setIsProjectDialogOpen}
-        onSubmit={handleProjectSubmit}
-        initialName={dialogMode === "edit" ? currentProject?.name : ""}
-        mode={dialogMode}
-      />
-    </div>
+    </SidebarProvider>
   );
 };
 
