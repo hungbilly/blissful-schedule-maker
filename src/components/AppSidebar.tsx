@@ -1,61 +1,40 @@
+import { NavigationMenu, NavigationMenuList, NavigationMenuItem, NavigationMenuLink } from "@/components/ui/navigation-menu";
+import { UserProfile } from "@/components/auth/UserProfile";
 import { Link } from "react-router-dom";
-import { Receipt, Users, UserPlus, TableProperties } from "lucide-react";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar";
 
-const menuItems = [
-  {
-    title: "Vendors",
-    url: "/vendors",
-    icon: Users,
-  },
-  {
-    title: "Budget",
-    url: "/budget",
-    icon: Receipt,
-  },
-  {
-    title: "Guest List",
-    url: "/guests",
-    icon: UserPlus,
-  },
-  {
-    title: "Sitting Plan",
-    url: "/sitting-plan",
-    icon: TableProperties,
-  },
-];
-
-export function AppSidebar() {
+export const AppSidebar = () => {
   return (
-    <Sidebar>
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Wedding Planning</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {menuItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link to={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-    </Sidebar>
+    <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
+      <UserProfile />
+      <NavigationMenu orientation="vertical" className="w-full">
+        <NavigationMenuList className="flex-col items-start space-y-2 p-4">
+          <NavigationMenuItem className="w-full">
+            <Link to="/" className="w-full block px-4 py-2 text-sm rounded-md hover:bg-gray-100">
+              Timeline
+            </Link>
+          </NavigationMenuItem>
+          <NavigationMenuItem className="w-full">
+            <Link to="/vendors" className="w-full block px-4 py-2 text-sm rounded-md hover:bg-gray-100">
+              Vendors
+            </Link>
+          </NavigationMenuItem>
+          <NavigationMenuItem className="w-full">
+            <Link to="/budget" className="w-full block px-4 py-2 text-sm rounded-md hover:bg-gray-100">
+              Budget
+            </Link>
+          </NavigationMenuItem>
+          <NavigationMenuItem className="w-full">
+            <Link to="/guests" className="w-full block px-4 py-2 text-sm rounded-md hover:bg-gray-100">
+              Guest List
+            </Link>
+          </NavigationMenuItem>
+          <NavigationMenuItem className="w-full">
+            <Link to="/sitting-plan" className="w-full block px-4 py-2 text-sm rounded-md hover:bg-gray-100">
+              Sitting Plan
+            </Link>
+          </NavigationMenuItem>
+        </NavigationMenuList>
+      </NavigationMenu>
+    </aside>
   );
-}
+};
