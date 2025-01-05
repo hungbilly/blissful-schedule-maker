@@ -11,7 +11,7 @@ import { CoupleInfo } from "@/components/CoupleInfo";
 import { exportToCSV } from "@/utils/exportUtils";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
-import { useSession } from "@supabase/auth-helpers-react";
+import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useProjects, useCreateProject, useUpdateProject, useDeleteProject, useDuplicateProject } from "@/hooks/useProjects";
 import { useProjectData } from "./useProjectData";
 import { TimelineEvent } from "./types";
@@ -30,15 +30,41 @@ export const ProjectContent = () => {
   const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
   const { toast } = useToast();
   const session = useSession();
+  const supabase = useSupabaseClient();
   const { updateProjectDetails } = useProjectDetails(currentProjectId);
   const { events, currentProject } = useProjectData(currentProjectId);
   const { addEventMutation, updateEventMutation, deleteEventMutation } = useEventMutations(currentProjectId);
+  const [profileData, setProfileData] = useState<{ bride_name?: string; groom_name?: string }>({});
 
   useEffect(() => {
     if (projects.length > 0 && currentProjectId === null) {
       setCurrentProjectId(projects[0].id);
     }
   }, [projects, currentProjectId]);
+
+  // Fetch profile data when component mounts
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (!session?.user?.id) return;
+
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('bride_name, groom_name')
+        .eq('id', session.user.id)
+        .single();
+
+      if (error) {
+        console.error('Error fetching profile:', error);
+        return;
+      }
+
+      if (data) {
+        setProfileData(data);
+      }
+    };
+
+    fetchProfile();
+  }, [session?.user?.id, supabase]);
 
   const handleAddEvent = async (eventData: Omit<TimelineEvent, "id" | "created_at" | "project_id" | "user_id">) => {
     if (!currentProjectId) return;
@@ -145,7 +171,14 @@ export const ProjectContent = () => {
   const handleExport = () => {
     if (!currentProject) return;
     
-    exportToCSV(events, use24Hour);
+    exportToCSV(
+      events, 
+      use24Hour,
+      profileData.bride_name,
+      profileData.groom_name,
+      currentProject.name
+    );
+    
     toast({
       title: "Success",
       description: "Event rundown has been downloaded",

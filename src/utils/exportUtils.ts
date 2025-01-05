@@ -1,41 +1,63 @@
 import { TimelineEvent } from "@/components/project/types";
 
-export const convertTo24Hour = (time: string, use24Hour: boolean): string => {
-  if (use24Hour) return time;
+const formatTime = (time: string, use24Hour: boolean): string => {
+  if (!time) return "";
   
-  const [hours, minutes] = time.split(':').map(Number);
-  const period = hours >= 12 ? 'PM' : 'AM';
-  const displayHours = hours % 12 || 12;
-  return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
+  const [hours, minutes] = time.split(':');
+  const hour = parseInt(hours);
+  
+  if (use24Hour) {
+    return `${hours.padStart(2, '0')}:${minutes}`;
+  }
+  
+  const period = hour >= 12 ? 'PM' : 'AM';
+  const hour12 = hour % 12 || 12;
+  return `${hour12}:${minutes} ${period}`;
 };
 
-export const exportToCSV = (events: TimelineEvent[], use24Hour: boolean) => {
-  // Define CSV headers
+export const exportToCSV = (
+  events: TimelineEvent[], 
+  use24Hour: boolean,
+  brideName?: string,
+  groomName?: string,
+  projectName?: string
+) => {
+  // Sort events by time
+  const sortedEvents = [...events].sort((a, b) => {
+    const timeA = a.time.split(':').map(Number);
+    const timeB = b.time.split(':').map(Number);
+    return (timeA[0] * 60 + timeA[1]) - (timeB[0] * 60 + timeB[1]);
+  });
+
+  // Create CSV content
   const headers = ['Time', 'End Time', 'Duration', 'Title', 'Description', 'Location'];
-  
-  // Convert events to CSV rows
-  const rows = events.map(event => [
-    convertTo24Hour(event.time, use24Hour),
-    convertTo24Hour(event.end_time, use24Hour),
+  const rows = sortedEvents.map(event => [
+    formatTime(event.time, use24Hour),
+    formatTime(event.end_time, use24Hour),
     event.duration,
     event.title,
     event.description || '',
     event.location || ''
   ]);
-  
-  // Combine headers and rows
+
   const csvContent = [
     headers.join(','),
     ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
   ].join('\n');
-  
-  // Create blob and download
+
+  // Create and trigger download
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a');
   const url = URL.createObjectURL(blob);
   
+  // Generate filename with bride and groom names if available
+  let filename = 'wedding_rundown';
+  if (brideName && groomName && projectName) {
+    filename = `${brideName}_${groomName}_${projectName}_rundown`.replace(/\s+/g, '_').toLowerCase();
+  }
+  
   link.setAttribute('href', url);
-  link.setAttribute('download', 'event_rundown.csv');
+  link.setAttribute('download', `${filename}.csv`);
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
