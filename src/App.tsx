@@ -3,7 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { StrictMode } from "react";
+import React from "react";
 import Index from "./pages/Index";
 import VendorList from "./pages/VendorList";
 import Budget from "./pages/Budget";
@@ -14,7 +14,7 @@ const queryClient = new QueryClient();
 
 function App() {
   return (
-    <StrictMode>
+    <React.StrictMode>
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <TooltipProvider>
@@ -30,7 +30,7 @@ function App() {
           </TooltipProvider>
         </BrowserRouter>
       </QueryClientProvider>
-    </StrictMode>
+    </React.StrictMode>
   );
 }
 
