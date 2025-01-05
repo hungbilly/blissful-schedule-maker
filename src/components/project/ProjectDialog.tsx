@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
-import { Trash2 } from "lucide-react";
+import { Trash2, Copy } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,6 +25,7 @@ interface ProjectDialogProps {
   onOpenChange: (open: boolean) => void;
   onSubmit: (name: string) => void;
   onDelete?: () => void;
+  onDuplicate?: () => void;
   initialName?: string;
   mode: "create" | "edit";
 }
@@ -34,6 +35,7 @@ export const ProjectDialog = ({
   onOpenChange,
   onSubmit,
   onDelete,
+  onDuplicate,
   initialName = "",
   mode,
 }: ProjectDialogProps) => {
@@ -65,7 +67,7 @@ export const ProjectDialog = ({
             <DialogDescription>
               {mode === "create" 
                 ? "Enter a name for your new project." 
-                : "Edit your project details or delete the project."}
+                : "Edit your project details or manage the project."}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 pt-4">
@@ -83,14 +85,29 @@ export const ProjectDialog = ({
               <Button onClick={handleSubmit} className="flex-1">
                 {mode === "create" ? "Create Project" : "Save Changes"}
               </Button>
-              {mode === "edit" && onDelete && (
-                <Button
-                  variant="destructive"
-                  onClick={() => setShowDeleteAlert(true)}
-                  className="px-3"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+              {mode === "edit" && (
+                <div className="flex gap-2">
+                  {onDuplicate && (
+                    <Button
+                      variant="outline"
+                      onClick={onDuplicate}
+                      className="px-3"
+                      title="Duplicate project"
+                    >
+                      <Copy className="h-4 w-4" />
+                    </Button>
+                  )}
+                  {onDelete && (
+                    <Button
+                      variant="destructive"
+                      onClick={() => setShowDeleteAlert(true)}
+                      className="px-3"
+                      title="Delete project"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
               )}
             </div>
           </div>

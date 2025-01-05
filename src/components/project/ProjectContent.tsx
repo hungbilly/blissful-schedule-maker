@@ -14,7 +14,7 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { useSession } from "@supabase/auth-helpers-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useProjects, useCreateProject, useUpdateProject, useDeleteProject } from "@/hooks/useProjects";
+import { useProjects, useCreateProject, useUpdateProject, useDeleteProject, useDuplicateProject } from "@/hooks/useProjects";
 import { useProjectData } from "./useProjectData";
 import { TimelineEvent } from "./projectTypes";
 import { useProjectDetails } from "@/hooks/useProjectDetails";
@@ -24,6 +24,7 @@ export const ProjectContent = () => {
   const createProject = useCreateProject();
   const updateProject = useUpdateProject();
   const deleteProject = useDeleteProject();
+  const duplicateProject = useDuplicateProject();
   const [currentProjectId, setCurrentProjectId] = useState<number | null>(null);
   const [use24Hour, setUse24Hour] = useState(true);
   const [isProjectDialogOpen, setIsProjectDialogOpen] = useState(false);
@@ -224,6 +225,25 @@ export const ProjectContent = () => {
     }
   };
 
+  const handleDuplicateProject = async () => {
+    if (!currentProjectId) return;
+
+    try {
+      await duplicateProject.mutateAsync(currentProjectId);
+      setIsProjectDialogOpen(false);
+      toast({
+        title: "Success",
+        description: "Project has been duplicated",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to duplicate project",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleEditProject = () => {
     setDialogMode("edit");
     setIsProjectDialogOpen(true);
@@ -347,6 +367,7 @@ export const ProjectContent = () => {
           onOpenChange={setIsProjectDialogOpen}
           onSubmit={handleProjectSubmit}
           onDelete={dialogMode === "edit" ? handleDeleteProject : undefined}
+          onDuplicate={dialogMode === "edit" ? handleDuplicateProject : undefined}
           initialName={dialogMode === "edit" ? currentProject?.name : ""}
           mode={dialogMode}
         />
