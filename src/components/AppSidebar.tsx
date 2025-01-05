@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Receipt, Users } from "lucide-react";
+import { Receipt, Users, UserPlus, TableProperties } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -21,6 +21,16 @@ const menuItems = [
     title: "Budget",
     url: "/budget",
     icon: Receipt,
+  },
+  {
+    title: "Guest List",
+    url: "/guests",
+    icon: UserPlus,
+  },
+  {
+    title: "Sitting Plan",
+    url: "/sitting-plan",
+    icon: TableProperties,
   },
 ];
 

@@ -35,3 +35,19 @@ export interface BudgetCategory {
   name: string;
   items: BudgetItem[];
 }
+
+export interface Guest {
+  id: number;
+  name: string;
+  email?: string;
+  phone?: string;
+  dietaryRestrictions?: string;
+  tableId?: number;
+}
+
+export interface Table {
+  id: number;
+  name: string;
+  capacity: number;
+  guests: Guest[];
+}
