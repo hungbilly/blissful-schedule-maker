@@ -263,7 +263,7 @@ export const ProjectContent = () => {
             />
 
             <h1 className="text-3xl md:text-4xl text-wedding-purple text-center font-serif mb-12">
-              Itinerary: {currentProject?.name || "Timeline"}
+              {currentProject?.name || "Timeline"}
             </h1>
 
             {currentProject && (
