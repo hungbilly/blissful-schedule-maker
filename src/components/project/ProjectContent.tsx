@@ -14,7 +14,7 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { useSession } from "@supabase/auth-helpers-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useProjects, useCreateProject, useUpdateProject } from "@/hooks/useProjects";
+import { useProjects, useCreateProject, useUpdateProject, useDeleteProject } from "@/hooks/useProjects";
 import { useProjectData } from "./useProjectData";
 import { TimelineEvent } from "./projectTypes";
 import { useProjectDetails } from "@/hooks/useProjectDetails";
