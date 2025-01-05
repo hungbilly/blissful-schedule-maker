@@ -61,6 +61,18 @@ export function CoupleInfo({
     return () => clearTimeout(timer);
   }, [localDate, date, onDateChange]);
 
+  // Format the date to display like "Friday 31 Jan 2025"
+  const formatDate = (dateString: string) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    });
+  };
+
   return (
     <div className="bg-white rounded-lg p-6 mb-12 shadow-sm">
       <div className="space-y-6">
@@ -85,13 +97,19 @@ export function CoupleInfo({
             />
           </div>
         </div>
-        <div className="flex justify-center">
-          <Input
-            type="date"
-            value={localDate}
-            onChange={(e) => setLocalDate(e.target.value)}
-            className="max-w-[240px] text-center font-serif bg-wedding-pink/10 border-wedding-purple/20 focus:border-wedding-purple"
-          />
+        <div className="flex flex-col items-center space-y-2">
+          <div className="text-lg font-serif text-wedding-purple">Wedding Date:</div>
+          <div className="relative">
+            <Input
+              type="date"
+              value={localDate}
+              onChange={(e) => setLocalDate(e.target.value)}
+              className="opacity-0 absolute inset-0 w-full cursor-pointer"
+            />
+            <div className="text-2xl font-serif text-wedding-purple border-b-2 border-wedding-purple/50 pb-1 px-4">
+              {formatDate(localDate)}
+            </div>
+          </div>
         </div>
       </div>
     </div>
