@@ -5,17 +5,18 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { ProjectSelector } from "@/components/project/ProjectSelector";
 import { ProjectDialog } from "@/components/project/ProjectDialog";
-import { TimelineEvent } from "@/components/project/types";
 import { Edit2, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CoupleInfo } from "@/components/CoupleInfo";
 import { exportToCSV } from "@/utils/exportUtils";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
-import { useProjects, useCreateProject, useUpdateProject } from "@/hooks/useProjects";
 import { useSession } from "@supabase/auth-helpers-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useProjects, useCreateProject, useUpdateProject } from "@/hooks/useProjects";
+import { useProjectData } from "./useProjectData";
+import { TimelineEvent } from "./projectTypes";
 
 export const ProjectContent = () => {
   const { data: projects = [], isLoading } = useProjects();
@@ -39,25 +40,10 @@ export const ProjectContent = () => {
     }
   }, [projects, currentProjectId]);
 
-  const { data: events = [] } = useQuery({
-    queryKey: ['events', currentProjectId],
-    queryFn: async () => {
-      if (!currentProjectId || !session?.user?.id) return [];
-      
-      const { data, error } = await supabase
-        .from('events')
-        .select('*')
-        .eq('project_id', currentProjectId)
-        .eq('user_id', session.user.id);
-
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!currentProjectId && !!session?.user?.id,
-  });
+  const { events, currentProject } = useProjectData(currentProjectId);
 
   const addEventMutation = useMutation({
-    mutationFn: async (eventData: Omit<TimelineEvent, "id">) => {
+    mutationFn: async (eventData: Omit<TimelineEvent, "id" | "created_at">) => {
       if (!session?.user?.id || !currentProjectId) {
         throw new Error("User must be logged in and project must be selected");
       }
@@ -66,6 +52,7 @@ export const ProjectContent = () => {
         .from('events')
         .insert([{
           ...eventData,
+          end_time: eventData.end_time,
           project_id: currentProjectId,
           user_id: session.user.id,
         }])
@@ -93,7 +80,7 @@ export const ProjectContent = () => {
   });
 
   const updateEventMutation = useMutation({
-    mutationFn: async (event: TimelineEvent) => {
+    mutationFn: async ({ id, ...updates }: TimelineEvent) => {
       if (!session?.user?.id) {
         throw new Error("User must be logged in");
       }
@@ -101,14 +88,10 @@ export const ProjectContent = () => {
       const { data, error } = await supabase
         .from('events')
         .update({
-          time: event.time,
-          end_time: event.endTime,
-          duration: event.duration,
-          title: event.title,
-          description: event.description,
-          location: event.location,
+          ...updates,
+          end_time: updates.end_time,
         })
-        .eq('id', event.id)
+        .eq('id', id)
         .eq('user_id', session.user.id)
         .select()
         .maybeSingle();
@@ -164,9 +147,13 @@ export const ProjectContent = () => {
     },
   });
 
-  const handleAddEvent = async (eventData: Omit<TimelineEvent, "id">) => {
+  const handleAddEvent = async (eventData: Omit<TimelineEvent, "id" | "created_at" | "project_id" | "user_id">) => {
     if (!currentProjectId) return;
-    await addEventMutation.mutateAsync(eventData);
+    await addEventMutation.mutateAsync({
+      ...eventData,
+      project_id: currentProjectId,
+      user_id: session?.user?.id || '',
+    });
   };
 
   const handleEditEvent = async (eventId: number, updates: Partial<TimelineEvent>) => {
@@ -230,7 +217,7 @@ export const ProjectContent = () => {
   const handleExport = () => {
     if (!currentProject) return;
     
-    exportToCSV(currentProject.events, use24Hour);
+    exportToCSV(events, use24Hour);
     toast({
       title: "Success",
       description: "Event rundown has been downloaded",

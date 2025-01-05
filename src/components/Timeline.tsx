@@ -5,7 +5,7 @@ import { AddEventForm } from "./AddEventForm";
 import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
 import { Plus } from "lucide-react";
 import { useToast } from "./ui/use-toast";
-import { TimelineEvent } from "./project/types";
+import { TimelineEvent } from "./project/projectTypes";
 
 interface TimelineProps {
   events: TimelineEvent[];
