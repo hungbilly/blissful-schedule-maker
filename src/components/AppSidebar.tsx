@@ -9,7 +9,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { LogOut } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
@@ -26,6 +26,7 @@ export const AppSidebar = () => {
   const session = useSession();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   
   const { data: profile, isLoading: isProfileLoading } = useQuery({
     queryKey: ['profile', session?.user?.id],
@@ -42,6 +43,32 @@ export const AppSidebar = () => {
     },
     enabled: !!session?.user?.id,
   });
+
+  // Subscribe to real-time updates for the profiles table
+  useEffect(() => {
+    if (!session?.user?.id) return;
+
+    const channel = supabase
+      .channel('profile-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'profiles',
+          filter: `id=eq.${session.user.id}`,
+        },
+        (payload) => {
+          // Invalidate and refetch the profile query when changes occur
+          queryClient.invalidateQueries({ queryKey: ['profile', session.user.id] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [session?.user?.id, queryClient]);
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
