@@ -4,9 +4,11 @@ import { Link } from "react-router-dom";
 import { Separator } from "@/components/ui/separator";
 import { useProjectDetails } from "@/hooks/useProjectDetails";
 import { format } from "date-fns";
+import { useProjectData } from "@/components/project/useProjectData";
 
 export const AppSidebar = () => {
-  const { currentProject } = useProjectDetails();
+  const { currentProject } = useProjectData(null);
+  const { updateProjectDetails } = useProjectDetails(currentProject?.id || null);
 
   return (
     <aside className="w-64 bg-white border-r border-gray-200 flex flex-col min-h-screen">

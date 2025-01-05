@@ -1,10 +1,27 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 export const useProjectDetails = (projectId: number | null) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  const { data: currentProject } = useQuery({
+    queryKey: ['project', projectId],
+    queryFn: async () => {
+      if (!projectId) return null;
+      
+      const { data, error } = await supabase
+        .from('projects')
+        .select('*')
+        .eq('id', projectId)
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!projectId,
+  });
 
   const updateProjectDetails = useMutation({
     mutationFn: async ({ bride, groom, date }: { bride: string; groom: string; date: string }) => {
@@ -40,5 +57,5 @@ export const useProjectDetails = (projectId: number | null) => {
     },
   });
 
-  return { updateProjectDetails };
+  return { currentProject, updateProjectDetails };
 };
