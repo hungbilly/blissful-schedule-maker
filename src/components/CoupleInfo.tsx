@@ -114,12 +114,13 @@ export function CoupleInfo({
                 {localDate ? formatDate(localDate) : "Set the date"}
               </div>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="center">
+            <PopoverContent className="w-auto p-0 bg-white border border-gray-200 shadow-lg z-50" align="center">
               <Calendar
                 mode="single"
                 selected={localDate ? new Date(localDate) : undefined}
                 onSelect={handleDateSelect}
                 initialFocus
+                className="bg-white rounded-lg"
               />
             </PopoverContent>
           </Popover>
