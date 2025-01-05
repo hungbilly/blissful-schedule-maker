@@ -1,23 +1,18 @@
 import { useState, useEffect } from "react";
-import { Timeline } from "@/components/Timeline";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { ProjectSelector } from "@/components/project/ProjectSelector";
 import { ProjectDialog } from "@/components/project/ProjectDialog";
-import { Edit2, Download } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { CoupleInfo } from "@/components/CoupleInfo";
 import { exportToCSV } from "@/utils/exportUtils";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useProjects, useCreateProject, useUpdateProject, useDeleteProject, useDuplicateProject } from "@/hooks/useProjects";
 import { useProjectData } from "./useProjectData";
-import { TimelineEvent } from "./types";
 import { useProjectDetails } from "@/hooks/useProjectDetails";
 import { useEventMutations } from "@/hooks/useEventMutations";
 import { EmptyProjectState } from "./EmptyProjectState";
+import { ProjectHeader } from "./ProjectHeader";
+import { ProjectMain } from "./ProjectMain";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const ProjectContent = () => {
   const { data: projects = [], isLoading } = useProjects();
@@ -36,6 +31,7 @@ export const ProjectContent = () => {
   const { events, currentProject } = useProjectData(currentProjectId);
   const { addEventMutation, updateEventMutation, deleteEventMutation } = useEventMutations(currentProjectId);
   const [profileData, setProfileData] = useState<{ bride_name?: string; groom_name?: string }>({});
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (projects.length > 0 && currentProjectId === null) {
@@ -43,7 +39,6 @@ export const ProjectContent = () => {
     }
   }, [projects, currentProjectId]);
 
-  // Fetch profile data when component mounts
   useEffect(() => {
     const fetchProfile = async () => {
       if (!session?.user?.id) return;
@@ -139,12 +134,17 @@ export const ProjectContent = () => {
       
       // Set the next project as current (or null if none left)
       setCurrentProjectId(nextProject?.id || null);
+
+      // Invalidate relevant queries
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      queryClient.invalidateQueries({ queryKey: ['events', deletedProjectId] });
       
       toast({
         title: "Success",
         description: "Project has been deleted",
       });
     } catch (error) {
+      console.error('Error deleting project:', error);
       toast({
         title: "Error",
         description: "Failed to delete project",
@@ -229,60 +229,27 @@ export const ProjectContent = () => {
         <AppSidebar />
         <div className="flex-1 bg-wedding-pink py-12">
           <div className="container max-w-3xl">
-            <div className="flex justify-between items-center mb-8">
-              <div className="flex items-center gap-4">
-                <ProjectSelector
-                  projects={projects}
-                  currentProjectId={currentProjectId || 0}
-                  onProjectChange={setCurrentProjectId}
-                  onNewProjectClick={handleNewProject}
-                />
-              </div>
-              <div className="flex items-center space-x-4">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={handleExport}
-                  className="h-10 w-10"
-                  title="Download rundown"
-                >
-                  <Download className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={handleEditProject}
-                  className="h-10 w-10"
-                >
-                  <Edit2 className="h-4 w-4" />
-                </Button>
-                <div className="flex items-center space-x-2">
-                  <Label htmlFor="24h-mode">24h</Label>
-                  <Switch
-                    id="24h-mode"
-                    checked={use24Hour}
-                    onCheckedChange={setUse24Hour}
-                  />
-                </div>
-              </div>
-            </div>
-
-            <CoupleInfo
-              date={currentProject?.wedding_date || ""}
-              onDateChange={(date) => handleCoupleInfoChange(date)}
+            <ProjectHeader
+              projects={projects}
+              currentProjectId={currentProjectId}
+              use24Hour={use24Hour}
+              onProjectChange={setCurrentProjectId}
+              onNewProject={handleNewProject}
+              onEditProject={handleEditProject}
+              onExport={handleExport}
+              setUse24Hour={setUse24Hour}
             />
 
-            <h1 className="text-3xl md:text-4xl text-wedding-purple text-center font-serif mb-12">
-              Itinerary: {currentProject?.name || ""}
-            </h1>
-
             {currentProject && (
-              <Timeline
+              <ProjectMain
+                projectName={currentProject.name}
+                weddingDate={currentProject.wedding_date || ""}
                 events={events}
+                use24Hour={use24Hour}
                 onAddEvent={handleAddEvent}
                 onEditEvent={handleEditEvent}
                 onDeleteEvent={handleDeleteEvent}
-                use24Hour={use24Hour}
+                onDateChange={handleCoupleInfoChange}
               />
             )}
           </div>
