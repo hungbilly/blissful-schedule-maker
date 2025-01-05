@@ -58,18 +58,18 @@ export function EventHeader({
           </span>
         )}
         <span className="text-xl md:text-2xl font-serif text-wedding-gray">-</span>
-        {editingField === "endTime" ? (
+        {editingField === "end_time" ? (
           <TimeField
             value={tempValue}
             onChange={setTempValue}
-            onBlur={() => onEdit("endTime", tempValue)}
+            onBlur={() => onEdit("end_time", tempValue)}
             label="End Time"
             className="text-2xl md:text-3xl font-serif text-wedding-purple"
           />
         ) : (
           <span 
             className="text-2xl md:text-3xl font-serif text-wedding-purple cursor-pointer hover:underline" 
-            onClick={() => onStartEditing("endTime", endTime)}
+            onClick={() => onStartEditing("end_time", endTime)}
           >
             {formatTime(endTime)}
           </span>
