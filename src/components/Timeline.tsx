@@ -32,10 +32,7 @@ export function Timeline({ events, onAddEvent, onEditEvent, onDeleteEvent, use24
     const originalEvent = events.find(e => e.id === eventId);
     if (originalEvent) {
       setUndoStack(prev => [...prev, { type: 'edit', event: { ...originalEvent } }]);
-      onEditEvent(eventId, {
-        ...updates,
-        end_time: updates.end_time || originalEvent.end_time // Ensure we use end_time, not endTime
-      });
+      onEditEvent(eventId, updates);
       toast({
         title: "Event updated",
         description: "Click undo to revert changes",
@@ -149,7 +146,7 @@ export function Timeline({ events, onAddEvent, onEditEvent, onDeleteEvent, use24
             onSubmit={(eventData) => {
               const newEvent = {
                 time: eventData.time,
-                end_time: eventData.endTime, // Convert endTime to end_time
+                end_time: eventData.end_time,
                 duration: eventData.duration,
                 title: eventData.title,
                 description: eventData.description,

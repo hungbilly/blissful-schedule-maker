@@ -6,7 +6,7 @@ import { MapPin } from "lucide-react";
 
 interface EventFormData {
   time: string;
-  endTime: string;
+  end_time: string;
   duration: string;
   title: string;
   description?: string;
@@ -22,7 +22,7 @@ interface AddEventFormProps {
 export function AddEventForm({ onSubmit, defaultTime, defaultValues }: AddEventFormProps) {
   const [formData, setFormData] = useState<EventFormData>({
     time: defaultValues?.time || defaultTime || "",
-    endTime: defaultValues?.endTime || "",
+    end_time: defaultValues?.end_time || "",
     duration: defaultValues?.duration || "",
     title: defaultValues?.title || "",
     description: defaultValues?.description || "",
@@ -37,17 +37,17 @@ export function AddEventForm({ onSubmit, defaultTime, defaultValues }: AddEventF
 
   // Calculate duration when start and end time change
   useEffect(() => {
-    if (formData.time && formData.endTime) {
-      const duration = calculateDuration(formData.time, formData.endTime);
+    if (formData.time && formData.end_time) {
+      const duration = calculateDuration(formData.time, formData.end_time);
       setFormData(prev => ({ ...prev, duration }));
     }
-  }, [formData.time, formData.endTime]);
+  }, [formData.time, formData.end_time]);
 
   // Calculate end time when duration changes
   useEffect(() => {
     if (formData.time && formData.duration) {
       const endTime = calculateEndTime(formData.time, formData.duration);
-      setFormData(prev => ({ ...prev, endTime }));
+      setFormData(prev => ({ ...prev, end_time: endTime }));
     }
   }, [formData.time, formData.duration]);
 
@@ -61,7 +61,7 @@ export function AddEventForm({ onSubmit, defaultTime, defaultValues }: AddEventF
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(formData);
-    setFormData({ time: "", endTime: "", duration: "", title: "", description: "", location: "" });
+    setFormData({ time: "", end_time: "", duration: "", title: "", description: "", location: "" });
   };
 
   return (
@@ -80,8 +80,8 @@ export function AddEventForm({ onSubmit, defaultTime, defaultValues }: AddEventF
         <div className="space-y-2 flex-1">
           <Input
             type="time"
-            value={formData.endTime}
-            onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
+            value={formData.end_time}
+            onChange={(e) => setFormData({ ...formData, end_time: e.target.value })}
             required
             className="font-sans bg-white"
             placeholder="End Time"
