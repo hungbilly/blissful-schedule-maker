@@ -13,6 +13,7 @@ import { EmptyProjectState } from "./EmptyProjectState";
 import { ProjectHeader } from "./ProjectHeader";
 import { ProjectMain } from "./ProjectMain";
 import { useQueryClient } from "@tanstack/react-query";
+import { TimelineEvent } from "./types";
 
 export const ProjectContent = () => {
   const { data: projects = [], isLoading } = useProjects();
