@@ -11,6 +11,8 @@ export interface TimelineEvent {
 export interface Project {
   id: number;
   name: string;
+  created_at?: string;
+  user_id?: string;
   events: TimelineEvent[];
   vendors: Vendor[];
 }
