@@ -30,7 +30,7 @@ export const ProjectSelector = ({
       </select>
       <Button variant="ghost" onClick={onNewProjectClick}>
         <Plus className="h-4 w-4 mr-2" />
-        New Project
+        +New Itinerary
       </Button>
     </div>
   );
