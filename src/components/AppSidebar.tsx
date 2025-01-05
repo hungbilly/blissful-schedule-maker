@@ -10,9 +10,10 @@ import { Link } from "react-router-dom";
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { LogOut } from "lucide-react";
+import { LogOut, Settings } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { EditProfileDialog } from "@/components/auth/EditProfileDialog";
 
 interface Profile {
   id: string;
@@ -23,6 +24,7 @@ interface Profile {
 export const AppSidebar = () => {
   const { data: projects = [] } = useProjects();
   const [currentProjectId, setCurrentProjectId] = useState<number | null>(null);
+  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
   const session = useSession();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -116,15 +118,26 @@ export const AppSidebar = () => {
             {profile.bride_name || "Bride"} & {profile.groom_name || "Groom"}
           </p>
         )}
-        <Button
-          variant="ghost"
-          size="sm"
-          className="w-full mt-2 text-wedding-purple hover:text-wedding-purple/80 justify-start"
-          onClick={handleLogout}
-        >
-          <LogOut className="w-4 h-4 mr-2" />
-          Logout
-        </Button>
+        <div className="flex flex-col gap-2 mt-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full text-wedding-purple hover:text-wedding-purple/80 justify-start"
+            onClick={() => setIsEditProfileOpen(true)}
+          >
+            <Settings className="w-4 h-4 mr-2" />
+            Edit Profile
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full text-wedding-purple hover:text-wedding-purple/80 justify-start"
+            onClick={handleLogout}
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            Logout
+          </Button>
+        </div>
       </div>
       
       <Separator />
@@ -168,6 +181,11 @@ export const AppSidebar = () => {
           </Button>
         </div>
       </nav>
+
+      <EditProfileDialog
+        open={isEditProfileOpen}
+        onOpenChange={setIsEditProfileOpen}
+      />
     </aside>
   );
 };
