@@ -6,10 +6,11 @@ import { useToast } from "@/hooks/use-toast";
 import { ProjectSelector } from "@/components/project/ProjectSelector";
 import { ProjectDialog } from "@/components/project/ProjectDialog";
 import { Project, TimelineEvent } from "@/components/project/types";
-import { Edit2, Download } from "lucide-react";
+import { Edit2, Download, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CoupleInfo } from "@/components/CoupleInfo";
 import { exportToCSV } from "@/utils/exportUtils";
+import { Link } from "react-router-dom";
 
 const Index = () => {
   const [projects, setProjects] = useState<Project[]>([
@@ -162,6 +163,16 @@ const Index = () => {
             onNewProjectClick={handleNewProject}
           />
           <div className="flex items-center space-x-4">
+            <Link to="/vendors">
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-10 w-10"
+                title="Manage vendors"
+              >
+                <Users className="h-4 w-4" />
+              </Button>
+            </Link>
             <Button
               variant="outline"
               size="icon"
