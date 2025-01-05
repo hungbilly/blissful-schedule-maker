@@ -36,16 +36,16 @@ export const ProjectSelector = ({
             <SelectItem
               key={project.id}
               value={project.id.toString()}
-              className="font-serif text-wedding-purple focus:bg-wedding-pink/50 focus:text-wedding-purple relative pl-8"
+              className="font-serif text-wedding-purple focus:bg-wedding-pink/50 focus:text-wedding-purple relative pl-10"
             >
               <Check
-                className={`h-4 w-4 absolute left-2 top-1/2 transform -translate-y-1/2 ${
+                className={`h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 ${
                   project.id === currentProjectId
                     ? "opacity-100"
                     : "opacity-0"
                 }`}
               />
-              {project.name}
+              <span className="block truncate">{project.name}</span>
             </SelectItem>
           ))}
         </SelectContent>
