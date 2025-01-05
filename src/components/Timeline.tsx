@@ -33,6 +33,10 @@ export function Timeline({ events, onAddEvent, onEditEvent, onDeleteEvent, use24
     if (originalEvent) {
       setUndoStack(prev => [...prev, { type: 'edit', event: { ...originalEvent } }]);
       onEditEvent(eventId, updates);
+      toast({
+        title: "Event updated",
+        description: "Click undo to revert changes",
+      });
     }
   };
 
@@ -41,6 +45,10 @@ export function Timeline({ events, onAddEvent, onEditEvent, onDeleteEvent, use24
     if (originalEvent) {
       setUndoStack(prev => [...prev, { type: 'delete', event: { ...originalEvent } }]);
       onDeleteEvent(eventId);
+      toast({
+        title: "Event deleted",
+        description: "Click undo to restore the event",
+      });
     }
   };
 
@@ -49,6 +57,10 @@ export function Timeline({ events, onAddEvent, onEditEvent, onDeleteEvent, use24
     if (lastAction) {
       if (lastAction.type === 'edit') {
         onEditEvent(lastAction.event.id, lastAction.event);
+        toast({
+          title: "Changes reverted",
+          description: "Event has been restored to its previous state",
+        });
       } else if (lastAction.type === 'delete') {
         onAddEvent({
           time: lastAction.event.time,
@@ -57,6 +69,10 @@ export function Timeline({ events, onAddEvent, onEditEvent, onDeleteEvent, use24
           title: lastAction.event.title,
           description: lastAction.event.description,
           location: lastAction.event.location,
+        });
+        toast({
+          title: "Event restored",
+          description: "Deleted event has been restored",
         });
       }
       setUndoStack(prev => prev.slice(0, -1));
