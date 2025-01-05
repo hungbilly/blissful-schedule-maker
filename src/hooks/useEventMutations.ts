@@ -23,9 +23,13 @@ export const useEventMutations = (currentProjectId: number | null) => {
           user_id: session.user.id,
         }])
         .select()
-        .maybeSingle();
+        .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error adding event:', error);
+        throw error;
+      }
+      
       return data;
     },
     onSuccess: () => {
@@ -46,20 +50,29 @@ export const useEventMutations = (currentProjectId: number | null) => {
   });
 
   const updateEventMutation = useMutation({
-    mutationFn: async ({ id, ...updates }: TimelineEvent) => {
+    mutationFn: async (event: TimelineEvent) => {
       if (!session?.user?.id) {
         throw new Error("User must be logged in");
       }
 
+      const { id, created_at, project_id, user_id, ...updates } = event;
+
       const { data, error } = await supabase
         .from('events')
-        .update(updates)
+        .update({
+          ...updates,
+          end_time: updates.end_time, // Ensure we're using end_time
+        })
         .eq('id', id)
         .eq('user_id', session.user.id)
         .select()
         .maybeSingle();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error updating event:', error);
+        throw error;
+      }
+
       return data;
     },
     onSuccess: () => {
@@ -91,7 +104,10 @@ export const useEventMutations = (currentProjectId: number | null) => {
         .eq('id', eventId)
         .eq('user_id', session.user.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error deleting event:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['events', currentProjectId] });
