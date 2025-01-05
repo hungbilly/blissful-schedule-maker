@@ -118,12 +118,16 @@ export default function GuestList() {
                 value={newGuestCategory}
                 onValueChange={setNewGuestCategory}
               >
-                <SelectTrigger>
+                <SelectTrigger className="w-full bg-white">
                   <SelectValue placeholder="Select guest category" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white border border-gray-200 shadow-md">
                   {guestCategories.map((category) => (
-                    <SelectItem key={category} value={category}>
+                    <SelectItem 
+                      key={category} 
+                      value={category}
+                      className="hover:bg-gray-100"
+                    >
                       {category}
                     </SelectItem>
                   ))}
