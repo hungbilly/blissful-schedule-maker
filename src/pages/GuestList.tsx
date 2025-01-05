@@ -7,15 +7,14 @@ import { Guest } from "@/components/project/types";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { CategoryManager } from "@/components/guest/CategoryManager";
 
 export default function GuestList() {
   const [guests, setGuests] = useState<Guest[]>([]);
   const [editingGuest, setEditingGuest] = useState<Guest | null>(null);
   const [newGuestName, setNewGuestName] = useState("");
   const [newGuestCategory, setNewGuestCategory] = useState("");
-  const { toast } = useToast();
-
-  const guestCategories = [
+  const [guestCategories, setGuestCategories] = useState<string[]>([
     "Bride's Friend",
     "Groom's Friend",
     "Bride's Family",
@@ -23,7 +22,8 @@ export default function GuestList() {
     "Colleague",
     "Parent's Friend",
     "Other"
-  ];
+  ]);
+  const { toast } = useToast();
 
   const handleAddGuest = () => {
     if (!newGuestName.trim()) {
@@ -96,6 +96,34 @@ export default function GuestList() {
     });
   };
 
+  const handleAddCategory = (category: string) => {
+    setGuestCategories([...guestCategories, category]);
+  };
+
+  const handleEditCategory = (oldCategory: string, newCategory: string) => {
+    // Update the category in the categories list
+    setGuestCategories(guestCategories.map(cat => 
+      cat === oldCategory ? newCategory : cat
+    ));
+
+    // Update all guests with the old category to use the new category
+    setGuests(guests.map(guest => ({
+      ...guest,
+      category: guest.category === oldCategory ? newCategory : guest.category
+    })));
+  };
+
+  const handleDeleteCategory = (category: string) => {
+    // Remove the category from the categories list
+    setGuestCategories(guestCategories.filter(cat => cat !== category));
+
+    // Update all guests with the deleted category to "Other"
+    setGuests(guests.map(guest => ({
+      ...guest,
+      category: guest.category === category ? "Other" : guest.category
+    })));
+  };
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
@@ -108,41 +136,50 @@ export default function GuestList() {
               </h1>
             </div>
 
-            <div className="space-y-4 mb-8">
-              <Input
-                placeholder="Guest Name"
-                value={newGuestName}
-                onChange={(e) => setNewGuestName(e.target.value)}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-4">
+                <Input
+                  placeholder="Guest Name"
+                  value={newGuestName}
+                  onChange={(e) => setNewGuestName(e.target.value)}
+                />
+                <Select
+                  value={newGuestCategory}
+                  onValueChange={setNewGuestCategory}
+                >
+                  <SelectTrigger className="w-full bg-white">
+                    <SelectValue placeholder="Select guest category" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white border border-gray-200 shadow-md">
+                    {guestCategories.map((category) => (
+                      <SelectItem 
+                        key={category} 
+                        value={category}
+                        className="hover:bg-gray-100"
+                      >
+                        {category}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button
+                  onClick={editingGuest ? handleUpdateGuest : handleAddGuest}
+                  className="w-full"
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  {editingGuest ? "Update Guest" : "Add Guest"}
+                </Button>
+              </div>
+
+              <CategoryManager
+                categories={guestCategories}
+                onAddCategory={handleAddCategory}
+                onEditCategory={handleEditCategory}
+                onDeleteCategory={handleDeleteCategory}
               />
-              <Select
-                value={newGuestCategory}
-                onValueChange={setNewGuestCategory}
-              >
-                <SelectTrigger className="w-full bg-white">
-                  <SelectValue placeholder="Select guest category" />
-                </SelectTrigger>
-                <SelectContent className="bg-white border border-gray-200 shadow-md">
-                  {guestCategories.map((category) => (
-                    <SelectItem 
-                      key={category} 
-                      value={category}
-                      className="hover:bg-gray-100"
-                    >
-                      {category}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Button
-                onClick={editingGuest ? handleUpdateGuest : handleAddGuest}
-                className="w-full"
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                {editingGuest ? "Update Guest" : "Add Guest"}
-              </Button>
             </div>
 
-            <div className="space-y-4">
+            <div className="mt-8 space-y-4">
               {guests.map((guest) => (
                 <div
                   key={guest.id}
