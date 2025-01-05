@@ -1,4 +1,4 @@
-import { Plus } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BudgetItem } from "./BudgetItem";
 import { BudgetCategory as BudgetCategoryType, BudgetItem as BudgetItemType } from "@/components/project/types";
@@ -9,6 +9,7 @@ interface BudgetCategoryProps {
   onUpdateItem: (categoryId: number, updatedItem: BudgetItemType) => void;
   onDeleteItem: (categoryId: number, itemId: number) => void;
   onAddItem: (categoryId: number, title: string, amount: number) => void;
+  onDeleteCategory: (categoryId: number) => void;
 }
 
 export const BudgetCategory = ({
@@ -16,6 +17,7 @@ export const BudgetCategory = ({
   onUpdateItem,
   onDeleteItem,
   onAddItem,
+  onDeleteCategory,
 }: BudgetCategoryProps) => {
   const [isAddingItem, setIsAddingItem] = useState(false);
   const [newItemTitle, setNewItemTitle] = useState("");
@@ -32,7 +34,17 @@ export const BudgetCategory = ({
 
   return (
     <div className="bg-white rounded-lg shadow-sm p-6 space-y-4">
-      <h3 className="text-xl font-serif text-wedding-purple">{category.name}</h3>
+      <div className="flex justify-between items-center">
+        <h3 className="text-xl font-serif text-wedding-purple">{category.name}</h3>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="text-wedding-purple hover:bg-wedding-pink/10"
+          onClick={() => onDeleteCategory(category.id)}
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
+      </div>
       <div className="space-y-2">
         {category.items.map((item) => (
           <BudgetItem

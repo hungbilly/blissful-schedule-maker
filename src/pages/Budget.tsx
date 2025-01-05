@@ -5,7 +5,6 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { BudgetCategory as BudgetCategoryType, BudgetItem } from "@/components/project/types";
 import { Plus, Settings } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { BudgetCategory } from "@/components/budget/BudgetCategory";
 
 const Budget = () => {
@@ -42,9 +41,6 @@ const Budget = () => {
 
   const { toast } = useToast();
   const [newCategory, setNewCategory] = useState("");
-  const [newItemTitle, setNewItemTitle] = useState("");
-  const [newItemAmount, setNewItemAmount] = useState<number>(0);
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
 
   const totalSpent = categories.reduce(
     (total, category) =>
@@ -120,7 +116,7 @@ const Budget = () => {
     }
 
     const newCategoryObj: BudgetCategoryType = {
-      id: categories.length + 1,
+      id: Math.max(...categories.map((cat) => cat.id), 0) + 1,
       name: newCategory,
       items: [],
     };
@@ -130,6 +126,14 @@ const Budget = () => {
     toast({
       title: "Success",
       description: "Category added successfully",
+    });
+  };
+
+  const handleDeleteCategory = (categoryId: number) => {
+    setCategories(categories.filter((category) => category.id !== categoryId));
+    toast({
+      title: "Success",
+      description: "Category deleted successfully",
     });
   };
 
@@ -167,6 +171,7 @@ const Budget = () => {
               onUpdateItem={handleUpdateItem}
               onDeleteItem={handleDeleteItem}
               onAddItem={handleAddItem}
+              onDeleteCategory={handleDeleteCategory}
             />
           ))}
         </div>
