@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Edit2, Trash2, User } from "lucide-react";
+import { Plus, Edit2, Trash2, User, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Guest } from "@/components/project/types";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CategoryManager } from "@/components/guest/CategoryManager";
+import { exportGuestsToCSV } from "@/utils/guestExportUtils";
 
 export default function GuestList() {
   const [guests, setGuests] = useState<Guest[]>([]);
@@ -124,6 +125,23 @@ export default function GuestList() {
     })));
   };
 
+  const handleExportCSV = () => {
+    if (guests.length === 0) {
+      toast({
+        title: "Error",
+        description: "No guests to export",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    exportGuestsToCSV(guests);
+    toast({
+      title: "Success",
+      description: "Guest list exported successfully",
+    });
+  };
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
@@ -134,6 +152,14 @@ export default function GuestList() {
               <h1 className="text-3xl font-serif text-wedding-purple">
                 Guest List ({guests.length} guests)
               </h1>
+              <Button
+                onClick={handleExportCSV}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <Download className="h-4 w-4" />
+                Export CSV
+              </Button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
