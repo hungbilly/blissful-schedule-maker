@@ -55,7 +55,7 @@ export const AppSidebar = () => {
     <aside className="w-64 bg-white border-r border-gray-200 flex flex-col min-h-screen">
       <div className="p-4">
         <h2 className="text-lg font-semibold text-gray-900">
-          Wedding Planning Of {currentProject.name}
+          Wedding Planning Of
         </h2>
         {currentProject.wedding_date && (
           <p className="text-sm text-gray-500">
