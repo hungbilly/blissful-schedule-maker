@@ -99,7 +99,14 @@ export const AppSidebar = () => {
             className="w-full justify-start"
             asChild
           >
-            <Link to="/budget">Planning Tools</Link>
+            <Link to="/budget">Budget</Link>
+          </Button>
+          <Button
+            variant="ghost"
+            className="w-full justify-start"
+            asChild
+          >
+            <Link to="/sitting-plan">Sitting Plans</Link>
           </Button>
         </div>
       </nav>
