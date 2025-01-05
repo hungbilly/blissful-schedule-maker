@@ -53,7 +53,6 @@ export const ProjectContent = () => {
         .from('events')
         .insert([{
           ...eventData,
-          end_time: eventData.end_time,
           project_id: currentProjectId,
           user_id: session.user.id,
         }])
@@ -86,12 +85,15 @@ export const ProjectContent = () => {
         throw new Error("User must be logged in");
       }
 
+      // Ensure we're using end_time, not endTime
+      const formattedUpdates = {
+        ...updates,
+        end_time: updates.end_time,
+      };
+
       const { data, error } = await supabase
         .from('events')
-        .update({
-          ...updates,
-          end_time: updates.end_time,
-        })
+        .update(formattedUpdates)
         .eq('id', id)
         .eq('user_id', session.user.id)
         .select()
@@ -161,9 +163,15 @@ export const ProjectContent = () => {
     const event = events.find(e => e.id === eventId);
     if (!event) return;
     
+    // Ensure we're using end_time consistently
+    const formattedUpdates = {
+      ...updates,
+      end_time: updates.end_time || event.end_time,
+    };
+    
     await updateEventMutation.mutateAsync({
       ...event,
-      ...updates,
+      ...formattedUpdates,
     });
   };
 
