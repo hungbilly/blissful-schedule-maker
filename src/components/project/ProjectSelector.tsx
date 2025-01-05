@@ -28,7 +28,7 @@ export const ProjectSelector = ({
           </option>
         ))}
       </select>
-      <Button variant="outline" onClick={onNewProjectClick}>
+      <Button variant="ghost" onClick={onNewProjectClick}>
         <Plus className="h-4 w-4 mr-2" />
         New Project
       </Button>
