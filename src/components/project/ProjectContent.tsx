@@ -12,12 +12,11 @@ import { exportToCSV } from "@/utils/exportUtils";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { useSession } from "@supabase/auth-helpers-react";
-import { supabase } from "@/integrations/supabase/client";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useProjects, useCreateProject, useUpdateProject, useDeleteProject, useDuplicateProject } from "@/hooks/useProjects";
 import { useProjectData } from "./useProjectData";
-import { TimelineEvent } from "./projectTypes";
+import { TimelineEvent } from "./types";
 import { useProjectDetails } from "@/hooks/useProjectDetails";
+import { useEventMutations } from "@/hooks/useEventMutations";
 
 export const ProjectContent = () => {
   const { data: projects = [], isLoading } = useProjects();
@@ -31,147 +30,28 @@ export const ProjectContent = () => {
   const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
   const { toast } = useToast();
   const session = useSession();
-  const queryClient = useQueryClient();
   const { updateProjectDetails } = useProjectDetails(currentProjectId);
+  const { events, currentProject } = useProjectData(currentProjectId);
+  const { addEventMutation, updateEventMutation, deleteEventMutation } = useEventMutations(currentProjectId);
 
-  // Initialize currentProjectId when projects are loaded
   useEffect(() => {
     if (projects.length > 0 && currentProjectId === null) {
       setCurrentProjectId(projects[0].id);
     }
   }, [projects, currentProjectId]);
 
-  const { events, currentProject } = useProjectData(currentProjectId);
-
-  const addEventMutation = useMutation({
-    mutationFn: async (eventData: Omit<TimelineEvent, "id" | "created_at">) => {
-      if (!session?.user?.id || !currentProjectId) {
-        throw new Error("User must be logged in and project must be selected");
-      }
-
-      const { data, error } = await supabase
-        .from('events')
-        .insert([{
-          ...eventData,
-          project_id: currentProjectId,
-          user_id: session.user.id,
-        }])
-        .select()
-        .maybeSingle();
-
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['events', currentProjectId] });
-      toast({
-        title: "Success",
-        description: "Event has been added to the timeline",
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: "Failed to add event",
-        variant: "destructive",
-      });
-      console.error('Error adding event:', error);
-    },
-  });
-
-  const updateEventMutation = useMutation({
-    mutationFn: async ({ id, ...updates }: TimelineEvent) => {
-      if (!session?.user?.id) {
-        throw new Error("User must be logged in");
-      }
-
-      // Ensure we're using end_time, not endTime
-      const formattedUpdates = {
-        ...updates,
-        end_time: updates.end_time,
-      };
-
-      const { data, error } = await supabase
-        .from('events')
-        .update(formattedUpdates)
-        .eq('id', id)
-        .eq('user_id', session.user.id)
-        .select()
-        .maybeSingle();
-
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['events', currentProjectId] });
-      toast({
-        title: "Success",
-        description: "Event has been updated",
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: "Failed to update event",
-        variant: "destructive",
-      });
-      console.error('Error updating event:', error);
-    },
-  });
-
-  const deleteEventMutation = useMutation({
-    mutationFn: async (eventId: number) => {
-      if (!session?.user?.id) {
-        throw new Error("User must be logged in");
-      }
-
-      const { error } = await supabase
-        .from('events')
-        .delete()
-        .eq('id', eventId)
-        .eq('user_id', session.user.id);
-
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['events', currentProjectId] });
-      toast({
-        title: "Success",
-        description: "Event has been deleted",
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: "Failed to delete event",
-        variant: "destructive",
-      });
-      console.error('Error deleting event:', error);
-    },
-  });
-
   const handleAddEvent = async (eventData: Omit<TimelineEvent, "id" | "created_at" | "project_id" | "user_id">) => {
     if (!currentProjectId) return;
-    await addEventMutation.mutateAsync({
-      ...eventData,
-      project_id: currentProjectId,
-      user_id: session?.user?.id || '',
-    });
+    await addEventMutation.mutateAsync(eventData);
   };
 
   const handleEditEvent = async (eventId: number, updates: Partial<TimelineEvent>) => {
     const event = events.find(e => e.id === eventId);
     if (!event) return;
     
-    // Ensure we're using end_time consistently
-    const formattedUpdates = {
-      ...updates,
-      end_time: updates.end_time || event.end_time,
-    };
-    
     await updateEventMutation.mutateAsync({
       ...event,
-      ...formattedUpdates,
+      ...updates,
     });
   };
 
