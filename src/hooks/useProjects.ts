@@ -48,7 +48,7 @@ export const useCreateProject = () => {
           user_id: session.user.id 
         }])
         .select()
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       return data;
@@ -75,7 +75,7 @@ export const useUpdateProject = () => {
         .eq("id", id)
         .eq("user_id", session.user.id)
         .select()
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       return data;

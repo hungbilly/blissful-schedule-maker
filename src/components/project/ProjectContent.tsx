@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Timeline } from "@/components/Timeline";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -18,7 +18,7 @@ export const ProjectContent = () => {
   const { data: projects = [], isLoading } = useProjects();
   const createProject = useCreateProject();
   const updateProject = useUpdateProject();
-  const [currentProjectId, setCurrentProjectId] = useState(projects[0]?.id || 0);
+  const [currentProjectId, setCurrentProjectId] = useState<number | null>(null);
   const [use24Hour, setUse24Hour] = useState(true);
   const [isProjectDialogOpen, setIsProjectDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
@@ -27,7 +27,14 @@ export const ProjectContent = () => {
   const [date, setDate] = useState("");
   const { toast } = useToast();
 
-  const currentProject = projects.find((p) => p.id === currentProjectId);
+  // Initialize currentProjectId when projects are loaded
+  useEffect(() => {
+    if (projects.length > 0 && currentProjectId === null) {
+      setCurrentProjectId(projects[0].id);
+    }
+  }, [projects, currentProjectId]);
+
+  const currentProject = currentProjectId ? projects.find((p) => p.id === currentProjectId) : null;
 
   const handleAddEvent = (eventData: Omit<TimelineEvent, "id"> | TimelineEvent) => {
     if (!currentProject) return;
@@ -79,7 +86,7 @@ export const ProjectContent = () => {
           title: "Success",
           description: `Project "${name}" has been created`,
         });
-      } else {
+      } else if (currentProjectId) {
         await updateProject.mutateAsync({ id: currentProjectId, name });
         toast({
           title: "Success",
@@ -120,6 +127,25 @@ export const ProjectContent = () => {
     return <div>Loading...</div>;
   }
 
+  if (projects.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-wedding-pink">
+        <div className="text-center">
+          <h2 className="text-2xl font-serif mb-4">Welcome to your Wedding Planner</h2>
+          <p className="mb-4">Create your first project to get started</p>
+          <Button onClick={handleNewProject}>Create Project</Button>
+        </div>
+        <ProjectDialog
+          open={isProjectDialogOpen}
+          onOpenChange={setIsProjectDialogOpen}
+          onSubmit={handleProjectSubmit}
+          initialName=""
+          mode="create"
+        />
+      </div>
+    );
+  }
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
@@ -131,7 +157,7 @@ export const ProjectContent = () => {
                 <SidebarTrigger />
                 <ProjectSelector
                   projects={projects}
-                  currentProjectId={currentProjectId}
+                  currentProjectId={currentProjectId || 0}
                   onProjectChange={setCurrentProjectId}
                   onNewProjectClick={handleNewProject}
                 />
