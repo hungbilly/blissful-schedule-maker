@@ -1,6 +1,8 @@
 import { Input } from "@/components/ui/input";
 import { Heart } from "lucide-react";
 import { useState, useEffect } from "react";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface CoupleInfoProps {
   bride: string;
@@ -73,6 +75,13 @@ export function CoupleInfo({
     });
   };
 
+  const handleDateSelect = (date: Date | undefined) => {
+    if (date) {
+      const formattedDate = date.toISOString().split('T')[0];
+      setLocalDate(formattedDate);
+    }
+  };
+
   return (
     <div className="bg-white rounded-lg p-6 mb-12 shadow-sm">
       <div className="space-y-6">
@@ -99,17 +108,21 @@ export function CoupleInfo({
         </div>
         <div className="flex flex-col items-center space-y-2">
           <div className="text-lg font-serif text-wedding-purple">Wedding Date:</div>
-          <div className="relative">
-            <Input
-              type="date"
-              value={localDate}
-              onChange={(e) => setLocalDate(e.target.value)}
-              className="opacity-0 absolute inset-0 w-full cursor-pointer"
-            />
-            <div className="text-2xl font-serif text-wedding-purple border-b-2 border-wedding-purple/50 pb-1 px-4">
-              {formatDate(localDate)}
-            </div>
-          </div>
+          <Popover>
+            <PopoverTrigger asChild>
+              <div className="text-2xl font-serif text-wedding-purple border-b-2 border-wedding-purple/50 pb-1 px-4 cursor-pointer">
+                {formatDate(localDate)}
+              </div>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="center">
+              <Calendar
+                mode="single"
+                selected={localDate ? new Date(localDate) : undefined}
+                onSelect={handleDateSelect}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
     </div>
