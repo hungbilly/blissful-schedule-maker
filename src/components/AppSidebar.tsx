@@ -27,7 +27,7 @@ export const AppSidebar = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   
-  const { data: profile } = useQuery({
+  const { data: profile, isLoading: isProfileLoading } = useQuery({
     queryKey: ['profile', session?.user?.id],
     queryFn: async () => {
       if (!session?.user?.id) return null;
@@ -69,7 +69,7 @@ export const AppSidebar = () => {
   const { currentProject, isLoading } = useProjectData(currentProjectId);
   const { updateProjectDetails } = useProjectDetails(currentProjectId);
 
-  if (isLoading || !currentProject) {
+  if (isLoading || !currentProject || isProfileLoading) {
     return null;
   }
 
@@ -84,9 +84,9 @@ export const AppSidebar = () => {
             {format(new Date(currentProject.wedding_date), "MMMM d, yyyy")}
           </p>
         )}
-        {profile && (profile.bride_name || profile.groom_name) && (
+        {profile && (
           <p className="text-sm text-gray-600 mt-1">
-            {profile.bride_name} & {profile.groom_name}
+            {profile.bride_name || "Bride"} & {profile.groom_name || "Groom"}
           </p>
         )}
         <Button
