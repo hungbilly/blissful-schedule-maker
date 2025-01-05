@@ -9,7 +9,7 @@ import { Edit2, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CoupleInfo } from "@/components/CoupleInfo";
 import { exportToCSV } from "@/utils/exportUtils";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { useSession } from "@supabase/auth-helpers-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -300,7 +300,6 @@ export const ProjectContent = () => {
           <div className="container max-w-3xl">
             <div className="flex justify-between items-center mb-8">
               <div className="flex items-center gap-4">
-                <SidebarTrigger />
                 <ProjectSelector
                   projects={projects}
                   currentProjectId={currentProjectId || 0}
