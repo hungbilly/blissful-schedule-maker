@@ -111,7 +111,7 @@ export function CoupleInfo({
           <Popover>
             <PopoverTrigger asChild>
               <div className="text-2xl font-serif text-wedding-purple border-b-2 border-wedding-purple/50 pb-1 px-4 cursor-pointer">
-                {formatDate(localDate)}
+                {localDate ? formatDate(localDate) : "Set the date"}
               </div>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="center">
