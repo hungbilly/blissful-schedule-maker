@@ -6,15 +6,24 @@ import { useToast } from "@/hooks/use-toast";
 import { Guest } from "@/components/project/types";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function GuestList() {
   const [guests, setGuests] = useState<Guest[]>([]);
   const [editingGuest, setEditingGuest] = useState<Guest | null>(null);
   const [newGuestName, setNewGuestName] = useState("");
-  const [newGuestEmail, setNewGuestEmail] = useState("");
-  const [newGuestPhone, setNewGuestPhone] = useState("");
-  const [newGuestDietary, setNewGuestDietary] = useState("");
+  const [newGuestCategory, setNewGuestCategory] = useState("");
   const { toast } = useToast();
+
+  const guestCategories = [
+    "Bride's Friend",
+    "Groom's Friend",
+    "Bride's Family",
+    "Groom's Family",
+    "Colleague",
+    "Parent's Friend",
+    "Other"
+  ];
 
   const handleAddGuest = () => {
     if (!newGuestName.trim()) {
@@ -26,19 +35,24 @@ export default function GuestList() {
       return;
     }
 
+    if (!newGuestCategory) {
+      toast({
+        title: "Error",
+        description: "Please select a guest category",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const newGuest: Guest = {
       id: guests.length + 1,
       name: newGuestName,
-      email: newGuestEmail,
-      phone: newGuestPhone,
-      dietaryRestrictions: newGuestDietary,
+      category: newGuestCategory,
     };
 
     setGuests([...guests, newGuest]);
     setNewGuestName("");
-    setNewGuestEmail("");
-    setNewGuestPhone("");
-    setNewGuestDietary("");
+    setNewGuestCategory("");
     toast({
       title: "Success",
       description: "Guest added successfully",
@@ -48,9 +62,7 @@ export default function GuestList() {
   const handleEditGuest = (guest: Guest) => {
     setEditingGuest(guest);
     setNewGuestName(guest.name);
-    setNewGuestEmail(guest.email || "");
-    setNewGuestPhone(guest.phone || "");
-    setNewGuestDietary(guest.dietaryRestrictions || "");
+    setNewGuestCategory(guest.category);
   };
 
   const handleUpdateGuest = () => {
@@ -61,9 +73,7 @@ export default function GuestList() {
         ? {
             ...g,
             name: newGuestName,
-            email: newGuestEmail,
-            phone: newGuestPhone,
-            dietaryRestrictions: newGuestDietary,
+            category: newGuestCategory,
           }
         : g
     );
@@ -71,9 +81,7 @@ export default function GuestList() {
     setGuests(updatedGuests);
     setEditingGuest(null);
     setNewGuestName("");
-    setNewGuestEmail("");
-    setNewGuestPhone("");
-    setNewGuestDietary("");
+    setNewGuestCategory("");
     toast({
       title: "Success",
       description: "Guest updated successfully",
@@ -106,23 +114,21 @@ export default function GuestList() {
                 value={newGuestName}
                 onChange={(e) => setNewGuestName(e.target.value)}
               />
-              <Input
-                placeholder="Email"
-                type="email"
-                value={newGuestEmail}
-                onChange={(e) => setNewGuestEmail(e.target.value)}
-              />
-              <Input
-                placeholder="Phone"
-                type="tel"
-                value={newGuestPhone}
-                onChange={(e) => setNewGuestPhone(e.target.value)}
-              />
-              <Input
-                placeholder="Dietary Restrictions"
-                value={newGuestDietary}
-                onChange={(e) => setNewGuestDietary(e.target.value)}
-              />
+              <Select
+                value={newGuestCategory}
+                onValueChange={setNewGuestCategory}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select guest category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {guestCategories.map((category) => (
+                    <SelectItem key={category} value={category}>
+                      {category}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <Button
                 onClick={editingGuest ? handleUpdateGuest : handleAddGuest}
                 className="w-full"
@@ -143,11 +149,7 @@ export default function GuestList() {
                     <div>
                       <h3 className="font-medium">{guest.name}</h3>
                       <div className="text-sm text-gray-500">
-                        {guest.email && <div>Email: {guest.email}</div>}
-                        {guest.phone && <div>Phone: {guest.phone}</div>}
-                        {guest.dietaryRestrictions && (
-                          <div>Dietary: {guest.dietaryRestrictions}</div>
-                        )}
+                        Category: {guest.category}
                       </div>
                     </div>
                   </div>
