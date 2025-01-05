@@ -20,7 +20,7 @@ export const ProjectSelector = ({
       <select
         value={currentProjectId}
         onChange={(e) => onProjectChange(Number(e.target.value))}
-        className="px-3 py-2 border rounded-md bg-white"
+        className="text-wedding-purple font-serif text-lg border-b border-wedding-purple/50 bg-transparent px-4 py-2 focus:outline-none focus:border-wedding-purple"
       >
         {projects.map((project) => (
           <option key={project.id} value={project.id}>
