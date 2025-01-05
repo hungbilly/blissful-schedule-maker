@@ -7,10 +7,36 @@ import { useProjectData } from "@/components/project/useProjectData";
 import { useProjects } from "@/hooks/useProjects";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useSession } from "@supabase/auth-helpers-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
+
+interface Profile {
+  id: string;
+  bride_name?: string;
+  groom_name?: string;
+}
 
 export const AppSidebar = () => {
   const { data: projects = [] } = useProjects();
   const [currentProjectId, setCurrentProjectId] = useState<number | null>(null);
+  const session = useSession();
+  
+  const { data: profile } = useQuery({
+    queryKey: ['profile', session?.user?.id],
+    queryFn: async () => {
+      if (!session?.user?.id) return null;
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
+      
+      if (error) throw error;
+      return data as Profile;
+    },
+    enabled: !!session?.user?.id,
+  });
   
   useEffect(() => {
     if (projects.length > 0 && currentProjectId === null) {
@@ -36,9 +62,9 @@ export const AppSidebar = () => {
             {format(new Date(currentProject.wedding_date), "MMMM d, yyyy")}
           </p>
         )}
-        {(currentProject.bride_name || currentProject.groom_name) && (
+        {profile && (profile.bride_name || profile.groom_name) && (
           <p className="text-sm text-gray-600 mt-1">
-            {currentProject.bride_name} & {currentProject.groom_name}
+            {profile.bride_name} & {profile.groom_name}
           </p>
         )}
       </div>
