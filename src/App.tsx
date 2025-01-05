@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { StrictMode } from "react";
 import Index from "./pages/Index";
 import VendorList from "./pages/VendorList";
+import Budget from "./pages/Budget";
 
 const queryClient = new QueryClient();
 
@@ -17,6 +18,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/vendors" element={<VendorList />} />
+            <Route path="/budget" element={<Budget />} />
           </Routes>
           <Toaster />
           <Sonner />

@@ -22,3 +22,16 @@ export interface Vendor {
   contactNumber: string;
   serviceDetails: string;
 }
+
+export interface BudgetItem {
+  id: number;
+  category: string;
+  title: string;
+  amount: number;
+}
+
+export interface BudgetCategory {
+  id: number;
+  name: string;
+  items: BudgetItem[];
+}
