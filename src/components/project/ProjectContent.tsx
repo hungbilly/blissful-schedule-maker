@@ -17,6 +17,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useProjects, useCreateProject, useUpdateProject } from "@/hooks/useProjects";
 import { useProjectData } from "./useProjectData";
 import { TimelineEvent } from "./projectTypes";
+import { useProjectDetails } from "@/hooks/useProjectDetails";
 
 export const ProjectContent = () => {
   const { data: projects = [], isLoading } = useProjects();
@@ -26,12 +27,10 @@ export const ProjectContent = () => {
   const [use24Hour, setUse24Hour] = useState(true);
   const [isProjectDialogOpen, setIsProjectDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
-  const [bride, setBride] = useState("");
-  const [groom, setGroom] = useState("");
-  const [date, setDate] = useState("");
   const { toast } = useToast();
   const session = useSession();
   const queryClient = useQueryClient();
+  const { updateProjectDetails } = useProjectDetails(currentProjectId);
 
   // Initialize currentProjectId when projects are loaded
   useEffect(() => {
@@ -224,6 +223,11 @@ export const ProjectContent = () => {
     });
   };
 
+  const handleCoupleInfoChange = async (bride: string, groom: string, date: string) => {
+    if (!currentProjectId) return;
+    await updateProjectDetails.mutateAsync({ bride, groom, date });
+  };
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -293,12 +297,12 @@ export const ProjectContent = () => {
             </div>
 
             <CoupleInfo
-              bride={bride}
-              groom={groom}
-              date={date}
-              onBrideChange={setBride}
-              onGroomChange={setGroom}
-              onDateChange={setDate}
+              bride={currentProject?.bride_name || ""}
+              groom={currentProject?.groom_name || ""}
+              date={currentProject?.wedding_date || ""}
+              onBrideChange={(bride) => handleCoupleInfoChange(bride, currentProject?.groom_name || "", currentProject?.wedding_date || "")}
+              onGroomChange={(groom) => handleCoupleInfoChange(currentProject?.bride_name || "", groom, currentProject?.wedding_date || "")}
+              onDateChange={(date) => handleCoupleInfoChange(currentProject?.bride_name || "", currentProject?.groom_name || "", date)}
             />
 
             <h1 className="text-4xl md:text-5xl text-wedding-purple text-center font-serif mb-12">

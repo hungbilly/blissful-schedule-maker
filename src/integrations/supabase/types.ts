@@ -76,22 +76,31 @@ export type Database = {
       }
       projects: {
         Row: {
+          bride_name: string | null
           created_at: string
+          groom_name: string | null
           id: number
           name: string
           user_id: string
+          wedding_date: string | null
         }
         Insert: {
+          bride_name?: string | null
           created_at?: string
+          groom_name?: string | null
           id?: number
           name: string
           user_id: string
+          wedding_date?: string | null
         }
         Update: {
+          bride_name?: string | null
           created_at?: string
+          groom_name?: string | null
           id?: number
           name?: string
           user_id?: string
+          wedding_date?: string | null
         }
         Relationships: []
       }

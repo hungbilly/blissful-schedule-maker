@@ -16,4 +16,7 @@ export interface Project {
   name: string;
   created_at: string;
   user_id: string;
+  bride_name?: string;
+  groom_name?: string;
+  wedding_date?: string;
 }
