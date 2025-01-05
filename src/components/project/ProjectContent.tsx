@@ -17,6 +17,7 @@ import { useProjectData } from "./useProjectData";
 import { TimelineEvent } from "./types";
 import { useProjectDetails } from "@/hooks/useProjectDetails";
 import { useEventMutations } from "@/hooks/useEventMutations";
+import { EmptyProjectState } from "./EmptyProjectState";
 
 export const ProjectContent = () => {
   const { data: projects = [], isLoading } = useProjects();
@@ -125,7 +126,17 @@ export const ProjectContent = () => {
     try {
       await deleteProject.mutateAsync(currentProjectId);
       setIsProjectDialogOpen(false);
-      setCurrentProjectId(projects.length > 1 ? projects[0].id : null);
+      
+      // Find the next available project
+      const remainingProjects = projects.filter(p => p.id !== currentProjectId);
+      if (remainingProjects.length > 0) {
+        // Set to the first remaining project
+        setCurrentProjectId(remainingProjects[0].id);
+      } else {
+        // No projects left
+        setCurrentProjectId(null);
+      }
+      
       toast({
         title: "Success",
         description: "Project has been deleted",
@@ -196,12 +207,8 @@ export const ProjectContent = () => {
 
   if (projects.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-wedding-pink">
-        <div className="text-center">
-          <h2 className="text-2xl font-serif mb-4">Welcome to your Wedding Planner</h2>
-          <p className="mb-4">Create your first project to get started</p>
-          <Button onClick={handleNewProject}>Create Project</Button>
-        </div>
+      <>
+        <EmptyProjectState onNewProject={handleNewProject} />
         <ProjectDialog
           open={isProjectDialogOpen}
           onOpenChange={setIsProjectDialogOpen}
@@ -209,7 +216,7 @@ export const ProjectContent = () => {
           initialName=""
           mode="create"
         />
-      </div>
+      </>
     );
   }
 
@@ -263,7 +270,7 @@ export const ProjectContent = () => {
             />
 
             <h1 className="text-3xl md:text-4xl text-wedding-purple text-center font-serif mb-12">
-              {currentProject?.name || "Timeline"}
+              Itinerary: {currentProject?.name || ""}
             </h1>
 
             {currentProject && (
