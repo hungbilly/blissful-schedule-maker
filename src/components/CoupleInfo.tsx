@@ -1,5 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Heart } from "lucide-react";
+import { useState, useEffect } from "react";
 
 interface CoupleInfoProps {
   bride: string;
@@ -18,6 +19,48 @@ export function CoupleInfo({
   onGroomChange,
   onDateChange
 }: CoupleInfoProps) {
+  const [localBride, setLocalBride] = useState(bride);
+  const [localGroom, setLocalGroom] = useState(groom);
+  const [localDate, setLocalDate] = useState(date);
+
+  // Update local state when props change
+  useEffect(() => {
+    setLocalBride(bride);
+    setLocalGroom(groom);
+    setLocalDate(date);
+  }, [bride, groom, date]);
+
+  // Debounce updates
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (localBride !== bride) {
+        onBrideChange(localBride);
+      }
+    }, 1000); // Wait 1 second after last keystroke
+
+    return () => clearTimeout(timer);
+  }, [localBride, bride, onBrideChange]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (localGroom !== groom) {
+        onGroomChange(localGroom);
+      }
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [localGroom, groom, onGroomChange]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (localDate !== date) {
+        onDateChange(localDate);
+      }
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [localDate, date, onDateChange]);
+
   return (
     <div className="bg-white rounded-lg p-6 mb-12 shadow-sm">
       <div className="space-y-6">
@@ -25,8 +68,8 @@ export function CoupleInfo({
           <div className="flex-1 w-full md:w-auto">
             <Input
               placeholder="Bride's Name"
-              value={bride}
-              onChange={(e) => onBrideChange(e.target.value)}
+              value={localBride}
+              onChange={(e) => setLocalBride(e.target.value)}
               className="bg-[#FFDEE2]/30 border-[#FFDEE2] focus:border-[#FFDEE2] text-center font-serif"
             />
           </div>
@@ -36,8 +79,8 @@ export function CoupleInfo({
           <div className="flex-1 w-full md:w-auto">
             <Input
               placeholder="Groom's Name"
-              value={groom}
-              onChange={(e) => onGroomChange(e.target.value)}
+              value={localGroom}
+              onChange={(e) => setLocalGroom(e.target.value)}
               className="bg-[#D3E4FD]/30 border-[#D3E4FD] focus:border-[#D3E4FD] text-center font-serif"
             />
           </div>
@@ -45,8 +88,8 @@ export function CoupleInfo({
         <div className="flex justify-center">
           <Input
             type="date"
-            value={date}
-            onChange={(e) => onDateChange(e.target.value)}
+            value={localDate}
+            onChange={(e) => setLocalDate(e.target.value)}
             className="max-w-[240px] text-center font-serif bg-wedding-pink/10 border-wedding-purple/20 focus:border-wedding-purple"
           />
         </div>
