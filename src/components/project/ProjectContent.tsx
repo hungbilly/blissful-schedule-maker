@@ -262,7 +262,7 @@ export const ProjectContent = () => {
               onDateChange={(date) => handleCoupleInfoChange(date)}
             />
 
-            <h1 className="text-4xl md:text-5xl text-wedding-purple text-center font-serif mb-12">
+            <h1 className="text-3xl md:text-4xl text-wedding-purple text-center font-serif mb-12">
               {currentProject?.name || "Timeline"}
             </h1>
 
