@@ -1,28 +1,21 @@
 import { useState } from "react";
-import { TimelineEvent } from "./TimelineEvent";
+import { TimelineEvent as TimelineEventComponent } from "./TimelineEvent";
 import { Button } from "./ui/button";
 import { AddEventForm } from "./AddEventForm";
 import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
 import { Plus } from "lucide-react";
 import { useToast } from "./ui/use-toast";
-
-interface TimelineEvent {
-  id: number;
-  time: string;
-  endTime: string;
-  duration: string;
-  title: string;
-  description?: string;
-  location?: string;
-}
+import { TimelineEvent } from "./project/types";
 
 interface TimelineProps {
   events: TimelineEvent[];
-  onAddEvent: (event: Omit<TimelineEvent, "id"> | TimelineEvent) => void;
+  onAddEvent: (event: Omit<TimelineEvent, "id">) => void;
+  onEditEvent: (eventId: number, updates: Partial<TimelineEvent>) => void;
+  onDeleteEvent: (eventId: number) => void;
   use24Hour: boolean;
 }
 
-export function Timeline({ events, onAddEvent, use24Hour }: TimelineProps) {
+export function Timeline({ events, onAddEvent, onEditEvent, onDeleteEvent, use24Hour }: TimelineProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedTime, setSelectedTime] = useState<string>("");
   const { toast } = useToast();
@@ -31,29 +24,6 @@ export function Timeline({ events, onAddEvent, use24Hour }: TimelineProps) {
   const handleAddEventClick = (time: string) => {
     setSelectedTime(time);
     setIsDialogOpen(true);
-  };
-
-  const handleEditEvent = (eventId: number, updates: Partial<TimelineEvent>) => {
-    const updatedEvents = events.map(event => 
-      event.id === eventId ? { ...event, ...updates } : event
-    );
-    onAddEvent(updatedEvents.find(e => e.id === eventId) as TimelineEvent);
-  };
-
-  const handleDeleteEvent = (eventId: number) => {
-    const eventToDelete = events.find(event => event.id === eventId);
-    
-    if (eventToDelete) {
-      onAddEvent({
-        ...eventToDelete,
-        id: -1
-      });
-      
-      toast({
-        title: "Event Deleted",
-        description: `"${eventToDelete.title}" has been removed from the timeline.`,
-      });
-    }
   };
 
   return (
@@ -74,15 +44,10 @@ export function Timeline({ events, onAddEvent, use24Hour }: TimelineProps) {
 
       {sortedEvents.map((event, index) => (
         <div key={event.id}>
-          <TimelineEvent
-            time={event.time}
-            endTime={event.endTime}
-            duration={event.duration}
-            title={event.title}
-            description={event.description}
-            location={event.location}
-            onEdit={(updates) => handleEditEvent(event.id, updates)}
-            onDelete={() => handleDeleteEvent(event.id)}
+          <TimelineEventComponent
+            {...event}
+            onEdit={(updates) => onEditEvent(event.id, updates)}
+            onDelete={() => onDeleteEvent(event.id)}
             use24Hour={use24Hour}
           />
           {index < sortedEvents.length - 1 && (

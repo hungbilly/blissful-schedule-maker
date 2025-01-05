@@ -13,6 +13,9 @@ import { exportToCSV } from "@/utils/exportUtils";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { useProjects, useCreateProject, useUpdateProject } from "@/hooks/useProjects";
+import { useSession } from "@supabase/auth-helpers-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const ProjectContent = () => {
   const { data: projects = [], isLoading } = useProjects();
@@ -26,6 +29,8 @@ export const ProjectContent = () => {
   const [groom, setGroom] = useState("");
   const [date, setDate] = useState("");
   const { toast } = useToast();
+  const session = useSession();
+  const queryClient = useQueryClient();
 
   // Initialize currentProjectId when projects are loaded
   useEffect(() => {
@@ -34,39 +39,148 @@ export const ProjectContent = () => {
     }
   }, [projects, currentProjectId]);
 
-  const currentProject = currentProjectId ? projects.find((p) => p.id === currentProjectId) : null;
+  const { data: events = [] } = useQuery({
+    queryKey: ['events', currentProjectId],
+    queryFn: async () => {
+      if (!currentProjectId || !session?.user?.id) return [];
+      
+      const { data, error } = await supabase
+        .from('events')
+        .select('*')
+        .eq('project_id', currentProjectId)
+        .eq('user_id', session.user.id);
 
-  const handleAddEvent = (eventData: Omit<TimelineEvent, "id"> | TimelineEvent) => {
-    if (!currentProject) return;
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!currentProjectId && !!session?.user?.id,
+  });
 
-    const updatedProjects = projects.map((project) => {
-      if (project.id !== currentProjectId) return project;
-
-      let updatedEvents;
-      if ('id' in eventData) {
-        if (eventData.id === -1) {
-          updatedEvents = project.events.filter(event => event.time !== eventData.time);
-        } else {
-          updatedEvents = project.events.map(event => 
-            event.id === eventData.id ? eventData : event
-          );
-        }
-      } else {
-        const newEvent = {
-          ...eventData,
-          id: project.events.length + 1,
-        };
-        updatedEvents = [...project.events, newEvent];
+  const addEventMutation = useMutation({
+    mutationFn: async (eventData: Omit<TimelineEvent, "id">) => {
+      if (!session?.user?.id || !currentProjectId) {
+        throw new Error("User must be logged in and project must be selected");
       }
 
-      return {
-        ...project,
-        events: updatedEvents,
-      };
-    });
+      const { data, error } = await supabase
+        .from('events')
+        .insert([{
+          ...eventData,
+          project_id: currentProjectId,
+          user_id: session.user.id,
+        }])
+        .select()
+        .maybeSingle();
 
-    // Note: We'll need to implement event persistence later
-    // For now, we're just managing events in memory
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['events', currentProjectId] });
+      toast({
+        title: "Success",
+        description: "Event has been added to the timeline",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to add event",
+        variant: "destructive",
+      });
+      console.error('Error adding event:', error);
+    },
+  });
+
+  const updateEventMutation = useMutation({
+    mutationFn: async (event: TimelineEvent) => {
+      if (!session?.user?.id) {
+        throw new Error("User must be logged in");
+      }
+
+      const { data, error } = await supabase
+        .from('events')
+        .update({
+          time: event.time,
+          end_time: event.endTime,
+          duration: event.duration,
+          title: event.title,
+          description: event.description,
+          location: event.location,
+        })
+        .eq('id', event.id)
+        .eq('user_id', session.user.id)
+        .select()
+        .maybeSingle();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['events', currentProjectId] });
+      toast({
+        title: "Success",
+        description: "Event has been updated",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to update event",
+        variant: "destructive",
+      });
+      console.error('Error updating event:', error);
+    },
+  });
+
+  const deleteEventMutation = useMutation({
+    mutationFn: async (eventId: number) => {
+      if (!session?.user?.id) {
+        throw new Error("User must be logged in");
+      }
+
+      const { error } = await supabase
+        .from('events')
+        .delete()
+        .eq('id', eventId)
+        .eq('user_id', session.user.id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['events', currentProjectId] });
+      toast({
+        title: "Success",
+        description: "Event has been deleted",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to delete event",
+        variant: "destructive",
+      });
+      console.error('Error deleting event:', error);
+    },
+  });
+
+  const handleAddEvent = async (eventData: Omit<TimelineEvent, "id">) => {
+    if (!currentProjectId) return;
+    await addEventMutation.mutateAsync(eventData);
+  };
+
+  const handleEditEvent = async (eventId: number, updates: Partial<TimelineEvent>) => {
+    const event = events.find(e => e.id === eventId);
+    if (!event) return;
+    
+    await updateEventMutation.mutateAsync({
+      ...event,
+      ...updates,
+    });
+  };
+
+  const handleDeleteEvent = async (eventId: number) => {
+    await deleteEventMutation.mutateAsync(eventId);
   };
 
   const handleProjectSubmit = async (name: string) => {
@@ -206,8 +320,10 @@ export const ProjectContent = () => {
 
             {currentProject && (
               <Timeline
-                events={currentProject.events}
+                events={events}
                 onAddEvent={handleAddEvent}
+                onEditEvent={handleEditEvent}
+                onDeleteEvent={handleDeleteEvent}
                 use24Hour={use24Hour}
               />
             )}
