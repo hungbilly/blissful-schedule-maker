@@ -7,9 +7,12 @@ import { useProjectData } from "@/components/project/useProjectData";
 import { useProjects } from "@/hooks/useProjects";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useSession } from "@supabase/auth-helpers-react";
+import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
+import { LogOut } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 interface Profile {
   id: string;
@@ -21,6 +24,8 @@ export const AppSidebar = () => {
   const { data: projects = [] } = useProjects();
   const [currentProjectId, setCurrentProjectId] = useState<number | null>(null);
   const session = useSession();
+  const { toast } = useToast();
+  const navigate = useNavigate();
   
   const { data: profile } = useQuery({
     queryKey: ['profile', session?.user?.id],
@@ -37,6 +42,23 @@ export const AppSidebar = () => {
     },
     enabled: !!session?.user?.id,
   });
+
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to log out",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Success",
+        description: "Logged out successfully",
+      });
+      navigate("/");
+    }
+  };
   
   useEffect(() => {
     if (projects.length > 0 && currentProjectId === null) {
@@ -67,6 +89,15 @@ export const AppSidebar = () => {
             {profile.bride_name} & {profile.groom_name}
           </p>
         )}
+        <Button
+          variant="ghost"
+          size="sm"
+          className="w-full mt-2 text-wedding-purple hover:text-wedding-purple/80 justify-start"
+          onClick={handleLogout}
+        >
+          <LogOut className="w-4 h-4 mr-2" />
+          Logout
+        </Button>
       </div>
       
       <Separator />
