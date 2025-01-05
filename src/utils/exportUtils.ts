@@ -16,7 +16,7 @@ export const exportToCSV = (events: TimelineEvent[], use24Hour: boolean) => {
   // Convert events to CSV rows
   const rows = events.map(event => [
     convertTo24Hour(event.time, use24Hour),
-    convertTo24Hour(event.endTime, use24Hour),
+    convertTo24Hour(event.end_time, use24Hour),
     event.duration,
     event.title,
     event.description || '',
