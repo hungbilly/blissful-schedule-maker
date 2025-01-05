@@ -9,7 +9,7 @@ export const useProjectDetails = (projectId: number | null) => {
   const session = useSession();
 
   const updateProjectDetails = useMutation({
-    mutationFn: async ({ bride, groom, date }: { bride: string; groom: string; date: string }) => {
+    mutationFn: async ({ date }: { date: string }) => {
       if (!projectId || !session?.user?.id) {
         throw new Error("No project selected or user not authenticated");
       }
@@ -17,8 +17,6 @@ export const useProjectDetails = (projectId: number | null) => {
       const { data, error } = await supabase
         .from('projects')
         .update({
-          bride_name: bride,
-          groom_name: groom,
           wedding_date: date,
         })
         .eq('id', projectId)

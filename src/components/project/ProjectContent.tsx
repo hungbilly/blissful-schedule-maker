@@ -264,9 +264,9 @@ export const ProjectContent = () => {
     });
   };
 
-  const handleCoupleInfoChange = async (bride: string, groom: string, date: string) => {
+  const handleCoupleInfoChange = async (date: string) => {
     if (!currentProjectId) return;
-    await updateProjectDetails.mutateAsync({ bride, groom, date });
+    await updateProjectDetails.mutateAsync({ date });
   };
 
   if (isLoading) {
@@ -338,12 +338,8 @@ export const ProjectContent = () => {
             </div>
 
             <CoupleInfo
-              bride={currentProject?.bride_name || ""}
-              groom={currentProject?.groom_name || ""}
               date={currentProject?.wedding_date || ""}
-              onBrideChange={(bride) => handleCoupleInfoChange(bride, currentProject?.groom_name || "", currentProject?.wedding_date || "")}
-              onGroomChange={(groom) => handleCoupleInfoChange(currentProject?.bride_name || "", groom, currentProject?.wedding_date || "")}
-              onDateChange={(date) => handleCoupleInfoChange(currentProject?.bride_name || "", currentProject?.groom_name || "", date)}
+              onDateChange={(date) => handleCoupleInfoChange(date)}
             />
 
             <h1 className="text-4xl md:text-5xl text-wedding-purple text-center font-serif mb-12">
