@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
 import { Plus } from "lucide-react";
 import { useToast } from "./ui/use-toast";
 import { TimelineEvent } from "./project/types";
+import { UndoButton } from "./UndoButton";
 
 interface TimelineProps {
   events: TimelineEvent[];
@@ -18,6 +19,7 @@ interface TimelineProps {
 export function Timeline({ events, onAddEvent, onEditEvent, onDeleteEvent, use24Hour }: TimelineProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedTime, setSelectedTime] = useState<string>("");
+  const [undoStack, setUndoStack] = useState<{ type: 'edit' | 'delete', event: TimelineEvent }[]>([]);
   const { toast } = useToast();
   const sortedEvents = [...events].sort((a, b) => a.time.localeCompare(b.time));
 
@@ -26,11 +28,46 @@ export function Timeline({ events, onAddEvent, onEditEvent, onDeleteEvent, use24
     setIsDialogOpen(true);
   };
 
+  const handleEditEvent = (eventId: number, updates: Partial<TimelineEvent>) => {
+    const originalEvent = events.find(e => e.id === eventId);
+    if (originalEvent) {
+      setUndoStack(prev => [...prev, { type: 'edit', event: { ...originalEvent } }]);
+      onEditEvent(eventId, updates);
+    }
+  };
+
+  const handleDeleteEvent = (eventId: number) => {
+    const originalEvent = events.find(e => e.id === eventId);
+    if (originalEvent) {
+      setUndoStack(prev => [...prev, { type: 'delete', event: { ...originalEvent } }]);
+      onDeleteEvent(eventId);
+    }
+  };
+
+  const handleUndo = () => {
+    const lastAction = undoStack[undoStack.length - 1];
+    if (lastAction) {
+      if (lastAction.type === 'edit') {
+        onEditEvent(lastAction.event.id, lastAction.event);
+      } else if (lastAction.type === 'delete') {
+        onAddEvent({
+          time: lastAction.event.time,
+          end_time: lastAction.event.end_time,
+          duration: lastAction.event.duration,
+          title: lastAction.event.title,
+          description: lastAction.event.description,
+          location: lastAction.event.location,
+        });
+      }
+      setUndoStack(prev => prev.slice(0, -1));
+    }
+  };
+
   return (
     <div className="relative">
       <div className="timeline-line" />
       
-      <div className="mb-8 flex justify-center">
+      <div className="mb-8 flex justify-between items-center">
         <Button
           variant="outline"
           size="sm"
@@ -40,14 +77,15 @@ export function Timeline({ events, onAddEvent, onEditEvent, onDeleteEvent, use24
           <Plus className="h-3 w-3 mr-1" />
           Add Event
         </Button>
+        <UndoButton onUndo={handleUndo} disabled={undoStack.length === 0} />
       </div>
 
       {sortedEvents.map((event, index) => (
         <div key={event.id}>
           <TimelineEventComponent
             {...event}
-            onEdit={(updates) => onEditEvent(event.id, updates)}
-            onDelete={() => onDeleteEvent(event.id)}
+            onEdit={(updates) => handleEditEvent(event.id, updates)}
+            onDelete={() => handleDeleteEvent(event.id)}
             use24Hour={use24Hour}
           />
           {index < sortedEvents.length - 1 && (
