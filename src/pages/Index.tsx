@@ -45,6 +45,7 @@ const Index = () => {
           location: "Grand Ballroom",
         },
       ],
+      vendors: [], // Add empty vendors array to initial project
     },
   ]);
 
@@ -106,6 +107,7 @@ const Index = () => {
         id: projects.length + 1,
         name,
         events: [],
+        vendors: [], // Add empty vendors array to new projects
       };
       setProjects([...projects, newProject]);
       setCurrentProjectId(newProject.id);
