@@ -98,7 +98,8 @@ export const ProjectContent = () => {
 
     try {
       if (dialogMode === "create") {
-        await createProject.mutateAsync(name);
+        const newProject = await createProject.mutateAsync(name);
+        setCurrentProjectId(newProject.id);
         toast({
           title: "Success",
           description: `Project "${name}" has been created`,
@@ -124,18 +125,20 @@ export const ProjectContent = () => {
     if (!currentProjectId) return;
 
     try {
-      await deleteProject.mutateAsync(currentProjectId);
+      // Store the current project ID before deletion
+      const deletedProjectId = currentProjectId;
+
+      // Find the next available project before deletion
+      const nextProject = projects.find(p => p.id !== deletedProjectId);
+
+      // Delete the project
+      await deleteProject.mutateAsync(deletedProjectId);
+      
+      // Close the dialog
       setIsProjectDialogOpen(false);
       
-      // Find the next available project
-      const remainingProjects = projects.filter(p => p.id !== currentProjectId);
-      if (remainingProjects.length > 0) {
-        // Set to the first remaining project
-        setCurrentProjectId(remainingProjects[0].id);
-      } else {
-        // No projects left
-        setCurrentProjectId(null);
-      }
+      // Set the next project as current (or null if none left)
+      setCurrentProjectId(nextProject?.id || null);
       
       toast({
         title: "Success",
