@@ -12,24 +12,26 @@ import SittingPlan from "./pages/SittingPlan";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <TooltipProvider>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/vendors" element={<VendorList />} />
-            <Route path="/budget" element={<Budget />} />
-            <Route path="/guests" element={<GuestList />} />
-            <Route path="/sitting-plan" element={<SittingPlan />} />
-          </Routes>
-          <Toaster />
-          <Sonner />
-        </TooltipProvider>
-      </BrowserRouter>
-    </QueryClientProvider>
-  </StrictMode>
-);
+function App() {
+  return (
+    <StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <TooltipProvider>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/vendors" element={<VendorList />} />
+              <Route path="/budget" element={<Budget />} />
+              <Route path="/guests" element={<GuestList />} />
+              <Route path="/sitting-plan" element={<SittingPlan />} />
+            </Routes>
+            <Toaster />
+            <Sonner />
+          </TooltipProvider>
+        </BrowserRouter>
+      </QueryClientProvider>
+    </StrictMode>
+  );
+}
 
 export default App;
