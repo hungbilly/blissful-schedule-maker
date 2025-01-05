@@ -22,6 +22,7 @@ export const BudgetCategory = ({
   const [isAddingItem, setIsAddingItem] = useState(false);
   const [newItemTitle, setNewItemTitle] = useState("");
   const [newItemAmount, setNewItemAmount] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
 
   const handleAddItem = () => {
     if (newItemTitle.trim()) {
@@ -33,17 +34,23 @@ export const BudgetCategory = ({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6 space-y-4">
+    <div 
+      className="bg-white rounded-lg shadow-sm p-6 space-y-4"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-serif text-wedding-purple">{category.name}</h3>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="text-wedding-purple hover:bg-wedding-pink/10"
-          onClick={() => onDeleteCategory(category.id)}
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
+        {isHovered && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-wedding-purple hover:bg-wedding-pink/10"
+            onClick={() => onDeleteCategory(category.id)}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        )}
       </div>
       <div className="space-y-2">
         {category.items.map((item) => (
@@ -79,14 +86,16 @@ export const BudgetCategory = ({
           </Button>
         </div>
       ) : (
-        <Button
-          variant="ghost"
-          className="w-full mt-2 text-wedding-purple hover:bg-wedding-pink/10"
-          onClick={() => setIsAddingItem(true)}
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Add new item
-        </Button>
+        isHovered && (
+          <Button
+            variant="ghost"
+            className="w-full mt-2 text-wedding-purple hover:bg-wedding-pink/10"
+            onClick={() => setIsAddingItem(true)}
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Add new item
+          </Button>
+        )
       )}
     </div>
   );
