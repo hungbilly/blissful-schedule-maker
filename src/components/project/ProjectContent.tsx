@@ -23,6 +23,7 @@ export const ProjectContent = () => {
   const { data: projects = [], isLoading } = useProjects();
   const createProject = useCreateProject();
   const updateProject = useUpdateProject();
+  const deleteProject = useDeleteProject();
   const [currentProjectId, setCurrentProjectId] = useState<number | null>(null);
   const [use24Hour, setUse24Hour] = useState(true);
   const [isProjectDialogOpen, setIsProjectDialogOpen] = useState(false);
@@ -203,6 +204,26 @@ export const ProjectContent = () => {
     }
   };
 
+  const handleDeleteProject = async () => {
+    if (!currentProjectId) return;
+
+    try {
+      await deleteProject.mutateAsync(currentProjectId);
+      setIsProjectDialogOpen(false);
+      setCurrentProjectId(projects.length > 1 ? projects[0].id : null);
+      toast({
+        title: "Success",
+        description: "Project has been deleted",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete project",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleEditProject = () => {
     setDialogMode("edit");
     setIsProjectDialogOpen(true);
@@ -325,6 +346,7 @@ export const ProjectContent = () => {
           open={isProjectDialogOpen}
           onOpenChange={setIsProjectDialogOpen}
           onSubmit={handleProjectSubmit}
+          onDelete={dialogMode === "edit" ? handleDeleteProject : undefined}
           initialName={dialogMode === "edit" ? currentProject?.name : ""}
           mode={dialogMode}
         />
