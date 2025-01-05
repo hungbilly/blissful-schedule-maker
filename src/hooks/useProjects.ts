@@ -135,8 +135,6 @@ export const useDuplicateProject = () => {
         .insert([{
           name: `${project.name} (Copy)`,
           user_id: session.user.id,
-          bride_name: project.bride_name,
-          groom_name: project.groom_name,
           wedding_date: project.wedding_date
         }])
         .select()
