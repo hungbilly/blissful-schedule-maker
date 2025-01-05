@@ -3,23 +3,29 @@ import { supabase } from "@/integrations/supabase/client";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { ProjectContent } from "@/components/project/ProjectContent";
 import { useToast } from "@/hooks/use-toast";
-import { useSession } from "@supabase/auth-helpers-react";
 
 const Index = () => {
-  const session = useSession();
+  const [session, setSession] = useState(null);
   const { toast } = useToast();
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        if (session) {
-          toast({
-            title: "Welcome!",
-            description: "You have successfully signed in.",
-          });
-        }
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    // Listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      if (session) {
+        toast({
+          title: "Welcome!",
+          description: "You have successfully signed in.",
+        });
       }
-    );
+    });
 
     return () => subscription.unsubscribe();
   }, [toast]);
