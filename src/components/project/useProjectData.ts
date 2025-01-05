@@ -6,7 +6,7 @@ import { useSession } from "@supabase/auth-helpers-react";
 export const useProjectData = (currentProjectId: number | null) => {
   const session = useSession();
 
-  const { data: events = [] } = useQuery({
+  const { data: events = [], isLoading: eventsLoading } = useQuery({
     queryKey: ['events', currentProjectId],
     queryFn: async () => {
       if (!currentProjectId || !session?.user?.id) return [];
@@ -23,7 +23,7 @@ export const useProjectData = (currentProjectId: number | null) => {
     enabled: !!currentProjectId && !!session?.user?.id,
   });
 
-  const { data: currentProject } = useQuery({
+  const { data: currentProject, isLoading: projectLoading } = useQuery({
     queryKey: ['project', currentProjectId],
     queryFn: async () => {
       if (!currentProjectId || !session?.user?.id) return null;
@@ -41,5 +41,9 @@ export const useProjectData = (currentProjectId: number | null) => {
     enabled: !!currentProjectId && !!session?.user?.id,
   });
 
-  return { events, currentProject };
+  return { 
+    events, 
+    currentProject, 
+    isLoading: eventsLoading || projectLoading 
+  };
 };

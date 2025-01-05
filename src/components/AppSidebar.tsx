@@ -6,6 +6,7 @@ import { format } from "date-fns";
 import { useProjectData } from "@/components/project/useProjectData";
 import { useProjects } from "@/hooks/useProjects";
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 export const AppSidebar = () => {
   const { data: projects = [] } = useProjects();
@@ -17,10 +18,10 @@ export const AppSidebar = () => {
     }
   }, [projects, currentProjectId]);
 
-  const { currentProject } = useProjectData(currentProjectId);
+  const { currentProject, isLoading } = useProjectData(currentProjectId);
   const { updateProjectDetails } = useProjectDetails(currentProjectId);
 
-  if (!currentProject) {
+  if (isLoading || !currentProject) {
     return null;
   }
 
@@ -51,28 +52,28 @@ export const AppSidebar = () => {
             className="w-full justify-start"
             asChild
           >
-            Overview
+            <Link to="/">Overview</Link>
           </Button>
           <Button
             variant="ghost"
             className="w-full justify-start"
             asChild
           >
-            Guest List
+            <Link to="/guests">Guest List</Link>
           </Button>
           <Button
             variant="ghost"
             className="w-full justify-start"
             asChild
           >
-            Venues & Vendors
+            <Link to="/vendors">Venues & Vendors</Link>
           </Button>
           <Button
             variant="ghost"
             className="w-full justify-start"
             asChild
           >
-            Planning Tools
+            <Link to="/budget">Planning Tools</Link>
           </Button>
         </div>
       </nav>
