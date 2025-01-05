@@ -5,11 +5,11 @@ import { AddEventForm } from "./AddEventForm";
 import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
 import { Plus } from "lucide-react";
 import { useToast } from "./ui/use-toast";
-import { TimelineEvent } from "./project/projectTypes";
+import { TimelineEvent } from "./project/types";
 
 interface TimelineProps {
   events: TimelineEvent[];
-  onAddEvent: (event: Omit<TimelineEvent, "id">) => void;
+  onAddEvent: (event: Omit<TimelineEvent, "id" | "created_at" | "project_id" | "user_id">) => void;
   onEditEvent: (eventId: number, updates: Partial<TimelineEvent>) => void;
   onDeleteEvent: (eventId: number) => void;
   use24Hour: boolean;
@@ -90,7 +90,15 @@ export function Timeline({ events, onAddEvent, onEditEvent, onDeleteEvent, use24
           <DialogTitle>Add Event</DialogTitle>
           <AddEventForm 
             onSubmit={(eventData) => {
-              onAddEvent(eventData);
+              const newEvent = {
+                time: eventData.time,
+                end_time: eventData.endTime,
+                duration: eventData.duration,
+                title: eventData.title,
+                description: eventData.description,
+                location: eventData.location,
+              };
+              onAddEvent(newEvent);
               setIsDialogOpen(false);
             }}
             defaultTime={selectedTime}

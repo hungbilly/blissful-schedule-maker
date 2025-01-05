@@ -4,22 +4,17 @@ import { EventOptionsMenu } from "./EventOptionsMenu";
 import { EventHeader } from "./EventHeader";
 import { EventDescription } from "./EventDescription";
 import { calculateDuration, calculateEndTime } from "@/utils/timeCalculations";
+import { TimelineEvent as TimelineEventType } from "./project/types";
 
-interface TimelineEventProps {
-  time: string;
-  endTime: string;
-  duration: string;
-  title: string;
-  description?: string;
-  location?: string;
+interface TimelineEventProps extends TimelineEventType {
   use24Hour: boolean;
-  onEdit: (updates: Partial<{ time: string; endTime: string; duration: string; title: string; description?: string; location?: string; }>) => void;
+  onEdit: (updates: Partial<TimelineEventType>) => void;
   onDelete?: () => void;
 }
 
 export function TimelineEvent({ 
   time, 
-  endTime, 
+  end_time, 
   duration, 
   title, 
   description,
@@ -28,24 +23,24 @@ export function TimelineEvent({
   onEdit,
   onDelete
 }: TimelineEventProps) {
-  const [editingField, setEditingField] = useState<"time" | "endTime" | "duration" | "title" | "description" | "location" | null>(null);
+  const [editingField, setEditingField] = useState<"time" | "end_time" | "duration" | "title" | "description" | "location" | null>(null);
   const [tempValue, setTempValue] = useState("");
   const [isHighlighted, setIsHighlighted] = useState(false);
 
   const handleEdit = (field: typeof editingField, value: string) => {
     if (field) {
-      let updates: Partial<TimelineEventProps> = {};
+      let updates: Partial<TimelineEventType> = {};
 
       if (field === "time") {
-        const newDuration = calculateDuration(value, endTime);
+        const newDuration = calculateDuration(value, end_time);
         updates = {
           time: value,
           duration: newDuration
         };
-      } else if (field === "endTime") {
+      } else if (field === "end_time") {
         const newDuration = calculateDuration(time, value);
         updates = {
-          endTime: value,
+          end_time: value,
           duration: newDuration
         };
       } else if (field === "duration") {
@@ -54,7 +49,7 @@ export function TimelineEvent({
           const newEndTime = calculateEndTime(time, `${minutes}mins`);
           updates = {
             duration: `${minutes}mins`,
-            endTime: newEndTime
+            end_time: newEndTime
           };
         }
       } else {
@@ -89,7 +84,7 @@ export function TimelineEvent({
         <div className="flex flex-col md:flex-row md:gap-8">
           <EventHeader
             time={time}
-            endTime={endTime}
+            endTime={end_time}
             duration={duration}
             editingField={editingField}
             tempValue={tempValue}
