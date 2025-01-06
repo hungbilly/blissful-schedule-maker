@@ -11,6 +11,7 @@ import VendorList from "./pages/VendorList";
 import Budget from "./pages/Budget";
 import GuestList from "./pages/GuestList";
 import SittingPlan from "./pages/SittingPlan";
+import Auth from "./pages/Auth";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +24,7 @@ function App() {
             <TooltipProvider>
               <Routes>
                 <Route path="/" element={<Index />} />
+                <Route path="/auth" element={<Auth />} />
                 <Route path="/vendors" element={<VendorList />} />
                 <Route path="/budget" element={<Budget />} />
                 <Route path="/guests" element={<GuestList />} />
