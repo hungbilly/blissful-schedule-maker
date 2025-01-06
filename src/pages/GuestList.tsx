@@ -44,7 +44,7 @@ export default function GuestList() {
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
         <AppSidebar />
-        <div className="flex-1 p-8">
+        <div className="flex-1 p-8 md:ml-64 bg-wedding-pink min-h-screen">
           <div className="max-w-4xl mx-auto">
             <div className="flex justify-between items-center mb-8">
               <h1 className="text-3xl font-serif text-wedding-purple">
