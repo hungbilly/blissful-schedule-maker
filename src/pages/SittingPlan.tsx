@@ -110,13 +110,13 @@ export default function SittingPlan() {
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
         <AppSidebar />
-        <div className="flex-1 md:ml-64 p-4 md:p-8"> {/* Added md:ml-64 to account for sidebar width */}
-          <div className="max-w-7xl mx-auto space-y-6">
-            <h1 className="text-3xl font-serif text-wedding-purple">
+        <div className="flex-1 md:ml-64 p-2 md:p-8"> {/* Reduced padding on mobile */}
+          <div className="max-w-7xl mx-auto space-y-4 md:space-y-6"> {/* Reduced spacing on mobile */}
+            <h1 className="text-2xl md:text-3xl font-serif text-wedding-purple">
               Sitting Plan
             </h1>
 
-            <div className="bg-white rounded-lg p-6 shadow-sm space-y-4">
+            <div className="bg-white rounded-lg p-4 md:p-6 shadow-sm space-y-4">
               <Input
                 placeholder="Table Name"
                 value={newTableName}
@@ -132,7 +132,7 @@ export default function SittingPlan() {
               </Button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6"> {/* Reduced gap on mobile */}
               {tables.map((table) => (
                 <TableCard
                   key={table.id}
