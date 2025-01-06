@@ -34,7 +34,6 @@ export const LandingPage = () => {
           </h1>
           <p className="text-lg mb-8 text-gray-700">
             Your one-stop wedding planning website, with all the tools you'll need to create the dream celebration.
-            No hidden fees! No sign-up required!
           </p>
           <Dialog>
             <DialogTrigger asChild>
@@ -46,13 +45,6 @@ export const LandingPage = () => {
               <AuthForm />
             </DialogContent>
           </Dialog>
-        </div>
-        <div className="relative">
-          <img 
-            src="/lovable-uploads/bac421a9-4f52-442b-b5fd-636babee1ca8.png" 
-            alt="Wedding Planning Illustration" 
-            className="w-full"
-          />
         </div>
       </main>
 
