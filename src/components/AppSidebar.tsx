@@ -7,13 +7,14 @@ import { useProjectData } from "@/components/project/useProjectData";
 import { useProjects } from "@/hooks/useProjects";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useSession } from "@supabase/auth-helpers-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { LogOut, Settings } from "lucide-react";
+import { LogOut, Settings, Menu } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { EditProfileDialog } from "@/components/auth/EditProfileDialog";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 interface Profile {
   id: string;
@@ -21,7 +22,7 @@ interface Profile {
   groom_name?: string;
 }
 
-export const AppSidebar = () => {
+const SidebarContent = () => {
   const { data: projects = [] } = useProjects();
   const [currentProjectId, setCurrentProjectId] = useState<number | null>(null);
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
@@ -46,7 +47,6 @@ export const AppSidebar = () => {
     enabled: !!session?.user?.id,
   });
 
-  // Subscribe to real-time updates for the profiles table
   useEffect(() => {
     if (!session?.user?.id) return;
 
@@ -61,7 +61,6 @@ export const AppSidebar = () => {
           filter: `id=eq.${session.user.id}`,
         },
         (payload) => {
-          // Invalidate and refetch the profile query when changes occur
           queryClient.invalidateQueries({ queryKey: ['profile', session.user.id] });
         }
       )
@@ -103,7 +102,7 @@ export const AppSidebar = () => {
   }
 
   return (
-    <aside className="w-64 bg-white border-r border-gray-200 flex flex-col min-h-screen">
+    <>
       <div className="p-4">
         <h2 className="text-lg font-semibold text-gray-900">
           Wedding Planning Of
@@ -186,6 +185,31 @@ export const AppSidebar = () => {
         open={isEditProfileOpen}
         onOpenChange={setIsEditProfileOpen}
       />
-    </aside>
+    </>
+  );
+};
+
+export const AppSidebar = () => {
+  return (
+    <>
+      {/* Mobile Menu Button - Only visible on mobile */}
+      <div className="fixed top-4 left-4 z-50 md:hidden">
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="outline" size="icon">
+              <Menu className="h-4 w-4" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-64 p-0">
+            <SidebarContent />
+          </SheetContent>
+        </Sheet>
+      </div>
+
+      {/* Desktop Sidebar - Hidden on mobile */}
+      <aside className="hidden md:flex w-64 bg-white border-r border-gray-200 min-h-screen">
+        <SidebarContent />
+      </aside>
+    </>
   );
 };
