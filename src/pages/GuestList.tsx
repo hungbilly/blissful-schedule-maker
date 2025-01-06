@@ -14,9 +14,10 @@ import { GuestListComponent } from "@/components/guest/GuestList";
 import { Guest } from "@/components/project/types";
 
 export default function GuestList() {
-  const { currentProject } = useProjectData("guests");
-  const { guests, guestsLoading } = useGuests(currentProject?.id ?? null);
-  const { categories, categoriesLoading } = useGuestCategories(currentProject?.id ?? null);
+  const { currentProject } = useProjectData("guests" as unknown as number);
+  const projectId = currentProject?.id ?? null;
+  const { guests, guestsLoading } = useGuests(projectId);
+  const { categories, categoriesLoading } = useGuestCategories(projectId);
   
   const [editingGuest, setEditingGuest] = useState<Guest | null>(null);
   const { toast } = useToast();
