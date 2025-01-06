@@ -160,6 +160,36 @@ export type Database = {
         }
         Relationships: []
       }
+      vendors: {
+        Row: {
+          contact_number: string
+          created_at: string
+          id: number
+          name: string
+          role: string
+          service_details: string | null
+          user_id: string
+        }
+        Insert: {
+          contact_number: string
+          created_at?: string
+          id?: number
+          name: string
+          role: string
+          service_details?: string | null
+          user_id: string
+        }
+        Update: {
+          contact_number?: string
+          created_at?: string
+          id?: number
+          name?: string
+          role?: string
+          service_details?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
