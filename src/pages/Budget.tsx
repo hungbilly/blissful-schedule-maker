@@ -6,6 +6,8 @@ import { useToast } from "@/hooks/use-toast";
 import { BudgetCategory as BudgetCategoryType, BudgetItem } from "@/components/project/types";
 import { Plus, Settings } from "lucide-react";
 import { BudgetCategory } from "@/components/budget/BudgetCategory";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/AppSidebar";
 
 const Budget = () => {
   const [totalBudget, setTotalBudget] = useState<number>(100000);
@@ -138,11 +140,14 @@ const Budget = () => {
   };
 
   return (
-    <div className="min-h-screen bg-wedding-pink py-12">
-      <div className="container max-w-3xl">
-        <h1 className="text-4xl md:text-5xl text-wedding-purple text-center font-serif mb-8">
-          Budget
-        </h1>
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full">
+        <AppSidebar />
+        <div className="flex-1 bg-wedding-pink py-12">
+          <div className="container max-w-3xl">
+            <h1 className="text-4xl md:text-5xl text-wedding-purple text-center font-serif mb-8">
+              Budget
+            </h1>
         <p className="text-center text-wedding-gray mb-12">
           Keep track of every penny you spend. Hover over items to edit them or add
           new ones to your categories.
@@ -205,8 +210,10 @@ const Budget = () => {
             Budget ${totalBudget.toFixed(2)}
           </div>
         </div>
+          </div>
+        </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 };
 

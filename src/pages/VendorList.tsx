@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
 import { Vendor } from "@/components/project/types";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/AppSidebar";
 
 const VendorList = () => {
   const [vendors, setVendors] = useState<Vendor[]>([]);
@@ -41,14 +43,17 @@ const VendorList = () => {
   };
 
   return (
-    <div className="min-h-screen bg-wedding-pink py-12">
-      <div className="container max-w-4xl">
-        <div className="mb-8">
-          <h1 className="text-3xl font-serif text-wedding-purple mb-2">Vendor List</h1>
-          <p className="text-wedding-gray">Manage your wedding vendors and their details</p>
-        </div>
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full">
+        <AppSidebar />
+        <div className="flex-1 bg-wedding-pink py-12">
+          <div className="container max-w-4xl">
+            <div className="mb-8">
+              <h1 className="text-3xl font-serif text-wedding-purple mb-2">Vendor List</h1>
+              <p className="text-wedding-gray">Manage your wedding vendors and their details</p>
+            </div>
 
-        <div className="grid md:grid-cols-2 gap-8">
+            <div className="grid md:grid-cols-2 gap-8">
           <div className="bg-white p-6 rounded-lg shadow-sm">
             <h2 className="text-xl font-serif text-wedding-purple mb-4">Add New Vendor</h2>
             <Form {...form}>
@@ -153,9 +158,11 @@ const VendorList = () => {
               )}
             </div>
           </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 };
 
