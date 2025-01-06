@@ -28,12 +28,6 @@ export const LandingPage = () => {
           </Dialog>
         </div>
       </main>
-
-      <div className="container mx-auto px-4 py-16 text-center">
-        <h2 className="text-3xl md:text-4xl font-serif text-wedding-purple max-w-4xl mx-auto leading-relaxed">
-          Our service has assisted tens of thousands of couples worldwide in planning their dream weddings!
-        </h2>
-      </div>
     </div>
   );
 };
