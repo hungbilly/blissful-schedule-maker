@@ -43,7 +43,6 @@ export default function SittingPlan() {
 
   const handleDeleteTable = async (id: number) => {
     try {
-      // First, remove all guests from this table
       const tableGuests = guests.filter(guest => guest.tableId === id);
       await Promise.all(
         tableGuests.map(guest => 
@@ -51,7 +50,6 @@ export default function SittingPlan() {
         )
       );
       
-      // Then delete the table
       await deleteTable.mutateAsync(id);
       toast({
         title: "Success",
@@ -112,25 +110,29 @@ export default function SittingPlan() {
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
         <AppSidebar />
-        <div className="flex-1 p-8">
-          <div className="max-w-7xl mx-auto"> {/* Changed from max-w-5xl to max-w-7xl to accommodate three columns */}
-            <h1 className="text-3xl font-serif text-wedding-purple mb-8">
+        <div className="flex-1 md:ml-64 p-4 md:p-8"> {/* Added md:ml-64 to account for sidebar width */}
+          <div className="max-w-7xl mx-auto space-y-6">
+            <h1 className="text-3xl font-serif text-wedding-purple">
               Sitting Plan
             </h1>
 
-            <div className="space-y-4 mb-8">
+            <div className="bg-white rounded-lg p-6 shadow-sm space-y-4">
               <Input
                 placeholder="Table Name"
                 value={newTableName}
                 onChange={(e) => setNewTableName(e.target.value)}
+                className="max-w-md"
               />
-              <Button onClick={handleAddTable} className="w-full">
+              <Button 
+                onClick={handleAddTable} 
+                className="w-full max-w-md bg-wedding-purple hover:bg-wedding-purple/90"
+              >
                 <Plus className="mr-2 h-4 w-4" />
                 Add Table
               </Button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"> {/* Updated to show 3 columns on large screens */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {tables.map((table) => (
                 <TableCard
                   key={table.id}
