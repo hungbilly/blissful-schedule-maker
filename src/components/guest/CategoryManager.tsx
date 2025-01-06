@@ -3,27 +3,28 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, Edit2, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useGuestCategories } from "@/hooks/useGuestCategories";
 
 interface CategoryManagerProps {
-  categories: string[];
-  onAddCategory: (category: string) => void;
-  onEditCategory: (oldCategory: string, newCategory: string) => void;
-  onDeleteCategory: (category: string) => void;
+  projectId: number;
 }
 
-export const CategoryManager = ({
-  categories,
-  onAddCategory,
-  onEditCategory,
-  onDeleteCategory,
-}: CategoryManagerProps) => {
+export const CategoryManager = ({ projectId }: CategoryManagerProps) => {
   const [isAdding, setIsAdding] = useState(false);
   const [newCategory, setNewCategory] = useState("");
-  const [editingCategory, setEditingCategory] = useState<string | null>(null);
+  const [editingCategory, setEditingCategory] = useState<number | null>(null);
   const [editedName, setEditedName] = useState("");
   const { toast } = useToast();
 
-  const handleAddCategory = () => {
+  const {
+    categories,
+    categoriesLoading,
+    addCategory,
+    updateCategory,
+    deleteCategory,
+  } = useGuestCategories(projectId);
+
+  const handleAddCategory = async () => {
     if (!newCategory.trim()) {
       toast({
         title: "Error",
@@ -33,7 +34,7 @@ export const CategoryManager = ({
       return;
     }
 
-    if (categories.includes(newCategory.trim())) {
+    if (categories.some(cat => cat.name === newCategory.trim())) {
       toast({
         title: "Error",
         description: "Category already exists",
@@ -42,16 +43,24 @@ export const CategoryManager = ({
       return;
     }
 
-    onAddCategory(newCategory.trim());
-    setNewCategory("");
-    setIsAdding(false);
-    toast({
-      title: "Success",
-      description: "Category added successfully",
-    });
+    try {
+      await addCategory.mutateAsync(newCategory.trim());
+      setNewCategory("");
+      setIsAdding(false);
+      toast({
+        title: "Success",
+        description: "Category added successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to add category",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleEditCategory = (category: string) => {
+  const handleEditCategory = async (id: number) => {
     if (!editedName.trim()) {
       toast({
         title: "Error",
@@ -61,7 +70,7 @@ export const CategoryManager = ({
       return;
     }
 
-    if (categories.includes(editedName.trim()) && editedName.trim() !== category) {
+    if (categories.some(cat => cat.name === editedName.trim() && cat.id !== id)) {
       toast({
         title: "Error",
         description: "Category already exists",
@@ -70,22 +79,42 @@ export const CategoryManager = ({
       return;
     }
 
-    onEditCategory(category, editedName.trim());
-    setEditingCategory(null);
-    setEditedName("");
-    toast({
-      title: "Success",
-      description: "Category updated successfully",
-    });
+    try {
+      await updateCategory.mutateAsync({ id, name: editedName.trim() });
+      setEditingCategory(null);
+      setEditedName("");
+      toast({
+        title: "Success",
+        description: "Category updated successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update category",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleDeleteCategory = (category: string) => {
-    onDeleteCategory(category);
-    toast({
-      title: "Success",
-      description: "Category deleted successfully",
-    });
+  const handleDeleteCategory = async (id: number) => {
+    try {
+      await deleteCategory.mutateAsync(id);
+      toast({
+        title: "Success",
+        description: "Category deleted successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete category",
+        variant: "destructive",
+      });
+    }
   };
+
+  if (categoriesLoading) {
+    return <div>Loading categories...</div>;
+  }
 
   return (
     <div className="space-y-4">
@@ -120,17 +149,19 @@ export const CategoryManager = ({
       <div className="space-y-2">
         {categories.map((category) => (
           <div
-            key={category}
+            key={category.id}
             className="flex items-center justify-between p-2 bg-white rounded-lg shadow-sm"
           >
-            {editingCategory === category ? (
+            {editingCategory === category.id ? (
               <div className="flex items-center gap-2 flex-1">
                 <Input
                   value={editedName}
                   onChange={(e) => setEditedName(e.target.value)}
                   className="flex-1"
                 />
-                <Button onClick={() => handleEditCategory(category)}>Save</Button>
+                <Button onClick={() => handleEditCategory(category.id)}>
+                  Save
+                </Button>
                 <Button
                   variant="ghost"
                   onClick={() => {
@@ -143,14 +174,14 @@ export const CategoryManager = ({
               </div>
             ) : (
               <>
-                <span>{category}</span>
+                <span>{category.name}</span>
                 <div className="flex items-center gap-2">
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => {
-                      setEditingCategory(category);
-                      setEditedName(category);
+                      setEditingCategory(category.id);
+                      setEditedName(category.name);
                     }}
                   >
                     <Edit2 className="h-4 w-4" />
@@ -158,7 +189,7 @@ export const CategoryManager = ({
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => handleDeleteCategory(category)}
+                    onClick={() => handleDeleteCategory(category.id)}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>

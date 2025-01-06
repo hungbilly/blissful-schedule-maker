@@ -56,6 +56,83 @@ export type Database = {
           },
         ]
       }
+      guest_categories: {
+        Row: {
+          created_at: string
+          id: number
+          name: string
+          project_id: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: never
+          name: string
+          project_id: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: never
+          name?: string
+          project_id?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guest_categories_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      guests: {
+        Row: {
+          category_id: number | null
+          created_at: string
+          id: number
+          name: string
+          project_id: number
+          table_id: number | null
+          user_id: string
+        }
+        Insert: {
+          category_id?: number | null
+          created_at?: string
+          id?: never
+          name: string
+          project_id: number
+          table_id?: number | null
+          user_id: string
+        }
+        Update: {
+          category_id?: number | null
+          created_at?: string
+          id?: never
+          name?: string
+          project_id?: number
+          table_id?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guests_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "guest_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "guests_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           bride_name: string | null

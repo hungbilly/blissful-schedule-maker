@@ -3,30 +3,26 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, Edit2, Trash2, User, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { Guest } from "@/components/project/types";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CategoryManager } from "@/components/guest/CategoryManager";
 import { exportGuestsToCSV } from "@/utils/guestExportUtils";
+import { useGuests } from "@/hooks/useGuests";
+import { useGuestCategories } from "@/hooks/useGuestCategories";
+import { useProjectData } from "@/components/project/useProjectData";
 
 export default function GuestList() {
-  const [guests, setGuests] = useState<Guest[]>([]);
-  const [editingGuest, setEditingGuest] = useState<Guest | null>(null);
+  const { currentProject } = useProjectData();
+  const { guests, guestsLoading, addGuest, updateGuest, deleteGuest } = useGuests(currentProject?.id ?? null);
+  const { categories, categoriesLoading } = useGuestCategories(currentProject?.id ?? null);
+  
+  const [editingGuest, setEditingGuest] = useState<number | null>(null);
   const [newGuestName, setNewGuestName] = useState("");
   const [newGuestCategory, setNewGuestCategory] = useState("");
-  const [guestCategories, setGuestCategories] = useState<string[]>([
-    "Bride's Friend",
-    "Groom's Friend",
-    "Bride's Family",
-    "Groom's Family",
-    "Colleague",
-    "Parent's Friend",
-    "Other"
-  ]);
   const { toast } = useToast();
 
-  const handleAddGuest = () => {
+  const handleAddGuest = async () => {
     if (!newGuestName.trim()) {
       toast({
         title: "Error",
@@ -45,84 +41,67 @@ export default function GuestList() {
       return;
     }
 
-    const newGuest: Guest = {
-      id: guests.length + 1,
-      name: newGuestName,
-      category: newGuestCategory,
-    };
-
-    setGuests([...guests, newGuest]);
-    setNewGuestName("");
-    setNewGuestCategory("");
-    toast({
-      title: "Success",
-      description: "Guest added successfully",
-    });
+    try {
+      await addGuest.mutateAsync({
+        name: newGuestName.trim(),
+        categoryId: parseInt(newGuestCategory),
+      });
+      
+      setNewGuestName("");
+      setNewGuestCategory("");
+      toast({
+        title: "Success",
+        description: "Guest added successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to add guest",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleEditGuest = (guest: Guest) => {
-    setEditingGuest(guest);
-    setNewGuestName(guest.name);
-    setNewGuestCategory(guest.category);
-  };
-
-  const handleUpdateGuest = () => {
+  const handleUpdateGuest = async () => {
     if (!editingGuest) return;
 
-    const updatedGuests = guests.map((g) =>
-      g.id === editingGuest.id
-        ? {
-            ...g,
-            name: newGuestName,
-            category: newGuestCategory,
-          }
-        : g
-    );
+    try {
+      await updateGuest.mutateAsync({
+        id: editingGuest,
+        name: newGuestName.trim(),
+        categoryId: parseInt(newGuestCategory),
+      });
 
-    setGuests(updatedGuests);
-    setEditingGuest(null);
-    setNewGuestName("");
-    setNewGuestCategory("");
-    toast({
-      title: "Success",
-      description: "Guest updated successfully",
-    });
+      setEditingGuest(null);
+      setNewGuestName("");
+      setNewGuestCategory("");
+      toast({
+        title: "Success",
+        description: "Guest updated successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update guest",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleDeleteGuest = (id: number) => {
-    setGuests(guests.filter((g) => g.id !== id));
-    toast({
-      title: "Success",
-      description: "Guest deleted successfully",
-    });
-  };
-
-  const handleAddCategory = (category: string) => {
-    setGuestCategories([...guestCategories, category]);
-  };
-
-  const handleEditCategory = (oldCategory: string, newCategory: string) => {
-    // Update the category in the categories list
-    setGuestCategories(guestCategories.map(cat => 
-      cat === oldCategory ? newCategory : cat
-    ));
-
-    // Update all guests with the old category to use the new category
-    setGuests(guests.map(guest => ({
-      ...guest,
-      category: guest.category === oldCategory ? newCategory : guest.category
-    })));
-  };
-
-  const handleDeleteCategory = (category: string) => {
-    // Remove the category from the categories list
-    setGuestCategories(guestCategories.filter(cat => cat !== category));
-
-    // Update all guests with the deleted category to "Other"
-    setGuests(guests.map(guest => ({
-      ...guest,
-      category: guest.category === category ? "Other" : guest.category
-    })));
+  const handleDeleteGuest = async (id: number) => {
+    try {
+      await deleteGuest.mutateAsync(id);
+      toast({
+        title: "Success",
+        description: "Guest deleted successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete guest",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleExportCSV = () => {
@@ -141,6 +120,14 @@ export default function GuestList() {
       description: "Guest list exported successfully",
     });
   };
+
+  if (!currentProject) {
+    return <div>Please select a project first</div>;
+  }
+
+  if (guestsLoading || categoriesLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <SidebarProvider>
@@ -177,13 +164,13 @@ export default function GuestList() {
                     <SelectValue placeholder="Select guest category" />
                   </SelectTrigger>
                   <SelectContent className="bg-white border border-gray-200 shadow-md">
-                    {guestCategories.map((category) => (
+                    {categories.map((category) => (
                       <SelectItem 
-                        key={category} 
-                        value={category}
+                        key={category.id} 
+                        value={category.id.toString()}
                         className="hover:bg-gray-100"
                       >
-                        {category}
+                        {category.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -197,12 +184,7 @@ export default function GuestList() {
                 </Button>
               </div>
 
-              <CategoryManager
-                categories={guestCategories}
-                onAddCategory={handleAddCategory}
-                onEditCategory={handleEditCategory}
-                onDeleteCategory={handleDeleteCategory}
-              />
+              <CategoryManager projectId={currentProject.id} />
             </div>
 
             <div className="mt-8 space-y-4">
@@ -224,7 +206,11 @@ export default function GuestList() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => handleEditGuest(guest)}
+                      onClick={() => {
+                        setEditingGuest(guest.id);
+                        setNewGuestName(guest.name);
+                        setNewGuestCategory(guest.category);
+                      }}
                     >
                       <Edit2 className="h-4 w-4" />
                     </Button>
