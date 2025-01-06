@@ -8,11 +8,14 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { useBudget } from "@/hooks/useBudget";
 import { useProjectData } from "@/components/project/useProjectData";
+import { useProjects } from "@/hooks/useProjects";
 
 const Budget = () => {
   const [totalBudget, setTotalBudget] = useState<number>(100000);
   const [newCategory, setNewCategory] = useState("");
-  const { currentProject } = useProjectData();
+  const { data: projects = [] } = useProjects();
+  const currentProjectId = projects.length > 0 ? projects[0].id : null;
+  const { currentProject } = useProjectData(currentProjectId);
   const { 
     categories, 
     isLoading,
