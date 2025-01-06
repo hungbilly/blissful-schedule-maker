@@ -20,15 +20,81 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useSession } from "@supabase/auth-helpers-react";
 
 export default function SittingPlan() {
   const [tables, setTables] = useState<Table[]>([]);
   const [newTableName, setNewTableName] = useState("");
-  const [editingTable, setEditingTable] = useState<Table | null>(null);
   const { toast } = useToast();
   const { guests, guestsLoading } = useGuests();
+  const session = useSession();
+  const queryClient = useQueryClient();
 
   const unassignedGuests = guests.filter(guest => !guest.tableId);
+
+  const assignGuestMutation = useMutation({
+    mutationFn: async ({ guestId, tableId }: { guestId: number, tableId: number }) => {
+      if (!session?.user?.id) throw new Error('Not authenticated');
+
+      const { data, error } = await supabase
+        .from('guests')
+        .update({ table_id: tableId })
+        .eq('id', guestId)
+        .eq('user_id', session.user.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['guests'] });
+      toast({
+        title: "Success",
+        description: "Guest assigned to table successfully",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to assign guest to table",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const removeGuestFromTableMutation = useMutation({
+    mutationFn: async (guestId: number) => {
+      if (!session?.user?.id) throw new Error('Not authenticated');
+
+      const { data, error } = await supabase
+        .from('guests')
+        .update({ table_id: null })
+        .eq('id', guestId)
+        .eq('user_id', session.user.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['guests'] });
+      toast({
+        title: "Success",
+        description: "Guest removed from table successfully",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to remove guest from table",
+        variant: "destructive",
+      });
+    },
+  });
 
   const handleAddTable = () => {
     if (!newTableName.trim()) {
@@ -43,7 +109,7 @@ export default function SittingPlan() {
     const newTable: Table = {
       id: tables.length + 1,
       name: newTableName,
-      capacity: 8, // Default capacity, not shown in UI
+      capacity: 8,
       guests: [],
     };
 
@@ -56,17 +122,13 @@ export default function SittingPlan() {
   };
 
   const handleDeleteTable = (id: number) => {
-    // Release all guests from this table first
-    const updatedTables = tables.map(table => {
-      if (table.id === id) {
-        table.guests.forEach(guest => {
-          guest.tableId = undefined;
-        });
-      }
-      return table;
+    // Remove all guests from this table first
+    const tableGuests = tables.find(t => t.id === id)?.guests || [];
+    tableGuests.forEach(guest => {
+      removeGuestFromTableMutation.mutate(guest.id);
     });
     
-    setTables(updatedTables.filter((t) => t.id !== id));
+    setTables(tables.filter((t) => t.id !== id));
     toast({
       title: "Success",
       description: "Table deleted successfully",
@@ -74,32 +136,14 @@ export default function SittingPlan() {
   };
 
   const handleAssignGuest = (tableId: number, guestId: string) => {
-    const guest = guests.find(g => g.id === Number(guestId));
-    if (!guest) return;
-
-    const updatedTables = tables.map((table) => {
-      if (table.id === tableId) {
-        return {
-          ...table,
-          guests: [...table.guests, { ...guest, tableId }],
-        };
-      }
-      return table;
+    assignGuestMutation.mutate({ 
+      guestId: Number(guestId), 
+      tableId 
     });
-    setTables(updatedTables);
   };
 
   const handleRemoveGuest = (tableId: number, guestId: number) => {
-    const updatedTables = tables.map((table) => {
-      if (table.id === tableId) {
-        return {
-          ...table,
-          guests: table.guests.filter((g) => g.id !== guestId),
-        };
-      }
-      return table;
-    });
-    setTables(updatedTables);
+    removeGuestFromTableMutation.mutate(guestId);
   };
 
   if (guestsLoading) {
