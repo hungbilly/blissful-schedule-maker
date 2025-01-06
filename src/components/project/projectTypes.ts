@@ -17,4 +17,6 @@ export interface Project {
   created_at: string;
   user_id: string;
   wedding_date?: string;
+  events: TimelineEvent[];
+  vendors: any[];
 }

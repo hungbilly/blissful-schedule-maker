@@ -13,6 +13,7 @@ import { useProjectDetails } from "@/hooks/useProjectDetails";
 import { useEventMutations } from "@/hooks/useEventMutations";
 import { ProjectHeader } from "./ProjectHeader";
 import { ProjectTimeline } from "./ProjectTimeline";
+import { Button } from "@/components/ui/button";
 
 export const ProjectContent = () => {
   const { data: projects = [], isLoading } = useProjects();
