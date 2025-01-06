@@ -28,9 +28,9 @@ export const LandingPage = () => {
       <main className="container mx-auto px-4 py-16 grid md:grid-cols-2 gap-8 items-center">
         <div>
           <h1 className="text-5xl font-serif text-wedding-purple mb-6">
-            Online<br />
+            ONAIR<br />
             Wedding Planning<br />
-            Assistant
+            Tool
           </h1>
           <p className="text-lg mb-8 text-gray-700">
             Your one-stop wedding planning website, with all the tools you'll need to create the dream celebration.
