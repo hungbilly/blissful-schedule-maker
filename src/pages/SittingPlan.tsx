@@ -113,7 +113,7 @@ export default function SittingPlan() {
       <div className="min-h-screen flex w-full">
         <AppSidebar />
         <div className="flex-1 p-8">
-          <div className="max-w-5xl mx-auto"> {/* Changed from max-w-2xl to max-w-5xl to accommodate two columns */}
+          <div className="max-w-7xl mx-auto"> {/* Changed from max-w-5xl to max-w-7xl to accommodate three columns */}
             <h1 className="text-3xl font-serif text-wedding-purple mb-8">
               Sitting Plan
             </h1>
@@ -130,7 +130,7 @@ export default function SittingPlan() {
               </Button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6"> {/* Changed to show 2 columns on medium screens and up */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"> {/* Updated to show 3 columns on large screens */}
               {tables.map((table) => (
                 <TableCard
                   key={table.id}
