@@ -53,15 +53,18 @@ export const TableCard = ({
             <div className="space-y-1">
               <div className="flex items-center space-x-2">
                 <User className="h-4 w-4 text-wedding-purple" />
-                <span>{guest.name}</span>
-              </div>
-              {guest.category && (
-                <div className="ml-6">
-                  <Badge variant="secondary" className="text-xs">
-                    {guest.category}
-                  </Badge>
+                <div className="flex md:flex-col md:items-start items-center space-x-2 md:space-x-0">
+                  <span>{guest.name}</span>
+                  {guest.category && (
+                    <Badge 
+                      variant="secondary" 
+                      className="text-xs md:ml-6 md:mt-1"
+                    >
+                      {guest.category}
+                    </Badge>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
             <Button
               variant="ghost"
