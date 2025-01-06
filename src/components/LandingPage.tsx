@@ -12,10 +12,6 @@ export const LandingPage = () => {
         </h1>
         <p className="text-xl md:text-2xl text-gray-600 mb-8">
           Your Wedding Journey Starts Here
-          <br />
-          <span className="text-base text-gray-500">
-            No hidden fees! No sign-up required!
-          </span>
         </p>
         <Button
           onClick={() => navigate("/auth")}
