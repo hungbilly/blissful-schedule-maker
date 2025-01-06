@@ -51,6 +51,6 @@ export interface Guest {
 export interface Table {
   id: number;
   name: string;
-  capacity: number;
-  guests: Guest[];
+  created_at: string;
+  user_id: string;
 }

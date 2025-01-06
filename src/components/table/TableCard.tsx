@@ -25,6 +25,7 @@ export const TableCard = ({
   onRemoveGuest,
 }: TableCardProps) => {
   const unassignedGuests = guests.filter(guest => !guest.tableId);
+  const tableGuests = guests.filter(guest => guest.tableId === table.id);
 
   return (
     <div className="p-6 bg-white rounded-lg shadow space-y-4">
@@ -43,26 +44,24 @@ export const TableCard = ({
       </div>
 
       <div className="space-y-2">
-        {guests
-          .filter(guest => guest.tableId === table.id)
-          .map((guest) => (
-            <div
-              key={guest.id}
-              className="flex items-center justify-between p-2 bg-gray-50 rounded"
-            >
-              <div className="flex items-center space-x-2">
-                <Users className="h-4 w-4" />
-                <span>{guest.name}</span>
-              </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => onRemoveGuest(table.id, guest.id)}
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
+        {tableGuests.map((guest) => (
+          <div
+            key={guest.id}
+            className="flex items-center justify-between p-2 bg-gray-50 rounded"
+          >
+            <div className="flex items-center space-x-2">
+              <Users className="h-4 w-4" />
+              <span>{guest.name}</span>
             </div>
-          ))}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => onRemoveGuest(table.id, guest.id)}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
+        ))}
       </div>
 
       {unassignedGuests.length > 0 && (
