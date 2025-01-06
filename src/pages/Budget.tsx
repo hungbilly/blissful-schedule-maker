@@ -2,47 +2,26 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
-import { BudgetCategory as BudgetCategoryType, BudgetItem } from "@/components/project/types";
 import { Plus, Settings } from "lucide-react";
 import { BudgetCategory } from "@/components/budget/BudgetCategory";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
+import { useBudget } from "@/hooks/useBudget";
+import { useProjectDetails } from "@/hooks/useProjectDetails";
 
 const Budget = () => {
   const [totalBudget, setTotalBudget] = useState<number>(100000);
-  const [categories, setCategories] = useState<BudgetCategoryType[]>([
-    {
-      id: 1,
-      name: "Entertainment",
-      items: [
-        { id: 1, category: "Entertainment", title: "Band", amount: 111 },
-      ],
-    },
-    {
-      id: 2,
-      name: "Beauty and Health",
-      items: [
-        { id: 2, category: "Beauty and Health", title: "Hair and Makeup", amount: 0 },
-        { id: 3, category: "Beauty and Health", title: "Prewedding Pampering", amount: 0 },
-      ],
-    },
-    {
-      id: 3,
-      name: "Other",
-      items: [
-        { id: 4, category: "Other", title: "Firework!", amount: 0 },
-        { id: 5, category: "Other", title: "Accommodations for Wedding Night", amount: 0 },
-        { id: 6, category: "Other", title: "Bridesmaid Gifts", amount: 0 },
-        { id: 7, category: "Other", title: "Groomsmen Gifts", amount: 0 },
-        { id: 8, category: "Other", title: "Parent Gifts", amount: 0 },
-        { id: 9, category: "Other", title: "Hotel Rooms for Out-of-Town Guests", amount: 0 },
-      ],
-    },
-  ]);
-
-  const { toast } = useToast();
   const [newCategory, setNewCategory] = useState("");
+  const { currentProjectId } = useProjectDetails();
+  const { 
+    categories, 
+    isLoading,
+    addCategory,
+    deleteCategory,
+    addItem,
+    updateItem,
+    deleteItem 
+  } = useBudget(currentProjectId);
 
   const totalSpent = categories.reduce(
     (total, category) =>
@@ -50,100 +29,32 @@ const Budget = () => {
     0
   );
 
-  const handleUpdateItem = (categoryId: number, updatedItem: BudgetItem) => {
-    const updatedCategories = categories.map((category) => {
-      if (category.id === categoryId) {
-        return {
-          ...category,
-          items: category.items.map((item) =>
-            item.id === updatedItem.id ? updatedItem : item
-          ),
-        };
-      }
-      return category;
-    });
-    setCategories(updatedCategories);
-  };
-
-  const handleDeleteItem = (categoryId: number, itemId: number) => {
-    const updatedCategories = categories.map((category) => {
-      if (category.id === categoryId) {
-        return {
-          ...category,
-          items: category.items.filter((item) => item.id !== itemId),
-        };
-      }
-      return category;
-    });
-    setCategories(updatedCategories);
-    toast({
-      title: "Success",
-      description: "Item deleted successfully",
-    });
-  };
-
-  const handleAddItem = (categoryId: number, title: string, amount: number) => {
-    const updatedCategories = categories.map((category) => {
-      if (category.id === categoryId) {
-        return {
-          ...category,
-          items: [
-            ...category.items,
-            {
-              id: Math.max(...category.items.map((item) => item.id), 0) + 1,
-              category: category.name,
-              title,
-              amount,
-            },
-          ],
-        };
-      }
-      return category;
-    });
-    setCategories(updatedCategories);
-    toast({
-      title: "Success",
-      description: "Item added successfully",
-    });
-  };
-
   const handleAddCategory = () => {
-    if (!newCategory.trim()) {
-      toast({
-        title: "Error",
-        description: "Please enter a category name",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const newCategoryObj: BudgetCategoryType = {
-      id: Math.max(...categories.map((cat) => cat.id), 0) + 1,
-      name: newCategory,
-      items: [],
-    };
-
-    setCategories([...categories, newCategoryObj]);
-    setNewCategory("");
-    toast({
-      title: "Success",
-      description: "Category added successfully",
+    if (!newCategory.trim()) return;
+    addCategory.mutate(newCategory, {
+      onSuccess: () => setNewCategory("")
     });
   };
 
-  const handleDeleteCategory = (categoryId: number) => {
-    setCategories(categories.filter((category) => category.id !== categoryId));
-    toast({
-      title: "Success",
-      description: "Category deleted successfully",
-    });
-  };
+  if (isLoading) {
+    return (
+      <SidebarProvider>
+        <div className="min-h-screen flex w-full">
+          <AppSidebar />
+          <div className="flex-1 bg-wedding-pink py-12 md:ml-64 px-4 md:px-8">
+            <div className="container max-w-3xl mx-auto">
+              Loading...
+            </div>
+          </div>
+        </div>
+      </SidebarProvider>
+    );
+  }
 
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
         <AppSidebar />
-        {/* Add margin-left for desktop and padding for mobile */}
         <div className="flex-1 bg-wedding-pink py-12 md:ml-64 px-4 md:px-8">
           <div className="container max-w-3xl mx-auto">
             <h1 className="text-4xl md:text-5xl text-wedding-purple text-center font-serif mb-8">
@@ -174,10 +85,10 @@ const Budget = () => {
                 <BudgetCategory
                   key={category.id}
                   category={category}
-                  onUpdateItem={handleUpdateItem}
-                  onDeleteItem={handleDeleteItem}
-                  onAddItem={handleAddItem}
-                  onDeleteCategory={handleDeleteCategory}
+                  onUpdateItem={(categoryId, updatedItem) => updateItem.mutate(updatedItem)}
+                  onDeleteItem={(categoryId, itemId) => deleteItem.mutate({ categoryId, itemId })}
+                  onAddItem={(categoryId, title, amount) => addItem.mutate({ categoryId, title, amount })}
+                  onDeleteCategory={(categoryId) => deleteCategory.mutate(categoryId)}
                 />
               ))}
             </div>

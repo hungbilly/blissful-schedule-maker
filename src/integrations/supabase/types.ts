@@ -9,6 +9,83 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      budget_categories: {
+        Row: {
+          created_at: string
+          id: number
+          name: string
+          project_id: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          name: string
+          project_id: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          name?: string
+          project_id?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "budget_categories_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      budget_items: {
+        Row: {
+          amount: number
+          category_id: number
+          created_at: string
+          id: number
+          project_id: number
+          title: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          category_id: number
+          created_at?: string
+          id?: number
+          project_id: number
+          title: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          category_id?: number
+          created_at?: string
+          id?: number
+          project_id?: number
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "budget_items_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "budget_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "budget_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       events: {
         Row: {
           created_at: string
