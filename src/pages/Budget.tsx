@@ -99,11 +99,15 @@ const Budget = () => {
                     <Settings className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
+                <DropdownMenuContent 
+                  align="end" 
+                  className="bg-white border border-gray-200 shadow-lg"
+                >
                   {CURRENCIES.map((currency) => (
                     <DropdownMenuItem
                       key={currency.code}
                       onClick={() => setSelectedCurrency(currency)}
+                      className="hover:bg-gray-100"
                     >
                       {currency.code} ({currency.symbol})
                     </DropdownMenuItem>
