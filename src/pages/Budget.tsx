@@ -7,12 +7,12 @@ import { BudgetCategory } from "@/components/budget/BudgetCategory";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { useBudget } from "@/hooks/useBudget";
-import { useProjectDetails } from "@/hooks/useProjectDetails";
+import { useProjectData } from "@/components/project/useProjectData";
 
 const Budget = () => {
   const [totalBudget, setTotalBudget] = useState<number>(100000);
   const [newCategory, setNewCategory] = useState("");
-  const { currentProjectId } = useProjectDetails();
+  const { currentProject } = useProjectData();
   const { 
     categories, 
     isLoading,
@@ -21,7 +21,7 @@ const Budget = () => {
     addItem,
     updateItem,
     deleteItem 
-  } = useBudget(currentProjectId);
+  } = useBudget(currentProject?.id ?? null);
 
   const totalSpent = categories.reduce(
     (total, category) =>
