@@ -99,11 +99,29 @@ export const useGuests = () => {
     },
   });
 
+  const assignGuestToTable = useMutation({
+    mutationFn: async ({ guestId, tableId }: { guestId: number; tableId: number | null }) => {
+      if (!session?.user?.id) throw new Error('Not authenticated');
+
+      const { error } = await supabase
+        .from('guests')
+        .update({ table_id: tableId })
+        .eq('id', guestId)
+        .eq('user_id', session.user.id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['guests'] });
+    },
+  });
+
   return {
     guests,
     guestsLoading,
     addGuest,
     updateGuest,
     deleteGuest,
+    assignGuestToTable,
   };
 };

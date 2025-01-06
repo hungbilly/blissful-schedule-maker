@@ -12,7 +12,7 @@ import { TableCard } from "@/components/table/TableCard";
 export default function SittingPlan() {
   const [newTableName, setNewTableName] = useState("");
   const { toast } = useToast();
-  const { guests, guestsLoading } = useGuests();
+  const { guests, guestsLoading, assignGuestToTable } = useGuests();
   const { tables, tablesLoading, addTable, deleteTable } = useTables();
 
   const handleAddTable = async () => {
@@ -43,6 +43,15 @@ export default function SittingPlan() {
 
   const handleDeleteTable = async (id: number) => {
     try {
+      // First, remove all guests from this table
+      const tableGuests = guests.filter(guest => guest.tableId === id);
+      await Promise.all(
+        tableGuests.map(guest => 
+          assignGuestToTable.mutateAsync({ guestId: guest.id, tableId: null })
+        )
+      );
+      
+      // Then delete the table
       await deleteTable.mutateAsync(id);
       toast({
         title: "Success",
@@ -52,6 +61,44 @@ export default function SittingPlan() {
       toast({
         title: "Error",
         description: "Failed to delete table",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleAssignGuest = async (tableId: number, guestId: string) => {
+    try {
+      await assignGuestToTable.mutateAsync({ 
+        guestId: parseInt(guestId), 
+        tableId 
+      });
+      toast({
+        title: "Success",
+        description: "Guest assigned to table successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to assign guest to table",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleRemoveGuest = async (tableId: number, guestId: number) => {
+    try {
+      await assignGuestToTable.mutateAsync({ 
+        guestId, 
+        tableId: null 
+      });
+      toast({
+        title: "Success",
+        description: "Guest removed from table successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to remove guest from table",
         variant: "destructive",
       });
     }
@@ -90,12 +137,8 @@ export default function SittingPlan() {
                   table={table}
                   guests={guests}
                   onDeleteTable={handleDeleteTable}
-                  onAssignGuest={(tableId, guestId) => {
-                    // This is handled by the useGuests hook's updateGuest mutation
-                  }}
-                  onRemoveGuest={(tableId, guestId) => {
-                    // This is handled by the useGuests hook's updateGuest mutation
-                  }}
+                  onAssignGuest={handleAssignGuest}
+                  onRemoveGuest={handleRemoveGuest}
                 />
               ))}
             </div>
