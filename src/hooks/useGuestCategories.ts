@@ -2,37 +2,35 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@supabase/auth-helpers-react";
 
-export const useGuestCategories = (projectId: number | null) => {
+export const useGuestCategories = () => {
   const session = useSession();
   const queryClient = useQueryClient();
 
   const { data: categories = [], isLoading: categoriesLoading } = useQuery({
-    queryKey: ['guestCategories', projectId],
+    queryKey: ['guestCategories'],
     queryFn: async () => {
-      if (!projectId || !session?.user?.id) return [];
+      if (!session?.user?.id) return [];
       
       const { data, error } = await supabase
         .from('guest_categories')
         .select('*')
-        .eq('project_id', projectId)
         .eq('user_id', session.user.id);
 
       if (error) throw error;
       return data;
     },
-    enabled: !!projectId && !!session?.user?.id,
+    enabled: !!session?.user?.id,
   });
 
   const addCategory = useMutation({
     mutationFn: async (name: string) => {
-      if (!session?.user?.id || !projectId) throw new Error('Not authenticated');
+      if (!session?.user?.id) throw new Error('Not authenticated');
 
       const { data, error } = await supabase
         .from('guest_categories')
         .insert({
           name,
           user_id: session.user.id,
-          project_id: projectId,
         })
         .select()
         .single();
@@ -41,7 +39,7 @@ export const useGuestCategories = (projectId: number | null) => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['guestCategories', projectId] });
+      queryClient.invalidateQueries({ queryKey: ['guestCategories'] });
     },
   });
 
@@ -61,7 +59,7 @@ export const useGuestCategories = (projectId: number | null) => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['guestCategories', projectId] });
+      queryClient.invalidateQueries({ queryKey: ['guestCategories'] });
     },
   });
 
@@ -78,7 +76,7 @@ export const useGuestCategories = (projectId: number | null) => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['guestCategories', projectId] });
+      queryClient.invalidateQueries({ queryKey: ['guestCategories'] });
     },
   });
 

@@ -5,11 +5,7 @@ import { Plus, Edit2, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useGuestCategories } from "@/hooks/useGuestCategories";
 
-interface CategoryManagerProps {
-  projectId: number;
-}
-
-export const CategoryManager = ({ projectId }: CategoryManagerProps) => {
+export const CategoryManager = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [newCategory, setNewCategory] = useState("");
   const [editingCategory, setEditingCategory] = useState<number | null>(null);
@@ -22,7 +18,7 @@ export const CategoryManager = ({ projectId }: CategoryManagerProps) => {
     addCategory,
     updateCategory,
     deleteCategory,
-  } = useGuestCategories(projectId);
+  } = useGuestCategories();
 
   const handleAddCategory = async () => {
     if (!newCategory.trim()) {

@@ -8,16 +8,13 @@ import { CategoryManager } from "@/components/guest/CategoryManager";
 import { exportGuestsToCSV } from "@/utils/guestExportUtils";
 import { useGuests } from "@/hooks/useGuests";
 import { useGuestCategories } from "@/hooks/useGuestCategories";
-import { useProjectData } from "@/components/project/useProjectData";
 import { GuestForm } from "@/components/guest/GuestForm";
 import { GuestListComponent } from "@/components/guest/GuestList";
 import { Guest } from "@/components/project/types";
 
 export default function GuestList() {
-  const { currentProject } = useProjectData("guests" as unknown as number);
-  const projectId = currentProject?.id ?? null;
-  const { guests, guestsLoading } = useGuests(projectId);
-  const { categories, categoriesLoading } = useGuestCategories(projectId);
+  const { guests, guestsLoading } = useGuests();
+  const { categories, categoriesLoading } = useGuestCategories();
   
   const [editingGuest, setEditingGuest] = useState<Guest | null>(null);
   const { toast } = useToast();
@@ -38,10 +35,6 @@ export default function GuestList() {
       description: "Guest list exported successfully",
     });
   };
-
-  if (!currentProject) {
-    return <div>Please select a project first</div>;
-  }
 
   if (guestsLoading || categoriesLoading) {
     return <div>Loading...</div>;
@@ -70,16 +63,14 @@ export default function GuestList() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-4">
                 <GuestForm 
-                  projectId={currentProject.id} 
                   categories={categories}
                 />
               </div>
 
-              <CategoryManager projectId={currentProject.id} />
+              <CategoryManager />
             </div>
 
             <GuestListComponent
-              projectId={currentProject.id}
               guests={guests}
               onEditGuest={setEditingGuest}
             />

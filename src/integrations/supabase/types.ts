@@ -61,32 +61,21 @@ export type Database = {
           created_at: string
           id: number
           name: string
-          project_id: number
           user_id: string
         }
         Insert: {
           created_at?: string
           id?: never
           name: string
-          project_id: number
           user_id: string
         }
         Update: {
           created_at?: string
           id?: never
           name?: string
-          project_id?: number
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "guest_categories_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       guests: {
         Row: {
@@ -94,7 +83,6 @@ export type Database = {
           created_at: string
           id: number
           name: string
-          project_id: number
           table_id: number | null
           user_id: string
         }
@@ -103,7 +91,6 @@ export type Database = {
           created_at?: string
           id?: never
           name: string
-          project_id: number
           table_id?: number | null
           user_id: string
         }
@@ -112,7 +99,6 @@ export type Database = {
           created_at?: string
           id?: never
           name?: string
-          project_id?: number
           table_id?: number | null
           user_id?: string
         }
@@ -122,13 +108,6 @@ export type Database = {
             columns: ["category_id"]
             isOneToOne: false
             referencedRelation: "guest_categories"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "guests_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
         ]

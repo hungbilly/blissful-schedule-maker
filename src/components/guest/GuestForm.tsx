@@ -7,14 +7,13 @@ import { useToast } from "@/hooks/use-toast";
 import { useGuests } from "@/hooks/useGuests";
 
 interface GuestFormProps {
-  projectId: number;
   categories: Array<{ id: number; name: string }>;
 }
 
-export const GuestForm = ({ projectId, categories }: GuestFormProps) => {
+export const GuestForm = ({ categories }: GuestFormProps) => {
   const [newGuestName, setNewGuestName] = useState("");
   const [newGuestCategory, setNewGuestCategory] = useState("");
-  const { addGuest } = useGuests(projectId);
+  const { addGuest } = useGuests();
   const { toast } = useToast();
 
   const handleAddGuest = async () => {

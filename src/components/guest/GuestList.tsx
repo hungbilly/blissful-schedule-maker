@@ -5,13 +5,12 @@ import { useGuests } from "@/hooks/useGuests";
 import { Guest } from "@/components/project/types";
 
 interface GuestListProps {
-  projectId: number;
   guests: Guest[];
   onEditGuest: (guest: Guest) => void;
 }
 
-export const GuestListComponent = ({ projectId, guests, onEditGuest }: GuestListProps) => {
-  const { deleteGuest } = useGuests(projectId);
+export const GuestListComponent = ({ guests, onEditGuest }: GuestListProps) => {
+  const { deleteGuest } = useGuests();
   const { toast } = useToast();
 
   const handleDeleteGuest = async (id: number) => {

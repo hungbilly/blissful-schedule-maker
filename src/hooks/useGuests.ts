@@ -3,14 +3,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { Guest } from "@/components/project/types";
 import { useSession } from "@supabase/auth-helpers-react";
 
-export const useGuests = (projectId: number | null) => {
+export const useGuests = () => {
   const session = useSession();
   const queryClient = useQueryClient();
 
   const { data: guests = [], isLoading: guestsLoading } = useQuery({
-    queryKey: ['guests', projectId],
+    queryKey: ['guests'],
     queryFn: async () => {
-      if (!projectId || !session?.user?.id) return [];
+      if (!session?.user?.id) return [];
       
       const { data, error } = await supabase
         .from('guests')
@@ -23,7 +23,6 @@ export const useGuests = (projectId: number | null) => {
           ),
           table_id
         `)
-        .eq('project_id', projectId)
         .eq('user_id', session.user.id);
 
       if (error) throw error;
@@ -35,12 +34,12 @@ export const useGuests = (projectId: number | null) => {
         tableId: guest.table_id,
       })) as Guest[];
     },
-    enabled: !!projectId && !!session?.user?.id,
+    enabled: !!session?.user?.id,
   });
 
   const addGuest = useMutation({
     mutationFn: async ({ name, categoryId }: { name: string; categoryId: number }) => {
-      if (!session?.user?.id || !projectId) throw new Error('Not authenticated');
+      if (!session?.user?.id) throw new Error('Not authenticated');
 
       const { data, error } = await supabase
         .from('guests')
@@ -48,7 +47,6 @@ export const useGuests = (projectId: number | null) => {
           name,
           category_id: categoryId,
           user_id: session.user.id,
-          project_id: projectId,
         })
         .select()
         .single();
@@ -57,7 +55,7 @@ export const useGuests = (projectId: number | null) => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['guests', projectId] });
+      queryClient.invalidateQueries({ queryKey: ['guests'] });
     },
   });
 
@@ -80,7 +78,7 @@ export const useGuests = (projectId: number | null) => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['guests', projectId] });
+      queryClient.invalidateQueries({ queryKey: ['guests'] });
     },
   });
 
@@ -97,7 +95,7 @@ export const useGuests = (projectId: number | null) => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['guests', projectId] });
+      queryClient.invalidateQueries({ queryKey: ['guests'] });
     },
   });
 
