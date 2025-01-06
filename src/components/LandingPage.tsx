@@ -14,7 +14,7 @@ export const LandingPage = () => {
             Tool
           </h1>
           <p className="text-lg mb-8 text-gray-700">
-            Your one-stop wedding planning website, with all the tools you'll need to create the dream celebration.
+            Your Wedding Journey Starts Here
           </p>
           <Dialog>
             <DialogTrigger asChild>
