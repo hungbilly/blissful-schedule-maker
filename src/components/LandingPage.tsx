@@ -6,25 +6,6 @@ import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
 export const LandingPage = () => {
   return (
     <div className="min-h-screen bg-wedding-pink">
-      <nav className="container mx-auto p-4 flex justify-between items-center">
-        <div className="text-wedding-purple text-2xl font-serif">WA</div>
-        <div className="flex items-center gap-4">
-          <Link to="/vendors" className="text-wedding-purple hover:text-wedding-purple/80">
-            Find vendor or venue
-          </Link>
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="ghost" className="text-wedding-purple hover:text-wedding-purple/80">
-                Login | Register
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
-              <AuthForm />
-            </DialogContent>
-          </Dialog>
-        </div>
-      </nav>
-
       <main className="container mx-auto px-4 py-16 grid md:grid-cols-2 gap-8 items-center">
         <div>
           <h1 className="text-5xl font-serif text-wedding-purple mb-6">
