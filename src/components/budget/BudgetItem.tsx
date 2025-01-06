@@ -8,9 +8,10 @@ interface BudgetItemProps {
   item: BudgetItemType;
   onUpdate: (updatedItem: BudgetItemType) => void;
   onDelete: (itemId: number) => void;
+  currencySymbol: string;
 }
 
-export const BudgetItem = ({ item, onUpdate, onDelete }: BudgetItemProps) => {
+export const BudgetItem = ({ item, onUpdate, onDelete, currencySymbol }: BudgetItemProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(item.title);
@@ -53,7 +54,7 @@ export const BudgetItem = ({ item, onUpdate, onDelete }: BudgetItemProps) => {
           />
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <span>$</span>
+              <span>{currencySymbol}</span>
               <Input
                 type="number"
                 value={editedAmount}
@@ -72,7 +73,7 @@ export const BudgetItem = ({ item, onUpdate, onDelete }: BudgetItemProps) => {
           <span>{item.title}</span>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <span>$</span>
+              <span>{currencySymbol}</span>
               <span>{item.amount}</span>
             </div>
             {isHovered && (

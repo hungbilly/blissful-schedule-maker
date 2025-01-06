@@ -9,10 +9,25 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { useBudget } from "@/hooks/useBudget";
 import { useProjectData } from "@/components/project/useProjectData";
 import { useProjects } from "@/hooks/useProjects";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+const CURRENCIES = [
+  { code: "USD", symbol: "$" },
+  { code: "HKD", symbol: "HK$" },
+  { code: "GBP", symbol: "£" },
+  { code: "JPY", symbol: "¥" },
+  { code: "EUR", symbol: "€" },
+];
 
 const Budget = () => {
   const [totalBudget, setTotalBudget] = useState<number>(100000);
   const [newCategory, setNewCategory] = useState("");
+  const [selectedCurrency, setSelectedCurrency] = useState(CURRENCIES[0]);
   const { data: projects = [] } = useProjects();
   const currentProjectId = projects.length > 0 ? projects[0].id : null;
   const { currentProject } = useProjectData(currentProjectId);
@@ -28,7 +43,7 @@ const Budget = () => {
 
   const totalSpent = categories.reduce(
     (total, category) =>
-      total + category.items.reduce((sum, item) => sum + item.amount, 0),
+      total + category.items.reduce((sum, item) => sum + Number(item.amount), 0),
     0
   );
 
@@ -78,9 +93,23 @@ const Budget = () => {
                   className="w-full md:w-48"
                 />
               </div>
-              <Button variant="outline" size="icon" className="h-10 w-10">
-                <Settings className="h-4 w-4" />
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="icon" className="h-10 w-10">
+                    <Settings className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  {CURRENCIES.map((currency) => (
+                    <DropdownMenuItem
+                      key={currency.code}
+                      onClick={() => setSelectedCurrency(currency)}
+                    >
+                      {currency.code} ({currency.symbol})
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
 
             <div className="space-y-8">
@@ -92,6 +121,7 @@ const Budget = () => {
                   onDeleteItem={(categoryId, itemId) => deleteItem.mutate({ categoryId, itemId })}
                   onAddItem={(categoryId, title, amount) => addItem.mutate({ categoryId, title, amount })}
                   onDeleteCategory={(categoryId) => deleteCategory.mutate(categoryId)}
+                  currencySymbol={selectedCurrency.symbol}
                 />
               ))}
             </div>
@@ -119,10 +149,10 @@ const Budget = () => {
             <div className="mt-12 bg-white rounded-lg shadow-sm p-6">
               <div className="flex justify-between items-center text-xl font-serif">
                 <span>Actual total</span>
-                <span className="text-wedding-purple">${totalSpent.toFixed(2)}</span>
+                <span className="text-wedding-purple">{selectedCurrency.symbol}{totalSpent.toFixed(2)}</span>
               </div>
               <div className="mt-4 text-center text-3xl text-wedding-gray">
-                Budget ${totalBudget.toFixed(2)}
+                Budget {selectedCurrency.symbol}{totalBudget.toFixed(2)}
               </div>
             </div>
           </div>

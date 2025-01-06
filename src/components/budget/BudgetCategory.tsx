@@ -10,6 +10,7 @@ interface BudgetCategoryProps {
   onDeleteItem: (categoryId: number, itemId: number) => void;
   onAddItem: (categoryId: number, title: string, amount: number) => void;
   onDeleteCategory: (categoryId: number) => void;
+  currencySymbol: string;
 }
 
 export const BudgetCategory = ({
@@ -18,6 +19,7 @@ export const BudgetCategory = ({
   onDeleteItem,
   onAddItem,
   onDeleteCategory,
+  currencySymbol,
 }: BudgetCategoryProps) => {
   const [isAddingItem, setIsAddingItem] = useState(false);
   const [newItemTitle, setNewItemTitle] = useState("");
@@ -59,6 +61,7 @@ export const BudgetCategory = ({
             item={item}
             onUpdate={(updatedItem) => onUpdateItem(category.id, updatedItem)}
             onDelete={(itemId) => onDeleteItem(category.id, itemId)}
+            currencySymbol={currencySymbol}
           />
         ))}
       </div>
@@ -72,7 +75,7 @@ export const BudgetCategory = ({
             className="flex-1 px-3 py-2 border rounded"
           />
           <div className="flex items-center gap-2">
-            <span>$</span>
+            <span>{currencySymbol}</span>
             <input
               type="number"
               value={newItemAmount}
