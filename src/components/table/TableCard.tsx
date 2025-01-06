@@ -48,15 +48,19 @@ export const TableCard = ({
         {tableGuests.map((guest) => (
           <div
             key={guest.id}
-            className="flex items-center justify-between p-2 bg-gray-50 rounded"
+            className="flex items-start justify-between p-2 bg-gray-50 rounded"
           >
-            <div className="flex items-center space-x-2">
-              <User className="h-4 w-4 text-wedding-purple" />
-              <span>{guest.name}</span>
+            <div className="space-y-1">
+              <div className="flex items-center space-x-2">
+                <User className="h-4 w-4 text-wedding-purple" />
+                <span>{guest.name}</span>
+              </div>
               {guest.category && (
-                <Badge variant="secondary" className="text-xs">
-                  {guest.category}
-                </Badge>
+                <div className="ml-6">
+                  <Badge variant="secondary" className="text-xs">
+                    {guest.category}
+                  </Badge>
+                </div>
               )}
             </div>
             <Button
