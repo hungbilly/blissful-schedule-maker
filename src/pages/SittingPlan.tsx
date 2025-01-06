@@ -12,22 +12,29 @@ import { useToast } from "@/hooks/use-toast";
 import { Guest, Table } from "@/components/project/types";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
+import { useGuests } from "@/hooks/useGuests";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function SittingPlan() {
   const [tables, setTables] = useState<Table[]>([]);
   const [newTableName, setNewTableName] = useState("");
-  const [newTableCapacity, setNewTableCapacity] = useState("");
   const [editingTable, setEditingTable] = useState<Table | null>(null);
   const { toast } = useToast();
+  const { guests, guestsLoading } = useGuests();
 
-  // Mock guest list - in a real app, this would be shared state
-  const [guests] = useState<Guest[]>([]);
+  const unassignedGuests = guests.filter(guest => !guest.tableId);
 
   const handleAddTable = () => {
-    if (!newTableName.trim() || !newTableCapacity) {
+    if (!newTableName.trim()) {
       toast({
         title: "Error",
-        description: "Table name and capacity are required",
+        description: "Table name is required",
         variant: "destructive",
       });
       return;
@@ -36,13 +43,12 @@ export default function SittingPlan() {
     const newTable: Table = {
       id: tables.length + 1,
       name: newTableName,
-      capacity: parseInt(newTableCapacity),
+      capacity: 8, // Default capacity, not shown in UI
       guests: [],
     };
 
     setTables([...tables, newTable]);
     setNewTableName("");
-    setNewTableCapacity("");
     toast({
       title: "Success",
       description: "Table added successfully",
@@ -50,24 +56,29 @@ export default function SittingPlan() {
   };
 
   const handleDeleteTable = (id: number) => {
-    setTables(tables.filter((t) => t.id !== id));
+    // Release all guests from this table first
+    const updatedTables = tables.map(table => {
+      if (table.id === id) {
+        table.guests.forEach(guest => {
+          guest.tableId = undefined;
+        });
+      }
+      return table;
+    });
+    
+    setTables(updatedTables.filter((t) => t.id !== id));
     toast({
       title: "Success",
       description: "Table deleted successfully",
     });
   };
 
-  const handleAssignGuest = (tableId: number, guest: Guest) => {
+  const handleAssignGuest = (tableId: number, guestId: string) => {
+    const guest = guests.find(g => g.id === Number(guestId));
+    if (!guest) return;
+
     const updatedTables = tables.map((table) => {
       if (table.id === tableId) {
-        if (table.guests.length >= table.capacity) {
-          toast({
-            title: "Error",
-            description: "Table is at full capacity",
-            variant: "destructive",
-          });
-          return table;
-        }
         return {
           ...table,
           guests: [...table.guests, { ...guest, tableId }],
@@ -91,6 +102,10 @@ export default function SittingPlan() {
     setTables(updatedTables);
   };
 
+  if (guestsLoading) {
+    return <div>Loading guests...</div>;
+  }
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
@@ -107,12 +122,6 @@ export default function SittingPlan() {
                 value={newTableName}
                 onChange={(e) => setNewTableName(e.target.value)}
               />
-              <Input
-                placeholder="Capacity"
-                type="number"
-                value={newTableCapacity}
-                onChange={(e) => setNewTableCapacity(e.target.value)}
-              />
               <Button onClick={handleAddTable} className="w-full">
                 <Plus className="mr-2 h-4 w-4" />
                 Add Table
@@ -128,9 +137,7 @@ export default function SittingPlan() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                       <TableIcon className="text-wedding-purple" />
-                      <h3 className="font-medium">
-                        {table.name} ({table.guests.length}/{table.capacity})
-                      </h3>
+                      <h3 className="font-medium">{table.name}</h3>
                     </div>
                     <Button
                       variant="ghost"
@@ -162,18 +169,20 @@ export default function SittingPlan() {
                     ))}
                   </div>
 
-                  {guests
-                    .filter((g) => !g.tableId)
-                    .map((guest) => (
-                      <Button
-                        key={guest.id}
-                        variant="outline"
-                        className="w-full"
-                        onClick={() => handleAssignGuest(table.id, guest)}
-                      >
-                        Assign {guest.name}
-                      </Button>
-                    ))}
+                  {unassignedGuests.length > 0 && (
+                    <Select onValueChange={(value) => handleAssignGuest(table.id, value)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Assign guest to table" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {unassignedGuests.map((guest) => (
+                          <SelectItem key={guest.id} value={guest.id.toString()}>
+                            {guest.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
                 </div>
               ))}
             </div>
