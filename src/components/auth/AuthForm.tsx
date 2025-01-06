@@ -4,9 +4,9 @@ import { ThemeSupa } from "@supabase/auth-ui-shared";
 
 export const AuthForm = () => {
   return (
-    <div className="w-full max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-3xl font-serif text-wedding-purple text-center mb-6">
-        Wedding Planner
+    <div className="w-full p-4">
+      <h2 className="text-2xl font-serif text-wedding-purple text-center mb-6">
+        Welcome Back
       </h2>
       <Auth
         supabaseClient={supabase}
@@ -15,10 +15,15 @@ export const AuthForm = () => {
           variables: {
             default: {
               colors: {
-                brand: '#9F7AEA',
-                brandAccent: '#805AD5',
+                brand: '#6B4E71',
+                brandAccent: '#5d4361',
               },
             },
+          },
+          className: {
+            container: 'auth-container',
+            button: 'auth-button',
+            input: 'auth-input',
           },
         }}
         providers={[]}

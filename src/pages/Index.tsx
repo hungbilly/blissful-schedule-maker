@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { AuthForm } from "@/components/auth/AuthForm";
 import { ProjectContent } from "@/components/project/ProjectContent";
 import { useToast } from "@/hooks/use-toast";
+import { LandingPage } from "@/components/LandingPage";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
   const [session, setSession] = useState(null);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Get initial session
@@ -24,17 +26,20 @@ const Index = () => {
           title: "Welcome!",
           description: "You have successfully signed in.",
         });
+        navigate("/");
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [toast]);
+  }, [toast, navigate]);
 
-  return (
-    <div className="min-h-screen bg-wedding-pink">
-      {!session ? <AuthForm /> : <ProjectContent />}
-    </div>
-  );
+  // Show landing page for non-authenticated users
+  if (!session) {
+    return <LandingPage />;
+  }
+
+  // Show project content for authenticated users
+  return <ProjectContent />;
 };
 
 export default Index;
