@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Table, Guest } from "@/components/project/types";
-import { TableIcon, Trash2, Users } from "lucide-react";
+import { TableIcon, Trash2, User } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 
 interface TableCardProps {
   table: Table;
@@ -50,8 +51,13 @@ export const TableCard = ({
             className="flex items-center justify-between p-2 bg-gray-50 rounded"
           >
             <div className="flex items-center space-x-2">
-              <Users className="h-4 w-4" />
+              <User className="h-4 w-4 text-wedding-purple" />
               <span>{guest.name}</span>
+              {guest.category && (
+                <Badge variant="secondary" className="text-xs">
+                  {guest.category}
+                </Badge>
+              )}
             </div>
             <Button
               variant="ghost"
@@ -72,7 +78,7 @@ export const TableCard = ({
           <SelectContent>
             {unassignedGuests.map((guest) => (
               <SelectItem key={guest.id} value={guest.id.toString()}>
-                {guest.name}
+                {guest.name} {guest.category && `(${guest.category})`}
               </SelectItem>
             ))}
           </SelectContent>
