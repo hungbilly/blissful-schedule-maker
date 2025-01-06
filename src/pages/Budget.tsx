@@ -26,9 +26,10 @@ const Budget = () => {
     deleteItem 
   } = useBudget(currentProject?.id ?? null);
 
+  // Calculate total spent by summing all items across all categories
   const totalSpent = categories.reduce(
     (total, category) =>
-      total + category.items.reduce((sum, item) => sum + item.amount, 0),
+      total + category.items.reduce((sum, item) => sum + Number(item.amount), 0),
     0
   );
 
