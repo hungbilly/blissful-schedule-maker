@@ -206,8 +206,8 @@ export const AppSidebar = () => {
         </Sheet>
       </div>
 
-      {/* Desktop Sidebar - Hidden on mobile */}
-      <aside className="hidden md:flex w-64 bg-white border-r border-gray-200 min-h-screen">
+      {/* Desktop Sidebar - Hidden on mobile, always visible on desktop */}
+      <aside className="hidden md:block fixed left-0 top-0 h-screen w-64 bg-white border-r border-gray-200">
         <SidebarContent />
       </aside>
     </>
