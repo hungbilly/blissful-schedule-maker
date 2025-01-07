@@ -5,8 +5,8 @@ import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
 
 export const LandingPage = () => {
   return (
-    <div className="min-h-screen bg-wedding-pink">
-      <main className="container mx-auto px-4 py-16 flex flex-col items-center justify-center">
+    <div className="min-h-screen bg-wedding-pink flex items-center">
+      <main className="container mx-auto px-4 flex flex-col items-center justify-center">
         <div className="text-center max-w-2xl">
           <h1 className="text-5xl font-serif text-wedding-purple mb-6">
             ONAIR<br />
