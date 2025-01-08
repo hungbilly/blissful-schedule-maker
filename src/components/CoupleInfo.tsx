@@ -131,9 +131,9 @@ export function CoupleInfo({ date, onDateChange }: CoupleInfoProps) {
   };
 
   return (
-    <div className="bg-white rounded-lg p-4 sm:p-6 mb-8 sm:mb-12 shadow-sm w-full max-w-[95%] mx-auto">
+    <div className="bg-white rounded-lg p-4 sm:p-6 mb-8 sm:mb-12 shadow-sm w-full max-w-[90%] mx-auto">
       <div className="space-y-4 sm:space-y-6">
-        <div className="flex flex-col md:flex-row items-center justify-center gap-4 relative w-full max-w-lg mx-auto">
+        <div className="flex flex-col md:flex-row items-center justify-center gap-4 relative w-full max-w-md mx-auto">
           <div className="w-full max-w-[240px]">
             <Input
               placeholder="Bride's Name"
