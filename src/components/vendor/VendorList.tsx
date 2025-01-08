@@ -14,7 +14,7 @@ export const VendorList = () => {
       const { data, error } = await supabase
         .from("vendors")
         .select("*")
-        .order("name", { ascending: true });  // Changed to sort by name alphabetically
+        .order("name", { ascending: true });
 
       if (error) {
         console.error("Error fetching vendors:", error);
@@ -28,6 +28,7 @@ export const VendorList = () => {
         contactNumber: vendor.contact_number,
         serviceDetails: vendor.service_details,
         socialMedia: vendor.social_media,
+        address: vendor.address,
       })) as Vendor[];
     },
   });
@@ -42,6 +43,7 @@ export const VendorList = () => {
           contact_number: data.contactNumber,
           service_details: data.serviceDetails,
           social_media: data.socialMedia,
+          address: data.address,
         })
         .eq("id", id);
 
