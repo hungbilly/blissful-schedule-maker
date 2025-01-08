@@ -91,7 +91,7 @@ export function EventDescription({
         />
       ) : description ? (
         <p 
-          className="mt-2 text-gray-600 text-xs md:text-sm cursor-pointer hover:underline"
+          className="mt-2 text-gray-600 text-xs md:text-sm cursor-pointer hover:underline whitespace-pre-wrap"
           onClick={() => onStartEditing("description", description)}
         >
           {description}
