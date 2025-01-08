@@ -61,20 +61,20 @@ export const VendorCard = ({ vendor, onUpdate, onDelete }: VendorCardProps) => {
           </AlertDialog>
         </div>
       </div>
-      <p className="text-sm text-wedding-gray">{vendor.role}</p>
+      <p className="text-sm text-wedding-purple">{vendor.role}</p>
       <div className="flex items-center space-x-2 text-sm">
-        <Phone className="h-4 w-4 text-wedding-gray" />
-        <span>{vendor.contactNumber}</span>
+        <Phone className="h-4 w-4 text-wedding-purple" />
+        <span className="text-wedding-purple">{vendor.contactNumber}</span>
       </div>
       {vendor.address && (
         <div className="flex items-center space-x-2 text-sm">
-          <MapPin className="h-4 w-4 text-wedding-gray" />
-          <span className="text-wedding-gray">{vendor.address}</span>
+          <MapPin className="h-4 w-4 text-wedding-purple" />
+          <span className="text-wedding-purple">{vendor.address}</span>
         </div>
       )}
       {vendor.socialMedia && (
         <div className="flex items-center space-x-2 text-sm">
-          <Instagram className="h-4 w-4 text-wedding-gray" />
+          <Instagram className="h-4 w-4 text-wedding-purple" />
           {isInstagramUsername(vendor.socialMedia) ? (
             <a
               href={formatInstagramUrl(vendor.socialMedia)}
@@ -85,14 +85,14 @@ export const VendorCard = ({ vendor, onUpdate, onDelete }: VendorCardProps) => {
               @{vendor.socialMedia.replace('@', '')}
             </a>
           ) : (
-            <span className="text-wedding-gray">{vendor.socialMedia}</span>
+            <span className="text-wedding-purple">{vendor.socialMedia}</span>
           )}
         </div>
       )}
       {vendor.serviceDetails && (
         <div className="flex items-start space-x-2 text-sm">
-          <FileText className="h-4 w-4 text-wedding-gray mt-1" />
-          <p className="text-wedding-gray whitespace-pre-wrap">{vendor.serviceDetails}</p>
+          <FileText className="h-4 w-4 text-wedding-purple mt-1" />
+          <p className="text-wedding-purple whitespace-pre-wrap">{vendor.serviceDetails}</p>
         </div>
       )}
     </div>
