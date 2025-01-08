@@ -36,7 +36,7 @@ export const ProjectHeader = ({
           onNewProjectClick={onNewProject}
         />
       </div>
-      <div className="flex items-center gap-4 w-full sm:w-auto justify-end">
+      <div className="flex items-center gap-4 w-full sm:w-auto justify-start sm:justify-end">
         <Button
           variant="outline"
           size="icon"
