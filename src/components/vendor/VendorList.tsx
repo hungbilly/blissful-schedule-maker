@@ -14,7 +14,7 @@ export const VendorList = () => {
       const { data, error } = await supabase
         .from("vendors")
         .select("*")
-        .order("created_at", { ascending: false });
+        .order("name", { ascending: true });  // Changed to sort by name alphabetically
 
       if (error) {
         console.error("Error fetching vendors:", error);
