@@ -1,4 +1,4 @@
-import { User, Phone, FileText } from "lucide-react";
+import { User, Phone, FileText, Link as LinkIcon } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -47,6 +47,12 @@ export const VendorList = () => {
                 <Phone className="h-4 w-4 text-wedding-gray" />
                 <span>{vendor.contact_number}</span>
               </div>
+              {vendor.social_media && (
+                <div className="flex items-center space-x-2 text-sm">
+                  <LinkIcon className="h-4 w-4 text-wedding-gray" />
+                  <span className="text-wedding-gray">{vendor.social_media}</span>
+                </div>
+              )}
               {vendor.service_details && (
                 <div className="flex items-start space-x-2 text-sm">
                   <FileText className="h-4 w-4 text-wedding-gray mt-1" />

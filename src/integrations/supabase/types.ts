@@ -266,6 +266,7 @@ export type Database = {
           name: string
           role: string
           service_details: string | null
+          social_media: string | null
           user_id: string
         }
         Insert: {
@@ -275,6 +276,7 @@ export type Database = {
           name: string
           role: string
           service_details?: string | null
+          social_media?: string | null
           user_id: string
         }
         Update: {
@@ -284,6 +286,7 @@ export type Database = {
           name?: string
           role?: string
           service_details?: string | null
+          social_media?: string | null
           user_id?: string
         }
         Relationships: []

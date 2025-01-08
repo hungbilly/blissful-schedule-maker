@@ -26,6 +26,7 @@ export interface Vendor {
   role: string;
   contactNumber: string;
   serviceDetails: string;
+  socialMedia?: string;
 }
 
 export interface BudgetItem {
