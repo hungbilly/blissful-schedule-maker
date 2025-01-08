@@ -74,104 +74,108 @@ export const VendorForm = () => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm">
+    <div className="bg-white p-6 rounded-lg shadow-sm flex flex-col h-[calc(100vh-12rem)]">
       <h2 className="text-xl font-serif text-wedding-purple mb-4">Add New Vendor</h2>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Vendor Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter vendor name" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col h-full">
+          <div className="flex-1 overflow-y-auto space-y-4 pr-2">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Vendor Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter vendor name" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <FormField
-            control={form.control}
-            name="role"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Role</FormLabel>
-                <FormControl>
-                  <Input placeholder="e.g., Photographer, Caterer" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            <FormField
+              control={form.control}
+              name="role"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Role</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g., Photographer, Caterer" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <FormField
-            control={form.control}
-            name="contactNumber"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Contact Number</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter contact number" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            <FormField
+              control={form.control}
+              name="contactNumber"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Contact Number</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter contact number" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <FormField
-            control={form.control}
-            name="address"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Address</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter vendor's address" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            <FormField
+              control={form.control}
+              name="address"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Address</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter vendor's address" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <FormField
-            control={form.control}
-            name="socialMedia"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Instagram ID</FormLabel>
-                <FormControl>
-                  <Input placeholder="e.g., billyonairphotography (without @)" {...field} />
-                </FormControl>
-                <FormDescription>
-                  Enter the Instagram username without the @ symbol
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            <FormField
+              control={form.control}
+              name="socialMedia"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Instagram ID</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g., billyonairphotography (without @)" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    Enter the Instagram username without the @ symbol
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <FormField
-            control={form.control}
-            name="serviceDetails"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Service Details</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Enter service details and notes"
-                    className="resize-none"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            <FormField
+              control={form.control}
+              name="serviceDetails"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Service Details</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Enter service details and notes"
+                      className="resize-none"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
 
-          <Button type="submit" className="w-full">
-            <Plus className="mr-2 h-4 w-4" /> Add Vendor
-          </Button>
+          <div className="pt-4 mt-4 border-t">
+            <Button type="submit" className="w-full">
+              <Plus className="mr-2 h-4 w-4" /> Add Vendor
+            </Button>
+          </div>
         </form>
       </Form>
     </div>
