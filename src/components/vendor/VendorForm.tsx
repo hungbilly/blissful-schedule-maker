@@ -125,7 +125,7 @@ export const VendorForm = () => {
               <FormItem>
                 <FormLabel>Instagram ID</FormLabel>
                 <FormControl>
-                  <Input placeholder="e.g., photographyco (without @)" {...field} />
+                  <Input placeholder="e.g., billyonairphotography (without @)" {...field} />
                 </FormControl>
                 <FormDescription>
                   Enter the Instagram username without the @ symbol
