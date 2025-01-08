@@ -2,7 +2,7 @@ import { User, Phone, FileText, Link as LinkIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Vendor } from "../project/types";
 import { EditVendorDialog } from "./EditVendorDialog";
-import { formatInstagramHandle, isInstagramHandle } from "@/utils/socialMediaUtils";
+import { formatInstagramUrl, isInstagramUsername } from "@/utils/socialMediaUtils";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -69,9 +69,9 @@ export const VendorCard = ({ vendor, onUpdate, onDelete }: VendorCardProps) => {
       {vendor.socialMedia && (
         <div className="flex items-center space-x-2 text-sm">
           <LinkIcon className="h-4 w-4 text-wedding-gray" />
-          {isInstagramHandle(vendor.socialMedia) ? (
+          {isInstagramUsername(vendor.socialMedia) ? (
             <a
-              href={formatInstagramHandle(vendor.socialMedia)}
+              href={formatInstagramUrl(vendor.socialMedia)}
               target="_blank"
               rel="noopener noreferrer"
               className="text-wedding-purple hover:underline"
