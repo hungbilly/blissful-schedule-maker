@@ -27,7 +27,7 @@ export const ProjectHeader = ({
   setUse24Hour,
 }: ProjectHeaderProps) => {
   return (
-    <div className="flex justify-between items-center mb-8">
+    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-8">
       <div className="flex items-center gap-4">
         <ProjectSelector
           projects={projects}
@@ -36,7 +36,7 @@ export const ProjectHeader = ({
           onNewProjectClick={onNewProject}
         />
       </div>
-      <div className="flex items-center space-x-4">
+      <div className="flex items-center space-x-4 w-full sm:w-auto">
         <Button
           variant="outline"
           size="icon"
