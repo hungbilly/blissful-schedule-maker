@@ -33,7 +33,6 @@ export const VendorForm = () => {
     },
   });
 
-  // Add vendor mutation
   const addVendorMutation = useMutation({
     mutationFn: async (newVendor: Omit<Vendor, "id">) => {
       const { data, error } = await supabase.from("vendors").insert([
@@ -124,7 +123,7 @@ export const VendorForm = () => {
             name="socialMedia"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Instagram Handle</FormLabel>
+                <FormLabel>Instagram ID</FormLabel>
                 <FormControl>
                   <Input placeholder="e.g., photographyco (without @)" {...field} />
                 </FormControl>
