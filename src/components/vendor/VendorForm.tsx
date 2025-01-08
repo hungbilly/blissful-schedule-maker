@@ -30,6 +30,7 @@ export const VendorForm = () => {
       contactNumber: "",
       serviceDetails: "",
       socialMedia: "",
+      address: "",
     },
   });
 
@@ -42,6 +43,7 @@ export const VendorForm = () => {
           contact_number: newVendor.contactNumber,
           service_details: newVendor.serviceDetails,
           social_media: newVendor.socialMedia,
+          address: newVendor.address,
           user_id: session?.user.id,
         },
       ]);
@@ -112,6 +114,20 @@ export const VendorForm = () => {
                 <FormLabel>Contact Number</FormLabel>
                 <FormControl>
                   <Input placeholder="Enter contact number" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="address"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Address</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter vendor's address" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

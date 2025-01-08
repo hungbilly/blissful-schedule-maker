@@ -260,6 +260,7 @@ export type Database = {
       }
       vendors: {
         Row: {
+          address: string | null
           contact_number: string
           created_at: string
           id: number
@@ -270,6 +271,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          address?: string | null
           contact_number: string
           created_at?: string
           id?: number
@@ -280,6 +282,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          address?: string | null
           contact_number?: string
           created_at?: string
           id?: number

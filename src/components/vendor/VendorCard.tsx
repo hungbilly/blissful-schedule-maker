@@ -1,4 +1,4 @@
-import { User, Phone, FileText, Instagram } from "lucide-react";
+import { User, Phone, FileText, Instagram, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Vendor } from "../project/types";
 import { EditVendorDialog } from "./EditVendorDialog";
@@ -66,6 +66,12 @@ export const VendorCard = ({ vendor, onUpdate, onDelete }: VendorCardProps) => {
         <Phone className="h-4 w-4 text-wedding-gray" />
         <span>{vendor.contactNumber}</span>
       </div>
+      {vendor.address && (
+        <div className="flex items-center space-x-2 text-sm">
+          <MapPin className="h-4 w-4 text-wedding-gray" />
+          <span className="text-wedding-gray">{vendor.address}</span>
+        </div>
+      )}
       {vendor.socialMedia && (
         <div className="flex items-center space-x-2 text-sm">
           <Instagram className="h-4 w-4 text-wedding-gray" />

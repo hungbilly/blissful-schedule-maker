@@ -27,6 +27,7 @@ export interface Vendor {
   contactNumber: string;
   serviceDetails: string;
   socialMedia?: string;
+  address?: string;
 }
 
 export interface BudgetItem {

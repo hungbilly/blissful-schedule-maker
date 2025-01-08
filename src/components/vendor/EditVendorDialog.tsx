@@ -35,6 +35,7 @@ export const EditVendorDialog = ({ vendor, onSave }: EditVendorDialogProps) => {
       contactNumber: vendor.contactNumber,
       serviceDetails: vendor.serviceDetails,
       socialMedia: vendor.socialMedia,
+      address: vendor.address,
     },
   });
 
@@ -92,6 +93,20 @@ export const EditVendorDialog = ({ vendor, onSave }: EditVendorDialogProps) => {
                   <FormLabel>Contact Number</FormLabel>
                   <FormControl>
                     <Input placeholder="Enter contact number" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="address"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Address</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter vendor's address" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
