@@ -80,10 +80,10 @@ export function Timeline({ events, onAddEvent, onEditEvent, onDeleteEvent, use24
   };
 
   return (
-    <div className="relative px-2 sm:px-4">
+    <div className="relative">
       <div className="timeline-line" />
       
-      <div className="mb-4 sm:mb-8 flex justify-between items-center">
+      <div className="mb-8 flex justify-between items-center">
         <Button
           variant="outline"
           size="sm"
@@ -126,7 +126,7 @@ export function Timeline({ events, onAddEvent, onEditEvent, onDeleteEvent, use24
       ))}
 
       {sortedEvents.length > 0 && (
-        <div className="mt-4 sm:mt-8 flex justify-center">
+        <div className="mt-8 flex justify-center">
           <Button
             variant="outline"
             size="sm"

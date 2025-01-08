@@ -23,7 +23,7 @@ export const ProjectTimeline = ({
 
   return (
     <>
-      <h1 className="text-2xl sm:text-3xl md:text-4xl text-wedding-purple text-center font-serif mb-6 sm:mb-12 px-4">
+      <h1 className="text-3xl md:text-4xl text-wedding-purple text-center font-serif mb-12">
         Itinerary: {currentProject?.name || "Timeline"}
       </h1>
 
