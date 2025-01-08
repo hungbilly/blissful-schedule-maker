@@ -53,10 +53,10 @@ export default function GuestList() {
               <Button
                 onClick={handleExportCSV}
                 variant="outline"
-                className="flex items-center gap-2"
+                size="icon"
+                className="flex items-center justify-center"
               >
                 <Download className="h-4 w-4" />
-                Export CSV
               </Button>
             </div>
 
