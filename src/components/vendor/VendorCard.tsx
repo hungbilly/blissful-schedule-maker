@@ -86,7 +86,7 @@ export const VendorCard = ({ vendor, onUpdate, onDelete }: VendorCardProps) => {
       {vendor.serviceDetails && (
         <div className="flex items-start space-x-2 text-sm">
           <FileText className="h-4 w-4 text-wedding-gray mt-1" />
-          <p className="text-wedding-gray">{vendor.serviceDetails}</p>
+          <p className="text-wedding-gray whitespace-pre-wrap">{vendor.serviceDetails}</p>
         </div>
       )}
     </div>
