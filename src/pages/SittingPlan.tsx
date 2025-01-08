@@ -116,7 +116,7 @@ export default function SittingPlan() {
               Sitting Plan
             </h1>
 
-            <div className="bg-white rounded-lg p-4 md:p-6 shadow-sm space-y-4">
+            <div className="bg-white rounded-lg p-4 md:p-6 shadow-sm space-y-4 mt-16 md:mt-0">
               <Input
                 placeholder="Table Name"
                 value={newTableName}
