@@ -120,7 +120,12 @@ export function CoupleInfo({ date, onDateChange }: CoupleInfoProps) {
 
   const handleDateSelect = (date: Date | undefined) => {
     if (date) {
-      const formattedDate = date.toISOString().split('T')[0];
+      // Create a new Date object at noon to avoid timezone issues
+      const selectedDate = new Date(date);
+      selectedDate.setHours(12, 0, 0, 0);
+      
+      // Format the date as YYYY-MM-DD
+      const formattedDate = selectedDate.toISOString().split('T')[0];
       setLocalDate(formattedDate);
     }
   };
