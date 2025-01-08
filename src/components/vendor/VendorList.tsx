@@ -17,6 +17,15 @@ import {
 import { EditVendorDialog } from "./EditVendorDialog";
 import { Vendor } from "../project/types";
 
+const isValidUrl = (urlString: string) => {
+  try {
+    new URL(urlString);
+    return true;
+  } catch (err) {
+    return false;
+  }
+};
+
 export const VendorList = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -169,7 +178,18 @@ export const VendorList = () => {
               {vendor.socialMedia && (
                 <div className="flex items-center space-x-2 text-sm">
                   <LinkIcon className="h-4 w-4 text-wedding-gray" />
-                  <span className="text-wedding-gray">{vendor.socialMedia}</span>
+                  {isValidUrl(vendor.socialMedia) ? (
+                    <a
+                      href={vendor.socialMedia}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-wedding-purple hover:underline"
+                    >
+                      {vendor.socialMedia}
+                    </a>
+                  ) : (
+                    <span className="text-wedding-gray">{vendor.socialMedia}</span>
+                  )}
                 </div>
               )}
               {vendor.serviceDetails && (
