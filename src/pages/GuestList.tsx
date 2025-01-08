@@ -47,9 +47,14 @@ export default function GuestList() {
         <div className="flex-1 p-8 md:ml-64 bg-wedding-pink min-h-screen">
           <div className="max-w-4xl mx-auto">
             <div className="flex justify-between items-center mb-8 mt-8 md:mt-0">
-              <h1 className="text-3xl font-serif text-wedding-purple pl-12 md:pl-0">
-                Guest List ({guests.length} guests)
-              </h1>
+              <div className="pl-12 md:pl-0">
+                <h1 className="text-3xl font-serif text-wedding-purple">
+                  Guest List
+                </h1>
+                <p className="text-sm text-wedding-gray mt-1">
+                  {guests.length} guests
+                </p>
+              </div>
               <Button
                 onClick={handleExportCSV}
                 variant="outline"
