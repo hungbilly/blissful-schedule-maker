@@ -11,6 +11,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
 import { Vendor } from "@/components/project/types";
@@ -123,10 +124,13 @@ export const VendorForm = () => {
             name="socialMedia"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Social Media</FormLabel>
+                <FormLabel>Instagram Handle</FormLabel>
                 <FormControl>
-                  <Input placeholder="e.g., Instagram handle or website" {...field} />
+                  <Input placeholder="e.g., photographyco (without @)" {...field} />
                 </FormControl>
+                <FormDescription>
+                  Enter the Instagram username without the @ symbol
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
