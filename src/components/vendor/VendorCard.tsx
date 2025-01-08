@@ -24,20 +24,20 @@ interface VendorCardProps {
 
 export const VendorCard = ({ vendor, onUpdate, onDelete }: VendorCardProps) => {
   return (
-    <div className="bg-white p-4 rounded-lg shadow-sm space-y-2">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <User className="h-4 w-4 text-wedding-purple" />
-          <h3 className="font-medium">{vendor.name}</h3>
+    <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm space-y-2.5 w-full max-w-full overflow-hidden">
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <div className="flex items-center space-x-2 min-w-0">
+          <User className="h-4 w-4 shrink-0 text-wedding-purple" />
+          <h3 className="font-medium truncate">{vendor.name}</h3>
         </div>
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-1">
           <EditVendorDialog
             vendor={vendor}
             onSave={(data) => onUpdate(vendor.id, data)}
           />
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" className="h-8 w-8">
                 <Trash2 className="h-4 w-4 text-red-500" />
               </Button>
             </AlertDialogTrigger>
@@ -61,38 +61,38 @@ export const VendorCard = ({ vendor, onUpdate, onDelete }: VendorCardProps) => {
           </AlertDialog>
         </div>
       </div>
-      <p className="text-sm text-wedding-purple">{vendor.role}</p>
+      <p className="text-sm text-wedding-purple break-words">{vendor.role}</p>
       <div className="flex items-center space-x-2 text-sm">
-        <Phone className="h-4 w-4 text-wedding-purple" />
-        <span className="text-wedding-purple">{vendor.contactNumber}</span>
+        <Phone className="h-4 w-4 shrink-0 text-wedding-purple" />
+        <span className="text-wedding-purple break-all">{vendor.contactNumber}</span>
       </div>
       {vendor.address && (
-        <div className="flex items-center space-x-2 text-sm">
-          <MapPin className="h-4 w-4 text-wedding-purple" />
-          <span className="text-wedding-purple">{vendor.address}</span>
+        <div className="flex items-start space-x-2 text-sm">
+          <MapPin className="h-4 w-4 shrink-0 text-wedding-purple mt-1" />
+          <span className="text-wedding-purple break-words">{vendor.address}</span>
         </div>
       )}
       {vendor.socialMedia && (
         <div className="flex items-center space-x-2 text-sm">
-          <Instagram className="h-4 w-4 text-wedding-purple" />
+          <Instagram className="h-4 w-4 shrink-0 text-wedding-purple" />
           {isInstagramUsername(vendor.socialMedia) ? (
             <a
               href={formatInstagramUrl(vendor.socialMedia)}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-wedding-purple hover:underline"
+              className="text-wedding-purple hover:underline break-all"
             >
               @{vendor.socialMedia.replace('@', '')}
             </a>
           ) : (
-            <span className="text-wedding-purple">{vendor.socialMedia}</span>
+            <span className="text-wedding-purple break-all">{vendor.socialMedia}</span>
           )}
         </div>
       )}
       {vendor.serviceDetails && (
         <div className="flex items-start space-x-2 text-sm">
-          <FileText className="h-4 w-4 text-wedding-purple mt-1" />
-          <p className="text-wedding-purple whitespace-pre-wrap">{vendor.serviceDetails}</p>
+          <FileText className="h-4 w-4 shrink-0 text-wedding-purple mt-1" />
+          <p className="text-wedding-purple whitespace-pre-wrap break-words">{vendor.serviceDetails}</p>
         </div>
       )}
     </div>
