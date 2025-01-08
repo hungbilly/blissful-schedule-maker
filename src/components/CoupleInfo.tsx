@@ -131,10 +131,10 @@ export function CoupleInfo({ date, onDateChange }: CoupleInfoProps) {
   };
 
   return (
-    <div className="bg-white rounded-lg p-4 sm:p-6 mb-8 sm:mb-12 shadow-sm max-w-full mx-auto">
+    <div className="bg-white rounded-lg p-4 sm:p-6 mb-8 sm:mb-12 shadow-sm w-full max-w-[95%] mx-auto">
       <div className="space-y-4 sm:space-y-6">
-        <div className="flex flex-col md:flex-row items-center justify-center gap-4 relative w-full max-w-2xl mx-auto">
-          <div className="w-full max-w-[280px]">
+        <div className="flex flex-col md:flex-row items-center justify-center gap-4 relative w-full max-w-lg mx-auto">
+          <div className="w-full max-w-[240px]">
             <Input
               placeholder="Bride's Name"
               value={localBride}
@@ -145,7 +145,7 @@ export function CoupleInfo({ date, onDateChange }: CoupleInfoProps) {
           <div className="absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 hidden md:block">
             <Heart className="text-wedding-purple h-6 w-6" />
           </div>
-          <div className="w-full max-w-[280px]">
+          <div className="w-full max-w-[240px]">
             <Input
               placeholder="Groom's Name"
               value={localGroom}
@@ -158,7 +158,7 @@ export function CoupleInfo({ date, onDateChange }: CoupleInfoProps) {
           <div className="text-base sm:text-lg font-serif text-wedding-purple">Wedding Date:</div>
           <Popover>
             <PopoverTrigger asChild>
-              <div className="text-xl sm:text-2xl font-serif text-wedding-purple border-b-2 border-wedding-purple/50 pb-1 px-4 cursor-pointer break-words text-center max-w-full">
+              <div className="text-xl sm:text-2xl font-serif text-wedding-purple border-b-2 border-wedding-purple/50 pb-1 px-2 sm:px-4 cursor-pointer break-words text-center w-full max-w-[280px]">
                 {localDate ? formatDate(localDate) : "Set the date"}
               </div>
             </PopoverTrigger>
