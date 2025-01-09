@@ -1,7 +1,8 @@
-import { Guest, Table } from "@/components/project/types";
 import { jsPDF } from "jspdf";
 import 'jspdf-autotable';
+import { UserOptions } from 'jspdf-autotable';
 import * as XLSX from "xlsx";
+import { Guest, Table } from "@/components/project/types";
 
 // Extend jsPDF type to include autoTable
 interface jsPDFWithAutoTable extends jsPDF {
