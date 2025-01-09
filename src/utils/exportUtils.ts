@@ -1,14 +1,6 @@
-import { jsPDF } from "jspdf";
-import 'jspdf-autotable';
-import { UserOptions } from 'jspdf-autotable';
 import * as XLSX from "xlsx";
 import { TimelineEvent } from "@/components/project/types";
 import { format } from "date-fns";
-
-// Extend jsPDF type to include autoTable
-interface jsPDFWithAutoTable extends jsPDF {
-  autoTable: (options: UserOptions) => jsPDF;
-}
 
 const formatTime = (time: string, use24Hour: boolean): string => {
   if (use24Hour) return time;
@@ -81,84 +73,4 @@ export const exportToExcel = (
   
   const fileName = `wedding-itinerary-${format(new Date(), 'yyyy-MM-dd')}.xlsx`;
   XLSX.writeFile(workbook, fileName);
-};
-
-export const exportToPDF = (
-  events: TimelineEvent[],
-  use24Hour: boolean,
-  brideName?: string,
-  groomName?: string,
-  projectName?: string,
-) => {
-  const { headerInfo, data } = prepareEventData(events, use24Hour, brideName, groomName, projectName);
-  
-  const doc = new jsPDF({
-    orientation: "landscape", // Changed to landscape for better table fitting
-    unit: "pt",
-    format: "a4",
-    putOnlyUsedFonts: true,
-    compress: true,
-  }) as jsPDFWithAutoTable;
-  
-  // Set up the document with simpler font configuration
-  doc.setFont("helvetica");
-  doc.setFontSize(16);
-  doc.text(headerInfo, 40, 40);
-  
-  // Prepare data for the table with simpler text
-  const tableData = data.map(event => [
-    event.Time,
-    event['End Time'],
-    event.Duration,
-    event.Title,
-    event.Description,
-    event.Location,
-  ]);
-
-  // Configure table with adjusted column widths and simpler styling
-  doc.autoTable({
-    head: [["Time", "End Time", "Duration", "Title", "Description", "Location"]],
-    body: tableData,
-    startY: 60,
-    styles: {
-      font: "helvetica",
-      fontSize: 10,
-      cellPadding: 5,
-      overflow: 'linebreak',
-      cellWidth: 'wrap',
-      minCellHeight: 30,
-      halign: 'left',
-      valign: 'middle',
-    },
-    headStyles: {
-      fillColor: [147, 51, 234],
-      textColor: 255,
-      fontSize: 11,
-      fontStyle: 'bold',
-      halign: 'center',
-    },
-    columnStyles: {
-      0: { cellWidth: 70 }, // Time
-      1: { cellWidth: 70 }, // End Time
-      2: { cellWidth: 70 }, // Duration
-      3: { cellWidth: 150 }, // Title
-      4: { cellWidth: 200 }, // Description
-      5: { cellWidth: 150 }, // Location
-    },
-    margin: { top: 60, right: 30, bottom: 30, left: 30 },
-    theme: 'grid',
-    tableWidth: 'auto',
-    didDrawPage: (data) => {
-      // Add page number at the bottom
-      doc.setFontSize(10);
-      doc.text(
-        `Page ${data.pageNumber}`,
-        data.settings.margin.left,
-        doc.internal.pageSize.height - 10
-      );
-    },
-  });
-
-  const fileName = `wedding-itinerary-${format(new Date(), 'yyyy-MM-dd')}.pdf`;
-  doc.save(fileName);
 };

@@ -1,6 +1,6 @@
 import { ProjectSelector } from "./ProjectSelector";
 import { Button } from "@/components/ui/button";
-import { Download, Edit2, FileSpreadsheet, FileText } from "lucide-react";
+import { Download, Edit2, FileSpreadsheet } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Project } from "./types";
@@ -18,7 +18,7 @@ interface ProjectHeaderProps {
   onProjectChange: (id: number) => void;
   onNewProject: () => void;
   onEditProject: () => void;
-  onExport: (type: 'csv' | 'excel' | 'pdf') => void;
+  onExport: (type: 'csv' | 'excel') => void;
   setUse24Hour: (value: boolean) => void;
 }
 
@@ -63,10 +63,6 @@ export const ProjectHeader = ({
               <FileSpreadsheet className="mr-2 h-4 w-4" />
               Export Excel
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onExport('pdf')}>
-              <FileText className="mr-2 h-4 w-4" />
-              Export PDF
-            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
         <Button
@@ -88,4 +84,4 @@ export const ProjectHeader = ({
       </div>
     </div>
   );
-};
+}

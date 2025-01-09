@@ -4,7 +4,7 @@ import { ProjectContent } from "@/components/project/ProjectContent";
 import { useToast } from "@/hooks/use-toast";
 import { LandingPage } from "@/components/LandingPage";
 import { useNavigate } from "react-router-dom";
-import { exportGuestsToCSV, exportGuestsToXLSX, exportGuestsToPDF } from "@/utils/guestExportUtils";
+import { exportGuestsToCSV, exportGuestsToXLSX } from "@/utils/guestExportUtils";
 import { useGuests } from "@/hooks/useGuests";
 import { useTables } from "@/hooks/useTables";
 
@@ -38,7 +38,7 @@ const Index = () => {
     return () => subscription.unsubscribe();
   }, [toast, navigate]);
 
-  const handleExport = (type: 'csv' | 'excel' | 'pdf') => {
+  const handleExport = (type: 'csv' | 'excel') => {
     try {
       if (!guests || !tables) {
         toast({
@@ -55,9 +55,6 @@ const Index = () => {
           break;
         case 'excel':
           exportGuestsToXLSX(guests, tables);
-          break;
-        case 'pdf':
-          exportGuestsToPDF(guests, tables);
           break;
         default:
           console.error("Invalid export type:", type);

@@ -1,17 +1,23 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Download } from "lucide-react";
+import { Download, FileSpreadsheet } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { CategoryManager } from "@/components/guest/CategoryManager";
-import { exportGuestsToCSV } from "@/utils/guestExportUtils";
+import { exportGuestsToCSV, exportGuestsToXLSX } from "@/utils/guestExportUtils";
 import { useGuests } from "@/hooks/useGuests";
 import { useGuestCategories } from "@/hooks/useGuestCategories";
 import { GuestForm } from "@/components/guest/GuestForm";
 import { GuestListComponent } from "@/components/guest/GuestList";
 import { Guest } from "@/components/project/types";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function GuestList() {
   const { guests, guestsLoading } = useGuests();
@@ -20,7 +26,7 @@ export default function GuestList() {
   const [editingGuest, setEditingGuest] = useState<Guest | null>(null);
   const { toast } = useToast();
 
-  const handleExportCSV = () => {
+  const handleExport = (type: 'csv' | 'excel') => {
     if (guests.length === 0) {
       toast({
         title: "Error",
@@ -30,7 +36,12 @@ export default function GuestList() {
       return;
     }
     
-    exportGuestsToCSV(guests, []); // Pass empty array as tables argument
+    if (type === 'csv') {
+      exportGuestsToCSV(guests, []);
+    } else {
+      exportGuestsToXLSX(guests, []);
+    }
+    
     toast({
       title: "Success",
       description: "Guest list exported successfully",
@@ -57,14 +68,27 @@ export default function GuestList() {
                     {guests.length} guests
                   </p>
                 </div>
-                <Button
-                  onClick={handleExportCSV}
-                  variant="outline"
-                  size="icon"
-                  className="flex items-center justify-center"
-                >
-                  <Download className="h-4 w-4" />
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="flex items-center justify-center"
+                    >
+                      <Download className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => handleExport('csv')}>
+                      <Download className="mr-2 h-4 w-4" />
+                      Export CSV
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleExport('excel')}>
+                      <FileSpreadsheet className="mr-2 h-4 w-4" />
+                      Export Excel
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
