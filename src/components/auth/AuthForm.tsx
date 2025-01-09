@@ -10,6 +10,7 @@ export const AuthForm = () => {
       </h2>
       <Auth
         supabaseClient={supabase}
+        view="sign_up"
         appearance={{
           theme: ThemeSupa,
           variables: {
@@ -26,7 +27,20 @@ export const AuthForm = () => {
             input: 'auth-input',
           },
         }}
+        localization={{
+          variables: {
+            sign_up: {
+              email_label: 'Email',
+              password_label: 'Password',
+              email_input_placeholder: 'Your email address',
+              password_input_placeholder: 'Your password',
+              button_label: 'Sign up',
+              confirmation_text: 'Please confirm your password',
+            },
+          },
+        }}
         providers={[]}
+        showLinks={true}
       />
     </div>
   );
