@@ -4,7 +4,6 @@ import { BudgetCategory } from "@/components/project/types";
 
 const prepareBudgetData = (
   categories: BudgetCategory[],
-  currencySymbol: string,
   projectName?: string,
 ) => {
   const title = projectName ? `${projectName} - Budget` : "Wedding Budget";
@@ -13,7 +12,7 @@ const prepareBudgetData = (
     category.items.map(item => ({
       Category: category.name,
       Item: item.title,
-      Amount: `${currencySymbol}${item.amount.toFixed(2)}`,
+      Amount: Number(item.amount), // Convert to number explicitly
     }))
   );
 
@@ -28,8 +27,20 @@ export const exportToCSV = (
   currencySymbol: string,
   projectName?: string,
 ) => {
-  const { data } = prepareBudgetData(categories, currencySymbol, projectName);
+  const { data } = prepareBudgetData(categories, projectName);
   const worksheet = XLSX.utils.json_to_sheet(data);
+  
+  // Set the Amount column to number format
+  const range = XLSX.utils.decode_range(worksheet["!ref"] || "A1");
+  const amountCol = "C"; // Amount is the third column
+  for (let row = range.s.r + 1; row <= range.e.r; row++) {
+    const cell = worksheet[amountCol + (row + 1)];
+    if (cell) {
+      cell.t = "n"; // Set cell type to number
+      cell.z = "0.00"; // Format with 2 decimal places
+    }
+  }
+  
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, "Budget");
   
@@ -42,8 +53,20 @@ export const exportToExcel = (
   currencySymbol: string,
   projectName?: string,
 ) => {
-  const { data } = prepareBudgetData(categories, currencySymbol, projectName);
+  const { data } = prepareBudgetData(categories, projectName);
   const worksheet = XLSX.utils.json_to_sheet(data);
+  
+  // Set the Amount column to number format
+  const range = XLSX.utils.decode_range(worksheet["!ref"] || "A1");
+  const amountCol = "C"; // Amount is the third column
+  for (let row = range.s.r + 1; row <= range.e.r; row++) {
+    const cell = worksheet[amountCol + (row + 1)];
+    if (cell) {
+      cell.t = "n"; // Set cell type to number
+      cell.z = "0.00"; // Format with 2 decimal places
+    }
+  }
+  
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, "Budget");
   
