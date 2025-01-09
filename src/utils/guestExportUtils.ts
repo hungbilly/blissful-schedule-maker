@@ -2,7 +2,6 @@ import { Guest, Table } from "@/components/project/types";
 import { jsPDF } from "jspdf";
 import 'jspdf-autotable';
 import * as XLSX from "xlsx";
-import { UserOptions } from 'jspdf-autotable';
 
 // Extend jsPDF type to include autoTable
 interface jsPDFWithAutoTable extends jsPDF {
@@ -42,15 +41,18 @@ export const exportGuestsToXLSX = (guests: Guest[], tables: Table[]) => {
 export const exportGuestsToPDF = (guests: Guest[], tables: Table[]) => {
   const doc = new jsPDF() as jsPDFWithAutoTable;
   
+  // Add title
   doc.setFontSize(16);
   doc.text("Wedding Guest List", 14, 15);
   
+  // Prepare data for the table
   const tableData = guests.map((guest) => [
     guest.name,
     guest.category || 'N/A',
     getTableName(guest.tableId, tables),
   ]);
 
+  // Add the table with styling
   doc.autoTable({
     head: [["Name", "Category", "Table"]],
     body: tableData,
