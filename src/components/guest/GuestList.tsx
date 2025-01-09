@@ -27,6 +27,13 @@ export const GuestListComponent = ({ guests, onEditGuest }: GuestListProps) => {
   const [editingName, setEditingName] = useState("");
   const [editingCategoryId, setEditingCategoryId] = useState<string>("");
 
+  // Sort guests by category name
+  const sortedGuests = [...guests].sort((a, b) => {
+    if (a.category < b.category) return -1;
+    if (a.category > b.category) return 1;
+    return a.name.localeCompare(b.name);
+  });
+
   const handleDeleteGuest = async (id: number) => {
     try {
       await deleteGuest.mutateAsync(id);
@@ -98,91 +105,93 @@ export const GuestListComponent = ({ guests, onEditGuest }: GuestListProps) => {
   };
 
   return (
-    <div className="mt-8 space-y-4">
-      {guests.map((guest) => (
-        <div
-          key={guest.id}
-          className="flex items-center justify-between p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow"
-        >
-          <div className="flex items-center space-x-4">
-            <User className="text-wedding-purple" />
-            <div className="space-y-2">
+    <div className="mt-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {sortedGuests.map((guest) => (
+          <div
+            key={guest.id}
+            className="flex items-center justify-between p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow"
+          >
+            <div className="flex items-center space-x-4 flex-1">
+              <User className="text-wedding-purple shrink-0" />
+              <div className="space-y-2 min-w-0">
+                {editingId === guest.id ? (
+                  <>
+                    <Input
+                      value={editingName}
+                      onChange={(e) => setEditingName(e.target.value)}
+                      className="w-full"
+                      autoFocus
+                    />
+                    <Select
+                      value={editingCategoryId}
+                      onValueChange={setEditingCategoryId}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select Category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categories.map((category) => (
+                          <SelectItem
+                            key={category.id}
+                            value={category.id.toString()}
+                          >
+                            {category.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </>
+                ) : (
+                  <>
+                    <h3 className="font-medium truncate">{guest.name}</h3>
+                    <div className="text-sm text-gray-500 truncate">
+                      Category: {guest.category}
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+            <div className="flex space-x-2 ml-2 shrink-0">
               {editingId === guest.id ? (
                 <>
-                  <Input
-                    value={editingName}
-                    onChange={(e) => setEditingName(e.target.value)}
-                    className="w-48"
-                    autoFocus
-                  />
-                  <Select
-                    value={editingCategoryId}
-                    onValueChange={setEditingCategoryId}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => saveEdit(guest)}
                   >
-                    <SelectTrigger className="w-48">
-                      <SelectValue placeholder="Select Category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map((category) => (
-                        <SelectItem
-                          key={category.id}
-                          value={category.id.toString()}
-                        >
-                          {category.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    <Check className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={cancelEditing}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
                 </>
               ) : (
                 <>
-                  <h3 className="font-medium">{guest.name}</h3>
-                  <div className="text-sm text-gray-500">
-                    Category: {guest.category}
-                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => startEditing(guest)}
+                  >
+                    <Edit2 className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleDeleteGuest(guest.id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
                 </>
               )}
             </div>
           </div>
-          <div className="flex space-x-2">
-            {editingId === guest.id ? (
-              <>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => saveEdit(guest)}
-                >
-                  <Check className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={cancelEditing}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => startEditing(guest)}
-                >
-                  <Edit2 className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleDeleteGuest(guest.id)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </>
-            )}
-          </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 };
