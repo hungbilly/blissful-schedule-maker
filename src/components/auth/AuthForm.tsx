@@ -26,6 +26,17 @@ export const AuthForm = () => {
             input: 'auth-input',
           },
         }}
+        localization={{
+          variables: {
+            sign_up: {
+              password_label: 'Create Password',
+              password_input_placeholder: 'Create a password',
+              confirmation_text: 'Please confirm your password',
+              confirmation_label: 'Confirm Password',
+              confirmation_placeholder: 'Enter your password again',
+            },
+          },
+        }}
         providers={[]}
       />
     </div>
