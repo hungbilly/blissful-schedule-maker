@@ -80,8 +80,7 @@ const Budget = () => {
               Budget
             </h1>
             <p className="text-center text-wedding-gray mb-12">
-              Keep track of every penny you spend. Hover over items to edit them or add
-              new ones to your categories.
+              Manage and monitor your wedding expenses by adding or removing categories and updating your spending here.
             </p>
 
             <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-8">
