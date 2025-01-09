@@ -66,6 +66,8 @@ export function CoupleInfo({ date, onDateChange }: CoupleInfoProps) {
         title: "Error",
         description: "Failed to update profile",
         variant: "destructive",
+        duration: 2000,
+        className: "w-[300px]"
       });
       console.error('Error updating profile:', error);
       return;
@@ -74,6 +76,8 @@ export function CoupleInfo({ date, onDateChange }: CoupleInfoProps) {
     toast({
       title: "Success",
       description: "Profile updated successfully",
+      duration: 2000,
+      className: "w-[300px]"
     });
   };
 
