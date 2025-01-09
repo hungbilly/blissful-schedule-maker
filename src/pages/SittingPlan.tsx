@@ -14,7 +14,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { exportGuestsToCSV, exportGuestsToXLSX, exportGuestsToPDF } from "@/utils/guestExportUtils";
+import { exportGuestsToCSV, exportGuestsToXLSX } from "@/utils/guestExportUtils";
 
 export default function SittingPlan() {
   const [newTableName, setNewTableName] = useState("");
@@ -125,7 +125,7 @@ export default function SittingPlan() {
     }
   };
 
-  const handleExport = (format: 'csv' | 'xlsx' | 'pdf') => {
+  const handleExport = (format: 'csv' | 'xlsx') => {
     try {
       switch (format) {
         case 'csv':
@@ -133,9 +133,6 @@ export default function SittingPlan() {
           break;
         case 'xlsx':
           exportGuestsToXLSX(guests, tables);
-          break;
-        case 'pdf':
-          exportGuestsToPDF(guests, tables);
           break;
       }
       toast({
@@ -159,7 +156,6 @@ export default function SittingPlan() {
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
         <AppSidebar />
-        {/* Added pt-16 for mobile to prevent overlap with menu button */}
         <div className="flex-1 md:ml-64 p-2 md:p-8 pt-16 md:pt-8">
           <div className="max-w-7xl mx-auto space-y-4 md:space-y-6">
             <div className="flex items-center justify-between mb-8">
@@ -179,9 +175,6 @@ export default function SittingPlan() {
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => handleExport('xlsx')}>
                     Export as Excel
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleExport('pdf')}>
-                    Export as PDF
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

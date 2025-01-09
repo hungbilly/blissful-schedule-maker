@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { ProjectDialog } from "@/components/project/ProjectDialog";
 import { CoupleInfo } from "@/components/CoupleInfo";
-import { exportToCSV, exportToExcel, exportToPDF } from "@/utils/exportUtils";
+import { exportToCSV, exportToExcel } from "@/utils/exportUtils";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
@@ -16,7 +16,7 @@ import { ProjectTimeline } from "./ProjectTimeline";
 import { Button } from "@/components/ui/button";
 
 interface ProjectContentProps {
-  onExport: (type: 'csv' | 'excel' | 'pdf') => void;
+  onExport: (type: 'csv' | 'excel') => void;
 }
 
 export const ProjectContent = ({ onExport }: ProjectContentProps) => {
@@ -168,7 +168,7 @@ export const ProjectContent = ({ onExport }: ProjectContentProps) => {
     setIsProjectDialogOpen(true);
   };
 
-  const handleExport = (type: 'csv' | 'excel' | 'pdf') => {
+  const handleExport = (type: 'csv' | 'excel') => {
     if (!currentProject) return;
     
     try {
@@ -184,15 +184,6 @@ export const ProjectContent = ({ onExport }: ProjectContentProps) => {
           break;
         case 'excel':
           exportToExcel(
-            events, 
-            use24Hour,
-            profileData.bride_name,
-            profileData.groom_name,
-            currentProject.name
-          );
-          break;
-        case 'pdf':
-          exportToPDF(
             events, 
             use24Hour,
             profileData.bride_name,
