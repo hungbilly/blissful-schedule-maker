@@ -36,7 +36,16 @@ export const useProjectData = (currentProjectId: number | null) => {
         .maybeSingle();
 
       if (error) throw error;
-      return data as Project | null;
+      
+      if (data) {
+        return {
+          ...data,
+          events: [],
+          vendors: []
+        } as Project;
+      }
+      
+      return null;
     },
     enabled: !!currentProjectId && !!session?.user?.id,
   });
