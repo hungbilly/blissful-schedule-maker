@@ -1,13 +1,20 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus } from "lucide-react";
+import { Plus, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { useGuests } from "@/hooks/useGuests";
 import { useTables } from "@/hooks/useTables";
 import { TableCard } from "@/components/table/TableCard";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { exportGuestsToCSV, exportGuestsToXLSX, exportGuestsToPDF } from "@/utils/guestExportUtils";
 
 export default function SittingPlan() {
   const [newTableName, setNewTableName] = useState("");
@@ -118,6 +125,32 @@ export default function SittingPlan() {
     }
   };
 
+  const handleExport = (format: 'csv' | 'xlsx' | 'pdf') => {
+    try {
+      switch (format) {
+        case 'csv':
+          exportGuestsToCSV(guests, tables);
+          break;
+        case 'xlsx':
+          exportGuestsToXLSX(guests, tables);
+          break;
+        case 'pdf':
+          exportGuestsToPDF(guests, tables);
+          break;
+      }
+      toast({
+        title: "Success",
+        description: `Sitting plan exported as ${format.toUpperCase()} successfully`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: `Failed to export sitting plan as ${format.toUpperCase()}`,
+        variant: "destructive",
+      });
+    }
+  };
+
   if (guestsLoading || tablesLoading) {
     return <div>Loading...</div>;
   }
@@ -128,10 +161,29 @@ export default function SittingPlan() {
         <AppSidebar />
         <div className="flex-1 md:ml-64 p-2 md:p-8">
           <div className="max-w-7xl mx-auto space-y-4 md:space-y-6">
-            <div className="flex items-center justify-center mb-8">
+            <div className="flex items-center justify-between mb-8">
               <h1 className="text-2xl md:text-3xl font-serif text-wedding-purple">
                 Sitting Plan
               </h1>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="ml-2">
+                    <Download className="mr-2 h-4 w-4" />
+                    Export
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem onClick={() => handleExport('csv')}>
+                    Export as CSV
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleExport('xlsx')}>
+                    Export as Excel
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleExport('pdf')}>
+                    Export as PDF
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
 
             <div className="bg-white rounded-lg p-4 md:p-6 shadow-sm space-y-4 mt-16 md:mt-0">
