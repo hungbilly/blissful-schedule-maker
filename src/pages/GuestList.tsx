@@ -97,6 +97,8 @@ export default function GuestList() {
                 <div className="space-y-4">
                   <GuestForm 
                     categories={categories}
+                    editingGuest={editingGuest}
+                    onEditComplete={() => setEditingGuest(null)}
                   />
                 </div>
 

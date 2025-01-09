@@ -1,94 +1,106 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useGuests } from "@/hooks/useGuests";
+import { GuestCategory, Guest } from "@/components/project/types";
 
 interface GuestFormProps {
-  categories: Array<{ id: number; name: string }>;
+  categories: GuestCategory[];
+  editingGuest?: Guest | null;
+  onEditComplete?: () => void;
 }
 
-export const GuestForm = ({ categories }: GuestFormProps) => {
-  const [newGuestName, setNewGuestName] = useState("");
-  const [newGuestCategory, setNewGuestCategory] = useState("");
-  const { addGuest } = useGuests();
+export const GuestForm = ({ categories, editingGuest, onEditComplete }: GuestFormProps) => {
+  const [name, setName] = useState("");
+  const [categoryId, setCategoryId] = useState("");
+  const { addGuest, updateGuest } = useGuests();
   const { toast } = useToast();
 
-  const handleAddGuest = async () => {
-    if (!newGuestName.trim()) {
-      toast({
-        title: "Error",
-        description: "Guest name is required",
-        variant: "destructive",
-      });
-      return;
+  useEffect(() => {
+    if (editingGuest) {
+      setName(editingGuest.name);
+      const category = categories.find(c => c.name === editingGuest.category);
+      if (category) {
+        setCategoryId(category.id.toString());
+      }
     }
+  }, [editingGuest, categories]);
 
-    if (!newGuestCategory) {
-      toast({
-        title: "Error",
-        description: "Please select a guest category",
-        variant: "destructive",
-      });
-      return;
-    }
-
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
     try {
-      await addGuest.mutateAsync({
-        name: newGuestName.trim(),
-        categoryId: parseInt(newGuestCategory),
-      });
+      if (editingGuest) {
+        await updateGuest.mutateAsync({
+          id: editingGuest.id,
+          name,
+          categoryId: Number(categoryId),
+        });
+        toast({
+          title: "Success",
+          description: "Guest updated successfully",
+        });
+        onEditComplete?.();
+      } else {
+        await addGuest.mutateAsync({
+          name,
+          categoryId: Number(categoryId),
+        });
+        toast({
+          title: "Success",
+          description: "Guest added successfully",
+        });
+      }
       
-      setNewGuestName("");
-      setNewGuestCategory("");
-      toast({
-        title: "Success",
-        description: "Guest added successfully",
-      });
+      setName("");
+      setCategoryId("");
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to add guest",
+        description: "Failed to save guest",
         variant: "destructive",
       });
     }
   };
 
   return (
-    <div className="space-y-4">
-      <Input
-        placeholder="Guest Name"
-        value={newGuestName}
-        onChange={(e) => setNewGuestName(e.target.value)}
-      />
-      <Select
-        value={newGuestCategory}
-        onValueChange={setNewGuestCategory}
-      >
-        <SelectTrigger className="w-full bg-white">
-          <SelectValue placeholder="Select guest category" />
-        </SelectTrigger>
-        <SelectContent className="bg-white border border-gray-200 shadow-md">
-          {categories.map((category) => (
-            <SelectItem 
-              key={category.id} 
-              value={category.id.toString()}
-              className="hover:bg-gray-100"
-            >
-              {category.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      <Button
-        onClick={handleAddGuest}
-        className="w-full"
-      >
-        <Plus className="mr-2 h-4 w-4" />
-        Add Guest
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <Input
+          placeholder="Guest Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="w-full"
+        />
+      </div>
+      <div>
+        <Select
+          value={categoryId}
+          onValueChange={setCategoryId}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select Category" />
+          </SelectTrigger>
+          <SelectContent>
+            {categories.map((category) => (
+              <SelectItem key={category.id} value={category.id.toString()}>
+                {category.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <Button type="submit" className="w-full">
+        {editingGuest ? "Update Guest" : "Add Guest"}
       </Button>
-    </div>
+    </form>
   );
 };
