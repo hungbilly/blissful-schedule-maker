@@ -15,8 +15,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { exportTablesToCSV, exportTablesToXLSX } from "@/utils/guestExportUtils";
-import { TableActions } from "@/components/table/TableActions";
-import { TableList } from "@/components/table/TableList";
 
 export default function SittingPlan() {
   const [newTableName, setNewTableName] = useState("");
