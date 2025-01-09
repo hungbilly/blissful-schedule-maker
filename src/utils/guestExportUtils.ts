@@ -4,7 +4,7 @@ import { Guest, Table } from "@/components/project/types";
 const getTableName = (tableId: number | null, tables: Table[]) => {
   if (!tableId) return "Unassigned";
   const table = tables.find((t) => t.id === tableId);
-  return table ? table.name : `Table ${tableId}`;
+  return table ? table.name : "Unassigned";
 };
 
 const prepareGuestData = (guests: Guest[], tables: Table[]) => {

@@ -12,6 +12,7 @@ import { GuestForm } from "@/components/guest/GuestForm";
 import { GuestListComponent } from "@/components/guest/GuestList";
 import { Guest } from "@/components/project/types";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { useTables } from "@/hooks/useTables";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,6 +23,7 @@ import {
 export default function GuestList() {
   const { guests, guestsLoading } = useGuests();
   const { categories, categoriesLoading } = useGuestCategories();
+  const { tables, tablesLoading } = useTables();
   
   const [editingGuest, setEditingGuest] = useState<Guest | null>(null);
   const { toast } = useToast();
@@ -37,9 +39,9 @@ export default function GuestList() {
     }
     
     if (type === 'csv') {
-      exportGuestsToCSV(guests, []);
+      exportGuestsToCSV(guests, tables);
     } else {
-      exportGuestsToXLSX(guests, []);
+      exportGuestsToXLSX(guests, tables);
     }
     
     toast({
@@ -48,7 +50,7 @@ export default function GuestList() {
     });
   };
 
-  if (guestsLoading || categoriesLoading) {
+  if (guestsLoading || categoriesLoading || tablesLoading) {
     return <div>Loading...</div>;
   }
 
