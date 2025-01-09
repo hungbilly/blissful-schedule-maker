@@ -92,22 +92,20 @@ export const exportToPDF = (
 ) => {
   const { headerInfo, data } = prepareEventData(events, use24Hour, brideName, groomName, projectName);
   
-  // Create PDF document with CJK support
   const doc = new jsPDF({
-    orientation: "portrait",
+    orientation: "landscape", // Changed to landscape for better table fitting
     unit: "pt",
     format: "a4",
     putOnlyUsedFonts: true,
     compress: true,
-    filters: ["ASCIIHexEncode"], // Add ASCII Hex encoding for better CJK support
   }) as jsPDFWithAutoTable;
   
-  // Add title with proper encoding for CJK
-  doc.setFont("helvetica", "bold");
+  // Set up the document with simpler font configuration
+  doc.setFont("helvetica");
   doc.setFontSize(16);
   doc.text(headerInfo, 40, 40);
   
-  // Prepare data for the table
+  // Prepare data for the table with simpler text
   const tableData = data.map(event => [
     event.Time,
     event['End Time'],
@@ -117,54 +115,47 @@ export const exportToPDF = (
     event.Location,
   ]);
 
-  // Add the table with styling and proper CJK support
+  // Configure table with adjusted column widths and simpler styling
   doc.autoTable({
     head: [["Time", "End Time", "Duration", "Title", "Description", "Location"]],
     body: tableData,
     startY: 60,
     styles: {
-      fontSize: 10,
-      cellPadding: 3,
       font: "helvetica",
+      fontSize: 10,
+      cellPadding: 5,
       overflow: 'linebreak',
       cellWidth: 'wrap',
-      minCellHeight: 20,
+      minCellHeight: 30,
+      halign: 'left',
+      valign: 'middle',
     },
     headStyles: {
-      fillColor: [147, 51, 234], // wedding-purple color
+      fillColor: [147, 51, 234],
       textColor: 255,
       fontSize: 11,
       fontStyle: 'bold',
       halign: 'center',
-      valign: 'middle',
     },
     columnStyles: {
-      0: { cellWidth: 50 }, // Time
-      1: { cellWidth: 50 }, // End Time
-      2: { cellWidth: 50 }, // Duration
-      3: { cellWidth: 120 }, // Title
-      4: { cellWidth: 150 }, // Description
-      5: { cellWidth: 100 }, // Location
+      0: { cellWidth: 70 }, // Time
+      1: { cellWidth: 70 }, // End Time
+      2: { cellWidth: 70 }, // Duration
+      3: { cellWidth: 150 }, // Title
+      4: { cellWidth: 200 }, // Description
+      5: { cellWidth: 150 }, // Location
     },
     margin: { top: 60, right: 30, bottom: 30, left: 30 },
     theme: 'grid',
     tableWidth: 'auto',
-    didDrawCell: (data) => {
-      // Ensure proper cell padding and text wrapping for CJK characters
-      if (data.cell.section === 'body' || data.cell.section === 'head') {
-        const td = data.cell.raw;
-        if (td) {
-          data.cell.styles.cellPadding = 5;
-          data.cell.styles.lineWidth = 0.5;
-        }
-      }
-    },
-    willDrawCell: (data) => {
-      // Set text alignment for better readability
-      if (data.cell.section === 'body') {
-        data.cell.styles.halign = 'left';
-        data.cell.styles.valign = 'middle';
-      }
+    didDrawPage: (data) => {
+      // Add page number at the bottom
+      doc.setFontSize(10);
+      doc.text(
+        `Page ${data.pageNumber}`,
+        data.settings.margin.left,
+        doc.internal.pageSize.height - 10
+      );
     },
   });
 
