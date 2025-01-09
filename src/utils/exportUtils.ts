@@ -98,11 +98,12 @@ export const exportToPDF = (
     unit: "pt",
     format: "a4",
     putOnlyUsedFonts: true,
-    compress: true
+    compress: true,
+    filters: ["ASCIIHexEncode"], // Add ASCII Hex encoding for better CJK support
   }) as jsPDFWithAutoTable;
   
   // Add title with proper encoding for CJK
-  doc.setFont("helvetica", "normal");
+  doc.setFont("helvetica", "bold");
   doc.setFontSize(16);
   doc.text(headerInfo, 40, 40);
   
@@ -126,14 +127,16 @@ export const exportToPDF = (
       cellPadding: 3,
       font: "helvetica",
       overflow: 'linebreak',
-      cellWidth: 'wrap'
+      cellWidth: 'wrap',
+      minCellHeight: 20,
     },
     headStyles: {
       fillColor: [147, 51, 234], // wedding-purple color
       textColor: 255,
       fontSize: 11,
       fontStyle: 'bold',
-      halign: 'center'
+      halign: 'center',
+      valign: 'middle',
     },
     columnStyles: {
       0: { cellWidth: 50 }, // Time
@@ -147,14 +150,22 @@ export const exportToPDF = (
     theme: 'grid',
     tableWidth: 'auto',
     didDrawCell: (data) => {
-      // Ensure text wrapping for CJK characters
+      // Ensure proper cell padding and text wrapping for CJK characters
       if (data.cell.section === 'body' || data.cell.section === 'head') {
         const td = data.cell.raw;
         if (td) {
           data.cell.styles.cellPadding = 5;
+          data.cell.styles.lineWidth = 0.5;
         }
       }
-    }
+    },
+    willDrawCell: (data) => {
+      // Set text alignment for better readability
+      if (data.cell.section === 'body') {
+        data.cell.styles.halign = 'left';
+        data.cell.styles.valign = 'middle';
+      }
+    },
   });
 
   const fileName = `wedding-itinerary-${format(new Date(), 'yyyy-MM-dd')}.pdf`;
