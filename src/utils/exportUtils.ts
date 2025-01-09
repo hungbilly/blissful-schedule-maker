@@ -92,18 +92,16 @@ export const exportToPDF = (
 ) => {
   const { headerInfo, data } = prepareEventData(events, use24Hour, brideName, groomName, projectName);
   
-  // Create PDF with CJK support
+  // Create PDF document
   const doc = new jsPDF({
-    filters: ["ASCIIHexEncode"]
+    orientation: "portrait",
+    unit: "pt",
+    format: "a4",
   }) as jsPDFWithAutoTable;
-
-  // Add CJK font support
-  doc.addFont("https://fonts.gstatic.com/ea/notosanstc/v1/NotoSansTC-Regular.ttf", "NotoSansTC", "normal");
-  doc.setFont("NotoSansTC");
   
   // Add title
   doc.setFontSize(16);
-  doc.text(headerInfo, 14, 15);
+  doc.text(headerInfo, 40, 40);
   
   // Prepare data for the table
   const tableData = data.map(event => [
@@ -115,26 +113,30 @@ export const exportToPDF = (
     event.Location,
   ]);
 
-  // Add the table with styling and CJK font support
+  // Add the table with styling
   doc.autoTable({
     head: [["Time", "End Time", "Duration", "Title", "Description", "Location"]],
     body: tableData,
-    startY: 25,
+    startY: 60,
     styles: {
       fontSize: 10,
       cellPadding: 3,
-      font: "NotoSansTC",
     },
     headStyles: {
       fillColor: [147, 51, 234], // wedding-purple color
       textColor: 255,
       fontSize: 11,
       fontStyle: 'bold',
-      font: "NotoSansTC",
     },
-    bodyStyles: {
-      font: "NotoSansTC",
+    columnStyles: {
+      0: { cellWidth: 60 }, // Time
+      1: { cellWidth: 60 }, // End Time
+      2: { cellWidth: 60 }, // Duration
+      3: { cellWidth: 100 }, // Title
+      4: { cellWidth: 'auto' }, // Description
+      5: { cellWidth: 80 }, // Location
     },
+    margin: { top: 60, right: 40, bottom: 40, left: 40 },
   });
 
   const fileName = `wedding-itinerary-${format(new Date(), 'yyyy-MM-dd')}.pdf`;
