@@ -11,6 +11,7 @@ import { useGuestCategories } from "@/hooks/useGuestCategories";
 import { GuestForm } from "@/components/guest/GuestForm";
 import { GuestListComponent } from "@/components/guest/GuestList";
 import { Guest } from "@/components/project/types";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 export default function GuestList() {
   const { guests, guestsLoading } = useGuests();
@@ -41,47 +42,49 @@ export default function GuestList() {
   }
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full">
-        <AppSidebar />
-        <div className="flex-1 p-8 md:ml-64 bg-wedding-pink min-h-screen">
-          <div className="max-w-4xl mx-auto">
-            <div className="flex justify-between items-center mb-8 mt-8 md:mt-0">
-              <div className="pl-12 md:pl-0">
-                <h1 className="text-3xl font-serif text-wedding-purple">
-                  Guest List
-                </h1>
-                <p className="text-sm text-wedding-gray mt-1">
-                  {guests.length} guests
-                </p>
-              </div>
-              <Button
-                onClick={handleExportCSV}
-                variant="outline"
-                size="icon"
-                className="flex items-center justify-center"
-              >
-                <Download className="h-4 w-4" />
-              </Button>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="space-y-4">
-                <GuestForm 
-                  categories={categories}
-                />
+    <TooltipProvider>
+      <SidebarProvider>
+        <div className="min-h-screen flex w-full">
+          <AppSidebar />
+          <div className="flex-1 p-8 md:ml-64 bg-wedding-pink min-h-screen">
+            <div className="max-w-4xl mx-auto">
+              <div className="flex justify-between items-center mb-8 mt-8 md:mt-0">
+                <div className="pl-12 md:pl-0">
+                  <h1 className="text-3xl font-serif text-wedding-purple">
+                    Guest List
+                  </h1>
+                  <p className="text-sm text-wedding-gray mt-1">
+                    {guests.length} guests
+                  </p>
+                </div>
+                <Button
+                  onClick={handleExportCSV}
+                  variant="outline"
+                  size="icon"
+                  className="flex items-center justify-center"
+                >
+                  <Download className="h-4 w-4" />
+                </Button>
               </div>
 
-              <CategoryManager />
-            </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-4">
+                  <GuestForm 
+                    categories={categories}
+                  />
+                </div>
 
-            <GuestListComponent
-              guests={guests}
-              onEditGuest={setEditingGuest}
-            />
+                <CategoryManager />
+              </div>
+
+              <GuestListComponent
+                guests={guests}
+                onEditGuest={setEditingGuest}
+              />
+            </div>
           </div>
         </div>
-      </div>
-    </SidebarProvider>
+      </SidebarProvider>
+    </TooltipProvider>
   );
 }
