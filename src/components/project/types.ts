@@ -50,6 +50,13 @@ export interface Guest {
   tableId?: number;
 }
 
+export interface GuestCategory {
+  id: number;
+  name: string;
+  created_at?: string;
+  user_id?: string;
+}
+
 export interface Table {
   id: number;
   name: string;
