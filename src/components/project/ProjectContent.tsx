@@ -15,7 +15,11 @@ import { ProjectHeader } from "./ProjectHeader";
 import { ProjectTimeline } from "./ProjectTimeline";
 import { Button } from "@/components/ui/button";
 
-export const ProjectContent = () => {
+interface ProjectContentProps {
+  onExport: (type: 'csv' | 'excel' | 'pdf') => void;
+}
+
+export const ProjectContent = ({ onExport }: ProjectContentProps) => {
   const { data: projects = [], isLoading } = useProjects();
   const createProject = useCreateProject();
   const updateProject = useUpdateProject();
@@ -222,7 +226,7 @@ export const ProjectContent = () => {
               onProjectChange={setCurrentProjectId}
               onNewProject={handleNewProject}
               onEditProject={handleEditProject}
-              onExport={handleExport}
+              onExport={onExport}
               setUse24Hour={setUse24Hour}
             />
 
