@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { ProjectDialog } from "@/components/project/ProjectDialog";
-import { CoupleInfo } from "@/components/CoupleInfo";
 import { exportToCSV, exportToExcel } from "@/utils/exportUtils";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
@@ -9,10 +8,10 @@ import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useProjects, useCreateProject, useUpdateProject, useDeleteProject, useDuplicateProject } from "@/hooks/useProjects";
 import { useProjectData } from "./useProjectData";
 import { TimelineEvent } from "./types";
-import { useProjectDetails } from "@/hooks/useProjectDetails";
 import { useEventMutations } from "@/hooks/useEventMutations";
 import { ProjectHeader } from "./ProjectHeader";
 import { ProjectTimeline } from "./ProjectTimeline";
+import { ProjectDetails } from "./ProjectDetails";
 import { Button } from "@/components/ui/button";
 
 interface ProjectContentProps {
@@ -32,7 +31,6 @@ export const ProjectContent = ({ onExport }: ProjectContentProps) => {
   const { toast } = useToast();
   const session = useSession();
   const supabase = useSupabaseClient();
-  const { updateProjectDetails } = useProjectDetails(currentProjectId);
   const { events, currentProject } = useProjectData(currentProjectId);
   const { addEventMutation, updateEventMutation, deleteEventMutation } = useEventMutations(currentProjectId);
   const [profileData, setProfileData] = useState<{ bride_name?: string; groom_name?: string }>({});
@@ -40,7 +38,6 @@ export const ProjectContent = ({ onExport }: ProjectContentProps) => {
   // Set the current project ID when projects are loaded
   useEffect(() => {
     if (projects.length > 0 && !currentProjectId) {
-      // Projects are already sorted by created_at desc in useProjects
       setCurrentProjectId(projects[0].id);
     }
   }, [projects, currentProjectId]);
@@ -209,11 +206,6 @@ export const ProjectContent = ({ onExport }: ProjectContentProps) => {
     }
   };
 
-  const handleCoupleInfoChange = async (date: string) => {
-    if (!currentProjectId) return;
-    await updateProjectDetails.mutateAsync({ date });
-  };
-
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -254,9 +246,9 @@ export const ProjectContent = ({ onExport }: ProjectContentProps) => {
               setUse24Hour={setUse24Hour}
             />
 
-            <CoupleInfo
-              date={currentProject?.wedding_date || ""}
-              onDateChange={handleCoupleInfoChange}
+            <ProjectDetails
+              currentProject={currentProject}
+              currentProjectId={currentProjectId}
             />
 
             <ProjectTimeline
