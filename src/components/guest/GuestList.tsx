@@ -5,6 +5,14 @@ import { useGuests } from "@/hooks/useGuests";
 import { Guest } from "@/components/project/types";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useGuestCategories } from "@/hooks/useGuestCategories";
 
 interface GuestListProps {
   guests: Guest[];
@@ -13,9 +21,11 @@ interface GuestListProps {
 
 export const GuestListComponent = ({ guests, onEditGuest }: GuestListProps) => {
   const { deleteGuest, updateGuest } = useGuests();
+  const { categories } = useGuestCategories();
   const { toast } = useToast();
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editingName, setEditingName] = useState("");
+  const [editingCategoryId, setEditingCategoryId] = useState<string>("");
 
   const handleDeleteGuest = async (id: number) => {
     try {
@@ -36,11 +46,13 @@ export const GuestListComponent = ({ guests, onEditGuest }: GuestListProps) => {
   const startEditing = (guest: Guest) => {
     setEditingId(guest.id);
     setEditingName(guest.name);
+    setEditingCategoryId(guest.category_id.toString());
   };
 
   const cancelEditing = () => {
     setEditingId(null);
     setEditingName("");
+    setEditingCategoryId("");
   };
 
   const saveEdit = async (guest: Guest) => {
@@ -53,11 +65,20 @@ export const GuestListComponent = ({ guests, onEditGuest }: GuestListProps) => {
       return;
     }
 
+    if (!editingCategoryId) {
+      toast({
+        title: "Error",
+        description: "Please select a category",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       await updateGuest.mutateAsync({
         id: guest.id,
         name: editingName.trim(),
-        categoryId: guest.category_id,
+        categoryId: Number(editingCategoryId),
       });
       toast({
         title: "Success",
@@ -65,6 +86,7 @@ export const GuestListComponent = ({ guests, onEditGuest }: GuestListProps) => {
       });
       setEditingId(null);
       setEditingName("");
+      setEditingCategoryId("");
     } catch (error) {
       toast({
         title: "Error",
@@ -83,20 +105,42 @@ export const GuestListComponent = ({ guests, onEditGuest }: GuestListProps) => {
         >
           <div className="flex items-center space-x-4">
             <User className="text-wedding-purple" />
-            <div>
+            <div className="space-y-2">
               {editingId === guest.id ? (
-                <Input
-                  value={editingName}
-                  onChange={(e) => setEditingName(e.target.value)}
-                  className="w-48"
-                  autoFocus
-                />
+                <>
+                  <Input
+                    value={editingName}
+                    onChange={(e) => setEditingName(e.target.value)}
+                    className="w-48"
+                    autoFocus
+                  />
+                  <Select
+                    value={editingCategoryId}
+                    onValueChange={setEditingCategoryId}
+                  >
+                    <SelectTrigger className="w-48">
+                      <SelectValue placeholder="Select Category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map((category) => (
+                        <SelectItem
+                          key={category.id}
+                          value={category.id.toString()}
+                        >
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </>
               ) : (
-                <h3 className="font-medium">{guest.name}</h3>
+                <>
+                  <h3 className="font-medium">{guest.name}</h3>
+                  <div className="text-sm text-gray-500">
+                    Category: {guest.category}
+                  </div>
+                </>
               )}
-              <div className="text-sm text-gray-500">
-                Category: {guest.category}
-              </div>
             </div>
           </div>
           <div className="flex space-x-2">
