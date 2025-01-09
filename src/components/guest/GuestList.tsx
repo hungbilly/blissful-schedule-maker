@@ -46,7 +46,8 @@ export const GuestListComponent = ({ guests, onEditGuest }: GuestListProps) => {
   const startEditing = (guest: Guest) => {
     setEditingId(guest.id);
     setEditingName(guest.name);
-    setEditingCategoryId(guest.category_id.toString());
+    // Handle the case where category_id might be undefined
+    setEditingCategoryId(guest.category_id ? guest.category_id.toString() : "");
   };
 
   const cancelEditing = () => {
