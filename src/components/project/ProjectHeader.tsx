@@ -1,9 +1,15 @@
 import { ProjectSelector } from "./ProjectSelector";
 import { Button } from "@/components/ui/button";
-import { Download, Edit2 } from "lucide-react";
+import { Download, Edit2, FileSpreadsheet, FilePdf } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Project } from "./types";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface ProjectHeaderProps {
   projects: Project[];
@@ -37,15 +43,32 @@ export const ProjectHeader = ({
         />
       </div>
       <div className="flex items-center gap-4 w-full sm:w-auto justify-start sm:justify-end">
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={onExport}
-          className="h-10 w-10"
-          title="Download rundown"
-        >
-          <Download className="h-4 w-4" />
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-10 w-10"
+              title="Export options"
+            >
+              <Download className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={onExport}>
+              <Download className="mr-2 h-4 w-4" />
+              Export CSV
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={onExport}>
+              <FileSpreadsheet className="mr-2 h-4 w-4" />
+              Export Excel
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={onExport}>
+              <FilePdf className="mr-2 h-4 w-4" />
+              Export PDF
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
         <Button
           variant="outline"
           size="icon"
