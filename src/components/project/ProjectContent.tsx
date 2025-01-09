@@ -37,8 +37,10 @@ export const ProjectContent = ({ onExport }: ProjectContentProps) => {
   const { addEventMutation, updateEventMutation, deleteEventMutation } = useEventMutations(currentProjectId);
   const [profileData, setProfileData] = useState<{ bride_name?: string; groom_name?: string }>({});
 
+  // Set the current project ID when projects are loaded
   useEffect(() => {
-    if (projects.length > 0 && currentProjectId === null) {
+    if (projects.length > 0 && !currentProjectId) {
+      // Projects are already sorted by created_at desc in useProjects
       setCurrentProjectId(projects[0].id);
     }
   }, [projects, currentProjectId]);
