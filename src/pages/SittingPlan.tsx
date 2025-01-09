@@ -169,11 +169,20 @@ export default function SittingPlan() {
                     Export
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem onClick={() => handleExport('csv')}>
+                <DropdownMenuContent 
+                  align="end"
+                  className="bg-white border border-input shadow-md min-w-[8rem] z-50"
+                >
+                  <DropdownMenuItem 
+                    onClick={() => handleExport('csv')}
+                    className="hover:bg-gray-100"
+                  >
                     Export as CSV
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleExport('xlsx')}>
+                  <DropdownMenuItem 
+                    onClick={() => handleExport('xlsx')}
+                    className="hover:bg-gray-100"
+                  >
                     Export as Excel
                   </DropdownMenuItem>
                 </DropdownMenuContent>

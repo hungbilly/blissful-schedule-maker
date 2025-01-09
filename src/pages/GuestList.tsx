@@ -80,12 +80,21 @@ export default function GuestList() {
                       <Download className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => handleExport('csv')}>
+                  <DropdownMenuContent 
+                    align="end"
+                    className="bg-white border border-input shadow-md min-w-[8rem] z-50"
+                  >
+                    <DropdownMenuItem 
+                      onClick={() => handleExport('csv')}
+                      className="hover:bg-gray-100"
+                    >
                       <Download className="mr-2 h-4 w-4" />
                       Export CSV
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleExport('excel')}>
+                    <DropdownMenuItem 
+                      onClick={() => handleExport('excel')}
+                      className="hover:bg-gray-100"
+                    >
                       <FileSpreadsheet className="mr-2 h-4 w-4" />
                       Export Excel
                     </DropdownMenuItem>

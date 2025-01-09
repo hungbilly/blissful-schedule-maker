@@ -1,10 +1,11 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Edit2, Trash2, User, Check, X } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Edit2, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useGuests } from "@/hooks/useGuests";
+import { useGuestCategories } from "@/hooks/useGuestCategories";
 import { Guest } from "@/components/project/types";
-import { useState } from "react";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -12,7 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useGuestCategories } from "@/hooks/useGuestCategories";
 
 interface GuestListProps {
   guests: Guest[];
@@ -20,21 +20,53 @@ interface GuestListProps {
 }
 
 export const GuestListComponent = ({ guests, onEditGuest }: GuestListProps) => {
-  const { deleteGuest, updateGuest } = useGuests();
-  const { categories } = useGuestCategories();
-  const { toast } = useToast();
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editingName, setEditingName] = useState("");
-  const [editingCategoryId, setEditingCategoryId] = useState<string>("");
+  const [editingCategoryId, setEditingCategoryId] = useState<number | null>(null);
+  const { updateGuest, deleteGuest } = useGuests();
+  const { categories } = useGuestCategories();
+  const { toast } = useToast();
 
-  // Sort guests by category name
-  const sortedGuests = [...guests].sort((a, b) => {
-    if (a.category < b.category) return -1;
-    if (a.category > b.category) return 1;
-    return a.name.localeCompare(b.name);
-  });
+  const handleEdit = (guest: Guest) => {
+    setEditingId(guest.id);
+    setEditingName(guest.name);
+    const category = categories.find(c => c.name === guest.category);
+    setEditingCategoryId(category?.id || null);
+  };
 
-  const handleDeleteGuest = async (id: number) => {
+  const handleSave = async () => {
+    if (!editingId || !editingName.trim() || !editingCategoryId) {
+      toast({
+        title: "Error",
+        description: "Name and category are required",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      await updateGuest.mutateAsync({
+        id: editingId,
+        name: editingName.trim(),
+        categoryId: editingCategoryId,
+      });
+      setEditingId(null);
+      setEditingName("");
+      setEditingCategoryId(null);
+      toast({
+        title: "Success",
+        description: "Guest updated successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update guest",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDelete = async (id: number) => {
     try {
       await deleteGuest.mutateAsync(id);
       toast({
@@ -50,145 +82,86 @@ export const GuestListComponent = ({ guests, onEditGuest }: GuestListProps) => {
     }
   };
 
-  const startEditing = (guest: Guest) => {
-    setEditingId(guest.id);
-    setEditingName(guest.name);
-    // Handle the case where category_id might be undefined
-    setEditingCategoryId(guest.category_id ? guest.category_id.toString() : "");
-  };
-
-  const cancelEditing = () => {
-    setEditingId(null);
-    setEditingName("");
-    setEditingCategoryId("");
-  };
-
-  const saveEdit = async (guest: Guest) => {
-    if (!editingName.trim()) {
-      toast({
-        title: "Error",
-        description: "Guest name cannot be empty",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (!editingCategoryId) {
-      toast({
-        title: "Error",
-        description: "Please select a category",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      await updateGuest.mutateAsync({
-        id: guest.id,
-        name: editingName.trim(),
-        categoryId: Number(editingCategoryId),
-      });
-      toast({
-        title: "Success",
-        description: "Guest updated successfully",
-      });
-      setEditingId(null);
-      setEditingName("");
-      setEditingCategoryId("");
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to update guest",
-        variant: "destructive",
-      });
-    }
-  };
+  const sortedGuests = [...guests].sort((a, b) => a.name.localeCompare(b.name));
 
   return (
     <div className="mt-8">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {sortedGuests.map((guest) => (
           <div
             key={guest.id}
-            className="flex items-center justify-between p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow"
+            className="bg-white p-4 rounded-lg shadow-sm space-y-2"
           >
-            <div className="flex items-center space-x-4 flex-1">
-              <User className="text-wedding-purple shrink-0" />
-              <div className="space-y-2 min-w-0">
-                {editingId === guest.id ? (
-                  <>
-                    <Input
-                      value={editingName}
-                      onChange={(e) => setEditingName(e.target.value)}
-                      className="w-full"
-                      autoFocus
-                    />
-                    <Select
-                      value={editingCategoryId}
-                      onValueChange={setEditingCategoryId}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select Category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {categories.map((category) => (
-                          <SelectItem
-                            key={category.id}
-                            value={category.id.toString()}
-                          >
-                            {category.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </>
-                ) : (
-                  <>
-                    <h3 className="font-medium truncate">{guest.name}</h3>
-                    <div className="text-sm text-gray-500 truncate">
-                      Category: {guest.category}
-                    </div>
-                  </>
-                )}
+            {editingId === guest.id ? (
+              <div className="space-y-2">
+                <Input
+                  value={editingName}
+                  onChange={(e) => setEditingName(e.target.value)}
+                  className="w-full"
+                />
+                <Select
+                  value={editingCategoryId?.toString() || ""}
+                  onValueChange={(value) => setEditingCategoryId(Number(value))}
+                >
+                  <SelectTrigger className="w-full bg-white border-input">
+                    <SelectValue placeholder="Select Category" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white border border-input shadow-md">
+                    {categories.map((category) => (
+                      <SelectItem 
+                        key={category.id} 
+                        value={category.id.toString()}
+                        className="hover:bg-gray-100"
+                      >
+                        {category.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <div className="flex gap-2">
+                  <Button onClick={handleSave} className="flex-1">
+                    Save
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => setEditingId(null)}
+                    className="flex-1"
+                  >
+                    Cancel
+                  </Button>
+                </div>
               </div>
-            </div>
-            <div className="flex space-x-2 ml-2 shrink-0">
-              {editingId === guest.id ? (
-                <>
+            ) : (
+              <div className="flex items-start justify-between">
+                <div className="space-y-1">
+                  <div className="font-medium">{guest.name}</div>
+                  {guest.category && (
+                    <div className="text-sm text-gray-500">{guest.category}</div>
+                  )}
+                  {guest.table_name && (
+                    <div className="text-sm text-gray-500">
+                      Table: {guest.table_name}
+                    </div>
+                  )}
+                </div>
+                <div className="flex gap-2">
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => saveEdit(guest)}
-                  >
-                    <Check className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={cancelEditing}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => startEditing(guest)}
+                    onClick={() => handleEdit(guest)}
                   >
                     <Edit2 className="h-4 w-4" />
                   </Button>
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => handleDeleteGuest(guest.id)}
+                    onClick={() => handleDelete(guest.id)}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
-                </>
-              )}
-            </div>
+                </div>
+              </div>
+            )}
           </div>
         ))}
       </div>

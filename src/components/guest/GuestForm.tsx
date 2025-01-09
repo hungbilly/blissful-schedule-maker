@@ -107,12 +107,16 @@ export const GuestForm = ({ categories, editingGuest, onEditComplete }: GuestFor
           value={categoryId}
           onValueChange={setCategoryId}
         >
-          <SelectTrigger>
+          <SelectTrigger className="w-full bg-white border-input">
             <SelectValue placeholder="Select Category" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-white border border-input shadow-md">
             {categories.map((category) => (
-              <SelectItem key={category.id} value={category.id.toString()}>
+              <SelectItem 
+                key={category.id} 
+                value={category.id.toString()}
+                className="hover:bg-gray-100"
+              >
                 {category.name}
               </SelectItem>
             ))}
