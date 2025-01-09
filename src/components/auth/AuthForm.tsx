@@ -36,6 +36,8 @@ export const AuthForm = () => {
           },
         }}
         providers={[]}
+        view="sign_up"
+        showLinks={true}
       />
     </div>
   );
