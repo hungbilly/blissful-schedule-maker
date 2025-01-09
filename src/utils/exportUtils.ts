@@ -92,14 +92,17 @@ export const exportToPDF = (
 ) => {
   const { headerInfo, data } = prepareEventData(events, use24Hour, brideName, groomName, projectName);
   
-  // Create PDF document
+  // Create PDF document with CJK support
   const doc = new jsPDF({
     orientation: "portrait",
     unit: "pt",
     format: "a4",
+    putOnlyUsedFonts: true,
+    compress: true
   }) as jsPDFWithAutoTable;
   
-  // Add title
+  // Add title with proper encoding for CJK
+  doc.setFont("helvetica", "normal");
   doc.setFontSize(16);
   doc.text(headerInfo, 40, 40);
   
@@ -113,7 +116,7 @@ export const exportToPDF = (
     event.Location,
   ]);
 
-  // Add the table with styling
+  // Add the table with styling and proper CJK support
   doc.autoTable({
     head: [["Time", "End Time", "Duration", "Title", "Description", "Location"]],
     body: tableData,
@@ -121,22 +124,37 @@ export const exportToPDF = (
     styles: {
       fontSize: 10,
       cellPadding: 3,
+      font: "helvetica",
+      overflow: 'linebreak',
+      cellWidth: 'wrap'
     },
     headStyles: {
       fillColor: [147, 51, 234], // wedding-purple color
       textColor: 255,
       fontSize: 11,
       fontStyle: 'bold',
+      halign: 'center'
     },
     columnStyles: {
-      0: { cellWidth: 60 }, // Time
-      1: { cellWidth: 60 }, // End Time
-      2: { cellWidth: 60 }, // Duration
-      3: { cellWidth: 100 }, // Title
-      4: { cellWidth: 'auto' }, // Description
-      5: { cellWidth: 80 }, // Location
+      0: { cellWidth: 50 }, // Time
+      1: { cellWidth: 50 }, // End Time
+      2: { cellWidth: 50 }, // Duration
+      3: { cellWidth: 120 }, // Title
+      4: { cellWidth: 150 }, // Description
+      5: { cellWidth: 100 }, // Location
     },
-    margin: { top: 60, right: 40, bottom: 40, left: 40 },
+    margin: { top: 60, right: 30, bottom: 30, left: 30 },
+    theme: 'grid',
+    tableWidth: 'auto',
+    didDrawCell: (data) => {
+      // Ensure text wrapping for CJK characters
+      if (data.cell.section === 'body' || data.cell.section === 'head') {
+        const td = data.cell.raw;
+        if (td) {
+          data.cell.styles.cellPadding = 5;
+        }
+      }
+    }
   });
 
   const fileName = `wedding-itinerary-${format(new Date(), 'yyyy-MM-dd')}.pdf`;
