@@ -2,13 +2,14 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, Settings } from "lucide-react";
+import { Plus, Settings, FileDown } from "lucide-react";
 import { BudgetCategory } from "@/components/budget/BudgetCategory";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { useBudget } from "@/hooks/useBudget";
 import { useProjectData } from "@/components/project/useProjectData";
 import { useProjects } from "@/hooks/useProjects";
+import { exportToCSV, exportToExcel } from "@/utils/budgetExportUtils";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -55,6 +56,14 @@ const Budget = () => {
     });
   };
 
+  const handleExportCSV = () => {
+    exportToCSV(categories, selectedCurrency.symbol, currentProject?.name);
+  };
+
+  const handleExportExcel = () => {
+    exportToExcel(categories, selectedCurrency.symbol, currentProject?.name);
+  };
+
   if (isLoading) {
     return (
       <SidebarProvider>
@@ -93,27 +102,47 @@ const Budget = () => {
                   className="w-full md:w-48"
                 />
               </div>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="icon" className="h-10 w-10">
-                    <Settings className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent 
-                  align="end" 
-                  className="bg-white border border-gray-200 shadow-lg"
-                >
-                  {CURRENCIES.map((currency) => (
-                    <DropdownMenuItem
-                      key={currency.code}
-                      onClick={() => setSelectedCurrency(currency)}
-                      className="hover:bg-gray-100"
-                    >
-                      {currency.code} ({currency.symbol})
+              <div className="flex items-center gap-2">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="icon" className="h-10 w-10">
+                      <Settings className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent 
+                    align="end" 
+                    className="bg-white border border-gray-200 shadow-lg"
+                  >
+                    {CURRENCIES.map((currency) => (
+                      <DropdownMenuItem
+                        key={currency.code}
+                        onClick={() => setSelectedCurrency(currency)}
+                        className="hover:bg-gray-100"
+                      >
+                        {currency.code} ({currency.symbol})
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="icon" className="h-10 w-10">
+                      <FileDown className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent 
+                    align="end" 
+                    className="bg-white border border-gray-200 shadow-lg"
+                  >
+                    <DropdownMenuItem onClick={handleExportCSV}>
+                      Export as CSV
                     </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
+                    <DropdownMenuItem onClick={handleExportExcel}>
+                      Export as Excel
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </div>
 
             <div className="space-y-8">
