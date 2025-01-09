@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { ProjectDialog } from "@/components/project/ProjectDialog";
 import { CoupleInfo } from "@/components/CoupleInfo";
-import { exportToCSV } from "@/utils/exportUtils";
+import { exportToCSV, exportToExcel, exportToPDF } from "@/utils/exportUtils";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
@@ -168,21 +168,52 @@ export const ProjectContent = ({ onExport }: ProjectContentProps) => {
     setIsProjectDialogOpen(true);
   };
 
-  const handleExport = () => {
+  const handleExport = (type: 'csv' | 'excel' | 'pdf') => {
     if (!currentProject) return;
     
-    exportToCSV(
-      events, 
-      use24Hour,
-      profileData.bride_name,
-      profileData.groom_name,
-      currentProject.name
-    );
-    
-    toast({
-      title: "Success",
-      description: "Event rundown has been downloaded",
-    });
+    try {
+      switch (type) {
+        case 'csv':
+          exportToCSV(
+            events, 
+            use24Hour,
+            profileData.bride_name,
+            profileData.groom_name,
+            currentProject.name
+          );
+          break;
+        case 'excel':
+          exportToExcel(
+            events, 
+            use24Hour,
+            profileData.bride_name,
+            profileData.groom_name,
+            currentProject.name
+          );
+          break;
+        case 'pdf':
+          exportToPDF(
+            events, 
+            use24Hour,
+            profileData.bride_name,
+            profileData.groom_name,
+            currentProject.name
+          );
+          break;
+      }
+      
+      toast({
+        title: "Success",
+        description: `Event rundown has been downloaded as ${type.toUpperCase()}`,
+      });
+    } catch (error) {
+      console.error('Export error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to export event rundown",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleCoupleInfoChange = async (date: string) => {
@@ -226,7 +257,7 @@ export const ProjectContent = ({ onExport }: ProjectContentProps) => {
               onProjectChange={setCurrentProjectId}
               onNewProject={handleNewProject}
               onEditProject={handleEditProject}
-              onExport={onExport}
+              onExport={handleExport}
               setUse24Hour={setUse24Hour}
             />
 

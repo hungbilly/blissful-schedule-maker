@@ -1,64 +1,129 @@
+import { jsPDF } from "jspdf";
+import 'jspdf-autotable';
+import { UserOptions } from 'jspdf-autotable';
+import * as XLSX from "xlsx";
 import { TimelineEvent } from "@/components/project/types";
+import { format } from "date-fns";
+
+// Extend jsPDF type to include autoTable
+interface jsPDFWithAutoTable extends jsPDF {
+  autoTable: (options: UserOptions) => jsPDF;
+}
 
 const formatTime = (time: string, use24Hour: boolean): string => {
-  if (!time) return "";
+  if (use24Hour) return time;
   
   const [hours, minutes] = time.split(':');
-  const hour = parseInt(hours);
-  
-  if (use24Hour) {
-    return `${hours.padStart(2, '0')}:${minutes}`;
-  }
-  
+  const hour = parseInt(hours, 10);
   const period = hour >= 12 ? 'PM' : 'AM';
   const hour12 = hour % 12 || 12;
+  
   return `${hour12}:${minutes} ${period}`;
 };
 
-export const exportToCSV = (
+const prepareEventData = (
   events: TimelineEvent[], 
   use24Hour: boolean,
   brideName?: string,
   groomName?: string,
-  projectName?: string
+  projectName?: string,
 ) => {
-  // Sort events by time
+  const coupleNames = [brideName, groomName].filter(Boolean).join(" & ");
+  const title = projectName || "Wedding Itinerary";
+  const headerInfo = coupleNames ? `${title} - ${coupleNames}` : title;
+
   const sortedEvents = [...events].sort((a, b) => {
     const timeA = a.time.split(':').map(Number);
     const timeB = b.time.split(':').map(Number);
     return (timeA[0] * 60 + timeA[1]) - (timeB[0] * 60 + timeB[1]);
   });
 
-  // Create CSV content
-  const headers = ['Time', 'End Time', 'Duration', 'Title', 'Description', 'Location'];
-  const rows = sortedEvents.map(event => [
-    formatTime(event.time, use24Hour),
-    formatTime(event.end_time, use24Hour),
-    event.duration,
-    event.title,
-    event.description || '',
-    event.location || ''
+  return {
+    headerInfo,
+    data: sortedEvents.map((event) => ({
+      Time: formatTime(event.time, use24Hour),
+      'End Time': formatTime(event.end_time, use24Hour),
+      Duration: event.duration,
+      Title: event.title,
+      Description: event.description || '',
+      Location: event.location || '',
+    })),
+  };
+};
+
+export const exportToCSV = (
+  events: TimelineEvent[],
+  use24Hour: boolean,
+  brideName?: string,
+  groomName?: string,
+  projectName?: string,
+) => {
+  const { data } = prepareEventData(events, use24Hour, brideName, groomName, projectName);
+  const worksheet = XLSX.utils.json_to_sheet(data);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Events");
+  
+  const fileName = `wedding-itinerary-${format(new Date(), 'yyyy-MM-dd')}.csv`;
+  XLSX.writeFile(workbook, fileName);
+};
+
+export const exportToExcel = (
+  events: TimelineEvent[],
+  use24Hour: boolean,
+  brideName?: string,
+  groomName?: string,
+  projectName?: string,
+) => {
+  const { data } = prepareEventData(events, use24Hour, brideName, groomName, projectName);
+  const worksheet = XLSX.utils.json_to_sheet(data);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Events");
+  
+  const fileName = `wedding-itinerary-${format(new Date(), 'yyyy-MM-dd')}.xlsx`;
+  XLSX.writeFile(workbook, fileName);
+};
+
+export const exportToPDF = (
+  events: TimelineEvent[],
+  use24Hour: boolean,
+  brideName?: string,
+  groomName?: string,
+  projectName?: string,
+) => {
+  const { headerInfo, data } = prepareEventData(events, use24Hour, brideName, groomName, projectName);
+  const doc = new jsPDF() as jsPDFWithAutoTable;
+  
+  // Add title
+  doc.setFontSize(16);
+  doc.text(headerInfo, 14, 15);
+  
+  // Prepare data for the table
+  const tableData = data.map(event => [
+    event.Time,
+    event['End Time'],
+    event.Duration,
+    event.Title,
+    event.Description,
+    event.Location,
   ]);
 
-  const csvContent = [
-    headers.join(','),
-    ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
-  ].join('\n');
+  // Add the table with styling
+  doc.autoTable({
+    head: [["Time", "End Time", "Duration", "Title", "Description", "Location"]],
+    body: tableData,
+    startY: 25,
+    styles: {
+      fontSize: 10,
+      cellPadding: 3,
+    },
+    headStyles: {
+      fillColor: [147, 51, 234], // wedding-purple color
+      textColor: 255,
+      fontSize: 11,
+      fontStyle: 'bold',
+    },
+  });
 
-  // Create and trigger download
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
-  const url = URL.createObjectURL(blob);
-  
-  // Generate filename with bride and groom names if available
-  let filename = 'wedding_rundown';
-  if (brideName && groomName && projectName) {
-    filename = `${brideName}_${groomName}_${projectName}_rundown`.replace(/\s+/g, '_').toLowerCase();
-  }
-  
-  link.setAttribute('href', url);
-  link.setAttribute('download', `${filename}.csv`);
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  const fileName = `wedding-itinerary-${format(new Date(), 'yyyy-MM-dd')}.pdf`;
+  doc.save(fileName);
 };
