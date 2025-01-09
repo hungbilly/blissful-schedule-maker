@@ -44,6 +44,23 @@ export const useTables = () => {
     },
   });
 
+  const updateTable = useMutation({
+    mutationFn: async ({ id, name }: { id: number; name: string }) => {
+      if (!session?.user?.id) throw new Error('Not authenticated');
+
+      const { error } = await supabase
+        .from('tables')
+        .update({ name })
+        .eq('id', id)
+        .eq('user_id', session.user.id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tables'] });
+    },
+  });
+
   const deleteTable = useMutation({
     mutationFn: async (id: number) => {
       if (!session?.user?.id) throw new Error('Not authenticated');
@@ -65,6 +82,7 @@ export const useTables = () => {
     tables,
     tablesLoading,
     addTable,
+    updateTable,
     deleteTable,
   };
 };

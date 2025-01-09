@@ -13,7 +13,7 @@ export default function SittingPlan() {
   const [newTableName, setNewTableName] = useState("");
   const { toast } = useToast();
   const { guests, guestsLoading, assignGuestToTable } = useGuests();
-  const { tables, tablesLoading, addTable, deleteTable } = useTables();
+  const { tables, tablesLoading, addTable, deleteTable, updateTable } = useTables();
 
   const handleAddTable = async () => {
     if (!newTableName.trim()) {
@@ -59,6 +59,22 @@ export default function SittingPlan() {
       toast({
         title: "Error",
         description: "Failed to delete table",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleUpdateTableName = async (tableId: number, newName: string) => {
+    try {
+      await updateTable.mutateAsync({ id: tableId, name: newName });
+      toast({
+        title: "Success",
+        description: "Table name updated successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update table name",
         variant: "destructive",
       });
     }
@@ -143,6 +159,7 @@ export default function SittingPlan() {
                   onDeleteTable={handleDeleteTable}
                   onAssignGuest={handleAssignGuest}
                   onRemoveGuest={handleRemoveGuest}
+                  onUpdateTableName={handleUpdateTableName}
                 />
               ))}
             </div>
