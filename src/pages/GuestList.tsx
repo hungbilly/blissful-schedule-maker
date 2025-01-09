@@ -29,7 +29,7 @@ export default function GuestList() {
       return;
     }
     
-    exportGuestsToCSV(guests);
+    exportGuestsToCSV(guests, []); // Pass empty array as tables argument
     toast({
       title: "Success",
       description: "Guest list exported successfully",

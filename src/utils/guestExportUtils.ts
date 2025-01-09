@@ -1,7 +1,13 @@
 import { Guest } from "@/components/project/types";
 import { jsPDF } from "jspdf";
-import "jspdf-autotable";
+import 'jspdf-autotable';
 import * as XLSX from "xlsx";
+import { UserOptions } from 'jspdf-autotable';
+
+// Extend jsPDF type to include autoTable
+interface jsPDFWithAutoTable extends jsPDF {
+  autoTable: (options: UserOptions) => jsPDF;
+}
 
 export const exportGuestsToCSV = (guests: Guest[], tables: { id: number; name: string }[]) => {
   const getTableName = (tableId: number | null) => {
@@ -64,7 +70,7 @@ export const exportGuestsToPDF = (guests: Guest[], tables: { id: number; name: s
     return table ? table.name : `Table ${tableId}`;
   };
 
-  const doc = new jsPDF();
+  const doc = new jsPDF() as jsPDFWithAutoTable;
   
   doc.setFontSize(16);
   doc.text("Wedding Sitting Plan", 14, 15);
