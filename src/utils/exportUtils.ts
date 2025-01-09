@@ -91,7 +91,15 @@ export const exportToPDF = (
   projectName?: string,
 ) => {
   const { headerInfo, data } = prepareEventData(events, use24Hour, brideName, groomName, projectName);
-  const doc = new jsPDF() as jsPDFWithAutoTable;
+  
+  // Create PDF with CJK support
+  const doc = new jsPDF({
+    filters: ["ASCIIHexEncode"]
+  }) as jsPDFWithAutoTable;
+
+  // Add CJK font support
+  doc.addFont("https://fonts.gstatic.com/ea/notosanstc/v1/NotoSansTC-Regular.ttf", "NotoSansTC", "normal");
+  doc.setFont("NotoSansTC");
   
   // Add title
   doc.setFontSize(16);
@@ -107,7 +115,7 @@ export const exportToPDF = (
     event.Location,
   ]);
 
-  // Add the table with styling
+  // Add the table with styling and CJK font support
   doc.autoTable({
     head: [["Time", "End Time", "Duration", "Title", "Description", "Location"]],
     body: tableData,
@@ -115,12 +123,17 @@ export const exportToPDF = (
     styles: {
       fontSize: 10,
       cellPadding: 3,
+      font: "NotoSansTC",
     },
     headStyles: {
       fillColor: [147, 51, 234], // wedding-purple color
       textColor: 255,
       fontSize: 11,
       fontStyle: 'bold',
+      font: "NotoSansTC",
+    },
+    bodyStyles: {
+      font: "NotoSansTC",
     },
   });
 
