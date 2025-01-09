@@ -38,7 +38,8 @@ const Budget = () => {
     deleteCategory,
     addItem,
     updateItem,
-    deleteItem 
+    deleteItem,
+    updateCategory
   } = useBudget(currentProject?.id ?? null);
 
   const totalSpent = categories.reduce(
@@ -125,6 +126,7 @@ const Budget = () => {
                   onDeleteItem={(categoryId, itemId) => deleteItem.mutate({ categoryId, itemId })}
                   onAddItem={(categoryId, title, amount) => addItem.mutate({ categoryId, title, amount })}
                   onDeleteCategory={(categoryId) => deleteCategory.mutate(categoryId)}
+                  onUpdateCategory={(categoryId, name) => updateCategory.mutate({ categoryId, name })}
                   currencySymbol={selectedCurrency.symbol}
                 />
               ))}

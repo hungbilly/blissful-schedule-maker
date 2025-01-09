@@ -1,4 +1,4 @@
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Check, X, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BudgetItem } from "./BudgetItem";
 import { BudgetCategory as BudgetCategoryType, BudgetItem as BudgetItemType } from "@/components/project/types";
@@ -10,6 +10,7 @@ interface BudgetCategoryProps {
   onDeleteItem: (categoryId: number, itemId: number) => void;
   onAddItem: (categoryId: number, title: string, amount: number) => void;
   onDeleteCategory: (categoryId: number) => void;
+  onUpdateCategory: (categoryId: number, name: string) => void;
   currencySymbol: string;
 }
 
@@ -19,12 +20,15 @@ export const BudgetCategory = ({
   onDeleteItem,
   onAddItem,
   onDeleteCategory,
+  onUpdateCategory,
   currencySymbol,
 }: BudgetCategoryProps) => {
   const [isAddingItem, setIsAddingItem] = useState(false);
   const [newItemTitle, setNewItemTitle] = useState("");
   const [newItemAmount, setNewItemAmount] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedName, setEditedName] = useState(category.name);
 
   const handleAddItem = () => {
     if (newItemTitle.trim()) {
@@ -35,6 +39,18 @@ export const BudgetCategory = ({
     }
   };
 
+  const handleUpdateName = () => {
+    if (editedName.trim() && editedName !== category.name) {
+      onUpdateCategory(category.id, editedName);
+    }
+    setIsEditing(false);
+  };
+
+  const handleCancelEdit = () => {
+    setEditedName(category.name);
+    setIsEditing(false);
+  };
+
   return (
     <div 
       className="bg-white rounded-lg shadow-sm p-6 space-y-4"
@@ -42,16 +58,56 @@ export const BudgetCategory = ({
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="flex justify-between items-center">
-        <h3 className="text-xl font-serif text-wedding-purple">{category.name}</h3>
-        {isHovered && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-wedding-purple hover:bg-wedding-pink/10"
-            onClick={() => onDeleteCategory(category.id)}
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
+        {isEditing ? (
+          <div className="flex items-center gap-2 flex-1">
+            <input
+              type="text"
+              value={editedName}
+              onChange={(e) => setEditedName(e.target.value)}
+              className="flex-1 px-3 py-2 border rounded text-xl font-serif text-wedding-purple"
+              autoFocus
+            />
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleUpdateName}
+              className="text-wedding-purple hover:bg-wedding-pink/10"
+            >
+              <Check className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleCancelEdit}
+              className="text-wedding-purple hover:bg-wedding-pink/10"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        ) : (
+          <>
+            <h3 className="text-xl font-serif text-wedding-purple">{category.name}</h3>
+            {isHovered && (
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-wedding-purple hover:bg-wedding-pink/10"
+                  onClick={() => setIsEditing(true)}
+                >
+                  <Pencil className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-wedding-purple hover:bg-wedding-pink/10"
+                  onClick={() => onDeleteCategory(category.id)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+          </>
         )}
       </div>
       <div className="space-y-2">

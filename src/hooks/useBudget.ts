@@ -158,11 +158,33 @@ export const useBudget = (projectId: number | null) => {
     },
   });
 
+  const updateCategory = useMutation({
+    mutationFn: async ({ categoryId, name }: { categoryId: number, name: string }) => {
+      const { data, error } = await supabase
+        .from('budget_categories')
+        .update({ name })
+        .eq('id', categoryId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['budget', projectId] });
+      toast({
+        title: "Success",
+        description: "Category updated successfully",
+      });
+    },
+  });
+
   return {
     categories,
     isLoading,
     addCategory,
     deleteCategory,
+    updateCategory,
     addItem,
     updateItem,
     deleteItem
