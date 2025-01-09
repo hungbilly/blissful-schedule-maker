@@ -14,7 +14,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { exportTablesToCSV, exportTablesToXLSX } from "@/utils/guestExportUtils";
+import { exportGuestsToCSV, exportGuestsToXLSX } from "@/utils/guestExportUtils";
 
 export default function SittingPlan() {
   const [newTableName, setNewTableName] = useState("");
@@ -48,14 +48,91 @@ export default function SittingPlan() {
     }
   };
 
+  const handleDeleteTable = async (id: number) => {
+    try {
+      const tableGuests = guests.filter(guest => guest.tableId === id);
+      await Promise.all(
+        tableGuests.map(guest => 
+          assignGuestToTable.mutateAsync({ guestId: guest.id, tableId: null })
+        )
+      );
+      
+      await deleteTable.mutateAsync(id);
+      toast({
+        title: "Success",
+        description: "Table deleted successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete table",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleUpdateTableName = async (tableId: number, newName: string) => {
+    try {
+      await updateTable.mutateAsync({ id: tableId, name: newName });
+      toast({
+        title: "Success",
+        description: "Table name updated successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update table name",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleAssignGuest = async (tableId: number, guestId: string) => {
+    try {
+      await assignGuestToTable.mutateAsync({ 
+        guestId: parseInt(guestId), 
+        tableId 
+      });
+      toast({
+        title: "Success",
+        description: "Guest assigned to table successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to assign guest to table",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleRemoveGuest = async (tableId: number, guestId: number) => {
+    try {
+      await assignGuestToTable.mutateAsync({ 
+        guestId, 
+        tableId: null 
+      });
+      toast({
+        title: "Success",
+        description: "Guest removed from table successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to remove guest from table",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleExport = (format: 'csv' | 'xlsx') => {
     try {
       switch (format) {
         case 'csv':
-          exportTablesToCSV(tables, guests);
+          exportGuestsToCSV(guests, tables);
           break;
         case 'xlsx':
-          exportTablesToXLSX(tables, guests);
+          exportGuestsToXLSX(guests, tables);
           break;
       }
       toast({
@@ -125,25 +202,10 @@ export default function SittingPlan() {
                   key={table.id}
                   table={table}
                   guests={guests}
-                  onDeleteTable={deleteTable.mutateAsync}
-                  onAssignGuest={(tableId, guestId) => 
-                    assignGuestToTable.mutateAsync({ 
-                      guestId: parseInt(guestId), 
-                      tableId 
-                    })
-                  }
-                  onRemoveGuest={(tableId, guestId) => 
-                    assignGuestToTable.mutateAsync({ 
-                      guestId, 
-                      tableId: null 
-                    })
-                  }
-                  onUpdateTableName={(tableId, newName) => 
-                    updateTable.mutateAsync({ 
-                      id: tableId, 
-                      name: newName 
-                    })
-                  }
+                  onDeleteTable={handleDeleteTable}
+                  onAssignGuest={handleAssignGuest}
+                  onRemoveGuest={handleRemoveGuest}
+                  onUpdateTableName={handleUpdateTableName}
                 />
               ))}
             </div>
