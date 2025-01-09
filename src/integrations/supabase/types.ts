@@ -187,6 +187,13 @@ export type Database = {
             referencedRelation: "guest_categories"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "guests_table_id_fkey"
+            columns: ["table_id"]
+            isOneToOne: false
+            referencedRelation: "tables"
+            referencedColumns: ["id"]
+          },
         ]
       }
       profiles: {

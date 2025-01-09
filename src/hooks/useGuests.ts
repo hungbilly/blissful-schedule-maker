@@ -21,11 +21,11 @@ export const useGuests = () => {
             id,
             name
           ),
+          table_id,
           tables (
             id,
             name
-          ),
-          table_id
+          )
         `)
         .eq('user_id', session.user.id);
 
