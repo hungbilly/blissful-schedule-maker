@@ -34,7 +34,7 @@ const Index = () => {
           description: "You have successfully signed in.",
         });
         navigate("/");
-      } else if (_event === 'SIGNED_UP') {
+      } else if (_event === 'USER_UPDATED' && !session) {
         toast({
           title: "Account Created",
           description: "Please sign in with your new account.",
