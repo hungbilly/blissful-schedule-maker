@@ -1,6 +1,6 @@
 import { ProjectSelector } from "./ProjectSelector";
 import { Button } from "@/components/ui/button";
-import { Download, Edit2, FileSpreadsheet, FilePdf } from "lucide-react";
+import { Download, Edit2, FileSpreadsheet, FileText } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Project } from "./types";
@@ -64,7 +64,7 @@ export const ProjectHeader = ({
               Export Excel
             </DropdownMenuItem>
             <DropdownMenuItem onClick={onExport}>
-              <FilePdf className="mr-2 h-4 w-4" />
+              <FileText className="mr-2 h-4 w-4" />
               Export PDF
             </DropdownMenuItem>
           </DropdownMenuContent>
