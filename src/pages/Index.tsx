@@ -28,12 +28,19 @@ const Index = () => {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
-      if (session) {
+      if (_event === 'SIGNED_IN') {
         toast({
           title: "Welcome!",
           description: "You have successfully signed in.",
         });
         navigate("/");
+      } else if (_event === 'SIGNED_UP') {
+        toast({
+          title: "Account Created",
+          description: "Please sign in with your new account.",
+        });
+        // Sign out the user after successful signup
+        supabase.auth.signOut();
       }
     });
 
