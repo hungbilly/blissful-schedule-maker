@@ -20,7 +20,7 @@ interface GuestFormProps {
 
 export const GuestForm = ({ categories, editingGuest, onEditComplete }: GuestFormProps) => {
   const [name, setName] = useState("");
-  const [categoryId, setCategoryId] = useState("");
+  const [categoryId, setCategoryId] = useState<string>("");
   const { addGuest, updateGuest } = useGuests();
   const { toast } = useToast();
 
@@ -31,17 +31,38 @@ export const GuestForm = ({ categories, editingGuest, onEditComplete }: GuestFor
       if (category) {
         setCategoryId(category.id.toString());
       }
+    } else {
+      setName("");
+      setCategoryId("");
     }
   }, [editingGuest, categories]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!name.trim()) {
+      toast({
+        title: "Error",
+        description: "Guest name is required",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!categoryId) {
+      toast({
+        title: "Error",
+        description: "Please select a category",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       if (editingGuest) {
         await updateGuest.mutateAsync({
           id: editingGuest.id,
-          name,
+          name: name.trim(),
           categoryId: Number(categoryId),
         });
         toast({
@@ -51,18 +72,18 @@ export const GuestForm = ({ categories, editingGuest, onEditComplete }: GuestFor
         onEditComplete?.();
       } else {
         await addGuest.mutateAsync({
-          name,
+          name: name.trim(),
           categoryId: Number(categoryId),
         });
         toast({
           title: "Success",
           description: "Guest added successfully",
         });
+        setName("");
+        setCategoryId("");
       }
-      
-      setName("");
-      setCategoryId("");
     } catch (error) {
+      console.error("Error saving guest:", error);
       toast({
         title: "Error",
         description: "Failed to save guest",
