@@ -47,6 +47,7 @@ export interface Guest {
   id: number;
   name: string;
   category: string;
+  category_id: number;  // Added this field
   tableId?: number;
 }
 
