@@ -82,7 +82,15 @@ export const GuestListComponent = ({ guests, onEditGuest }: GuestListProps) => {
     }
   };
 
-  const sortedGuests = [...guests].sort((a, b) => a.name.localeCompare(b.name));
+  // Sort guests first by category, then by name within each category
+  const sortedGuests = [...guests].sort((a, b) => {
+    // First sort by category
+    const categoryComparison = (a.category || '').localeCompare(b.category || '');
+    // If categories are different, return the category comparison
+    if (categoryComparison !== 0) return categoryComparison;
+    // If categories are the same, sort by name
+    return a.name.localeCompare(b.name);
+  });
 
   return (
     <div className="mt-8">
