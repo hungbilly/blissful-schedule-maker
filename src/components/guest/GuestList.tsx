@@ -138,9 +138,9 @@ export const GuestListComponent = ({ guests, onEditGuest }: GuestListProps) => {
                   {guest.category && (
                     <div className="text-sm text-gray-500">{guest.category}</div>
                   )}
-                  {guest.table_name && (
+                  {guest.tableName && (
                     <div className="text-sm text-gray-500">
-                      Table: {guest.table_name}
+                      Table: {guest.tableName}
                     </div>
                   )}
                 </div>

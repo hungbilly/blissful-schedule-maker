@@ -47,8 +47,9 @@ export interface Guest {
   id: number;
   name: string;
   category: string;
-  category_id: number;  // Added this field
+  category_id: number;
   tableId?: number;
+  tableName?: string;  // Added this field
 }
 
 export interface GuestCategory {

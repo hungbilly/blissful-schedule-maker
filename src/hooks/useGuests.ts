@@ -21,6 +21,10 @@ export const useGuests = () => {
             id,
             name
           ),
+          tables (
+            id,
+            name
+          ),
           table_id
         `)
         .eq('user_id', session.user.id);
@@ -31,7 +35,9 @@ export const useGuests = () => {
         id: guest.id,
         name: guest.name,
         category: guest.guest_categories?.name || '',
+        category_id: guest.guest_categories?.id,
         tableId: guest.table_id,
+        tableName: guest.tables?.name,
       })) as Guest[];
     },
     enabled: !!session?.user?.id,
