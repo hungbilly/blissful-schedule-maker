@@ -7,6 +7,8 @@ import { useNavigate } from "react-router-dom";
 import { exportGuestsToCSV, exportGuestsToXLSX } from "@/utils/guestExportUtils";
 import { useGuests } from "@/hooks/useGuests";
 import { useTables } from "@/hooks/useTables";
+import { Button } from "@/components/ui/button";
+import { LogOut } from "lucide-react";
 
 const Index = () => {
   const [session, setSession] = useState(null);
@@ -37,6 +39,24 @@ const Index = () => {
 
     return () => subscription.unsubscribe();
   }, [toast, navigate]);
+
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to log out",
+        variant: "destructive",
+      });
+    } else {
+      setSession(null);
+      toast({
+        title: "Success",
+        description: "Logged out successfully",
+      });
+      navigate("/");
+    }
+  };
 
   const handleExport = (type: 'csv' | 'excel') => {
     try {
@@ -84,8 +104,21 @@ const Index = () => {
     return <LandingPage />;
   }
 
-  // Show project content for authenticated users
-  return <ProjectContent onExport={handleExport} />;
+  // Show project content for authenticated users with logout button
+  return (
+    <div className="relative">
+      <Button
+        variant="ghost"
+        size="sm"
+        className="absolute top-4 right-4 text-wedding-purple hover:text-wedding-purple/80"
+        onClick={handleLogout}
+      >
+        <LogOut className="w-4 h-4 mr-2" />
+        Logout
+      </Button>
+      <ProjectContent onExport={handleExport} />
+    </div>
+  );
 };
 
 export default Index;
