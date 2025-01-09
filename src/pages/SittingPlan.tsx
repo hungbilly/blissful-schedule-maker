@@ -112,9 +112,11 @@ export default function SittingPlan() {
         <AppSidebar />
         <div className="flex-1 md:ml-64 p-2 md:p-8">
           <div className="max-w-7xl mx-auto space-y-4 md:space-y-6">
-            <h1 className="text-2xl md:text-3xl font-serif text-wedding-purple pl-12 md:pl-0">
-              Sitting Plan
-            </h1>
+            <div className="flex items-center justify-center mb-8">
+              <h1 className="text-2xl md:text-3xl font-serif text-wedding-purple">
+                Sitting Plan
+              </h1>
+            </div>
 
             <div className="bg-white rounded-lg p-4 md:p-6 shadow-sm space-y-4 mt-16 md:mt-0">
               <Input
