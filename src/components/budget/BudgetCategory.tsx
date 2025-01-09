@@ -51,6 +51,8 @@ export const BudgetCategory = ({
     setIsEditing(false);
   };
 
+  const categoryTotal = category.items.reduce((sum, item) => sum + item.amount, 0);
+
   return (
     <div 
       className="bg-white rounded-lg shadow-sm p-6 space-y-4"
@@ -86,7 +88,12 @@ export const BudgetCategory = ({
           </div>
         ) : (
           <>
-            <h3 className="text-xl font-serif text-wedding-purple">{category.name}</h3>
+            <div className="flex flex-col">
+              <h3 className="text-xl font-serif text-wedding-purple">{category.name}</h3>
+              <span className="text-sm text-gray-500">
+                {currencySymbol}{categoryTotal.toFixed(2)}
+              </span>
+            </div>
             {isHovered && (
               <div className="flex items-center gap-2">
                 <Button
