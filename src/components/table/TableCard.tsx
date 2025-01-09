@@ -29,7 +29,7 @@ export const TableCard = ({
   const tableGuests = guests.filter(guest => guest.tableId === table.id);
 
   return (
-    <div className="p-3 md:p-6 bg-white rounded-lg shadow space-y-3 md:space-y-4"> {/* Reduced padding and spacing on mobile */}
+    <div className="p-3 md:p-6 bg-white rounded-lg shadow space-y-3 md:space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <TableIcon className="text-wedding-purple h-4 w-4 md:h-5 md:w-5" />
@@ -51,19 +51,19 @@ export const TableCard = ({
             className="flex items-start justify-between p-2 bg-gray-50 rounded"
           >
             <div className="space-y-1">
-              <div className="flex items-center space-x-2">
-                <User className="h-4 w-4 text-wedding-purple shrink-0" />
-                <div className="flex md:flex-col md:items-start items-center space-x-2 md:space-x-0">
+              <div className="flex flex-col space-y-1">
+                <div className="flex items-center space-x-2">
+                  <User className="h-4 w-4 text-wedding-purple shrink-0" />
                   <span className="text-sm md:text-base">{guest.name}</span>
-                  {guest.category && (
-                    <Badge 
-                      variant="secondary" 
-                      className="text-xs md:ml-6 md:mt-1"
-                    >
-                      {guest.category}
-                    </Badge>
-                  )}
                 </div>
+                {guest.category && (
+                  <Badge 
+                    variant="secondary" 
+                    className="text-xs ml-6"
+                  >
+                    {guest.category}
+                  </Badge>
+                )}
               </div>
             </div>
             <Button
