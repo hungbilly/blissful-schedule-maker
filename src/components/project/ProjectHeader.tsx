@@ -18,7 +18,7 @@ interface ProjectHeaderProps {
   onProjectChange: (id: number) => void;
   onNewProject: () => void;
   onEditProject: () => void;
-  onExport: () => void;
+  onExport: (type: 'csv' | 'excel' | 'pdf') => void;
   setUse24Hour: (value: boolean) => void;
 }
 
@@ -55,15 +55,15 @@ export const ProjectHeader = ({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={onExport}>
+            <DropdownMenuItem onClick={() => onExport('csv')}>
               <Download className="mr-2 h-4 w-4" />
               Export CSV
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={onExport}>
+            <DropdownMenuItem onClick={() => onExport('excel')}>
               <FileSpreadsheet className="mr-2 h-4 w-4" />
               Export Excel
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={onExport}>
+            <DropdownMenuItem onClick={() => onExport('pdf')}>
               <FileText className="mr-2 h-4 w-4" />
               Export PDF
             </DropdownMenuItem>
