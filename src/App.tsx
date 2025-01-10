@@ -80,7 +80,7 @@ function App() {
                   }
                 />
                 <Route
-                  path="/sitting-plan"
+                  path="/seating-plan"
                   element={
                     <ProtectedRoute>
                       <SittingPlan />
