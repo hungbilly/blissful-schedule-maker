@@ -160,7 +160,7 @@ export default function SittingPlan() {
           <div className="max-w-7xl mx-auto space-y-4 md:space-y-6">
             <div className="flex items-center justify-between mb-8">
               <h1 className="text-2xl md:text-3xl font-serif text-wedding-purple">
-                Sitting Plan
+                Seating Plan
               </h1>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

@@ -38,7 +38,7 @@ export const NavigationLinks = () => {
           className="w-full justify-start"
           asChild
         >
-          <Link to="/sitting-plan">Sitting Plans</Link>
+          <Link to="/sitting-plan">Seating Plan</Link>
         </Button>
       </div>
     </nav>
