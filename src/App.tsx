@@ -12,6 +12,7 @@ import VendorList from "./pages/VendorList";
 import Budget from "./pages/Budget";
 import GuestList from "./pages/GuestList";
 import SittingPlan from "./pages/SittingPlan";
+import AdminDashboard from "./pages/AdminDashboard";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -23,10 +24,11 @@ const queryClient = new QueryClient({
 });
 
 // Protected route wrapper component
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+const ProtectedRoute = ({ children, requireAdmin = false }: { children: React.ReactNode, requireAdmin?: boolean }) => {
   const session = useSession();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const isAdmin = session?.user?.email === "admin@onair.wedding"; // You can adjust this condition
   
   useEffect(() => {
     if (!session) {
@@ -36,10 +38,17 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
         variant: "destructive",
       });
       navigate("/", { replace: true });
+    } else if (requireAdmin && !isAdmin) {
+      toast({
+        title: "Access Denied",
+        description: "You don't have permission to access this page.",
+        variant: "destructive",
+      });
+      navigate("/", { replace: true });
     }
-  }, [session, navigate, toast]);
+  }, [session, navigate, toast, requireAdmin, isAdmin]);
   
-  if (!session) {
+  if (!session || (requireAdmin && !isAdmin)) {
     return null;
   }
   
@@ -107,6 +116,14 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <SittingPlan />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin"
+                  element={
+                    <ProtectedRoute requireAdmin>
+                      <AdminDashboard />
                     </ProtectedRoute>
                   }
                 />
