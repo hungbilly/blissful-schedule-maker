@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -18,6 +18,8 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { useSession } from "@supabase/auth-helpers-react";
+import { ArrowUpDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface UserData {
   id: string;
@@ -34,10 +36,15 @@ interface UserData {
   }>;
 }
 
+type SortField = 'id' | 'bride_name' | 'groom_name' | 'created_at' | 'projects_count' | 'wedding_date';
+type SortOrder = 'asc' | 'desc';
+
 const AdminDashboard = () => {
   const { toast } = useToast();
   const session = useSession();
   const isAdmin = session?.user?.email === "admin@onair.wedding";
+  const [sortField, setSortField] = useState<SortField>('created_at');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
 
   const { data: users, isLoading, error } = useQuery({
     queryKey: ["admin-users"],
@@ -46,7 +53,6 @@ const AdminDashboard = () => {
         throw new Error("Unauthorized access");
       }
 
-      // Get all profiles with bride and groom names
       const { data: profiles, error: profilesError } = await supabase
         .from("profiles")
         .select(`
@@ -65,7 +71,6 @@ const AdminDashboard = () => {
         throw profilesError;
       }
 
-      // Then, for each profile, get their projects and vendors
       const usersWithData = await Promise.all(
         (profiles || []).map(async (profile) => {
           const { data: projectsData } = await supabase
@@ -97,6 +102,57 @@ const AdminDashboard = () => {
     enabled: isAdmin,
   });
 
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortOrder('asc');
+    }
+  };
+
+  const sortedUsers = React.useMemo(() => {
+    if (!users) return [];
+    
+    return [...users].sort((a, b) => {
+      let compareA: any;
+      let compareB: any;
+
+      switch (sortField) {
+        case 'id':
+          compareA = a.id;
+          compareB = b.id;
+          break;
+        case 'bride_name':
+          compareA = a.bride_name || '';
+          compareB = b.bride_name || '';
+          break;
+        case 'groom_name':
+          compareA = a.groom_name || '';
+          compareB = b.groom_name || '';
+          break;
+        case 'created_at':
+          compareA = new Date(a.created_at).getTime();
+          compareB = new Date(b.created_at).getTime();
+          break;
+        case 'projects_count':
+          compareA = a.projects.count;
+          compareB = b.projects.count;
+          break;
+        case 'wedding_date':
+          compareA = a.projects.latest_wedding_date || '';
+          compareB = b.projects.latest_wedding_date || '';
+          break;
+        default:
+          return 0;
+      }
+
+      if (compareA < compareB) return sortOrder === 'asc' ? -1 : 1;
+      if (compareA > compareB) return sortOrder === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }, [users, sortField, sortOrder]);
+
   if (!isAdmin) {
     return <div className="p-8 text-red-500">Unauthorized: Admin access required</div>;
   }
@@ -109,22 +165,45 @@ const AdminDashboard = () => {
     return <div className="p-8 text-red-500">Error loading users</div>;
   }
 
+  const SortButton = ({ field, children }: { field: SortField; children: React.ReactNode }) => (
+    <Button
+      variant="ghost"
+      onClick={() => handleSort(field)}
+      className="h-8 flex items-center gap-1 font-semibold"
+    >
+      {children}
+      <ArrowUpDown className="h-4 w-4" />
+    </Button>
+  );
+
   return (
     <div className="p-8">
       <h1 className="text-2xl font-bold mb-6">User Management</h1>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>User ID</TableHead>
-            <TableHead>Bride Name</TableHead>
-            <TableHead>Groom Name</TableHead>
-            <TableHead>Joined Date</TableHead>
-            <TableHead>Projects Count</TableHead>
-            <TableHead>Latest Wedding Date</TableHead>
+            <TableHead>
+              <SortButton field="id">User ID</SortButton>
+            </TableHead>
+            <TableHead>
+              <SortButton field="bride_name">Bride Name</SortButton>
+            </TableHead>
+            <TableHead>
+              <SortButton field="groom_name">Groom Name</SortButton>
+            </TableHead>
+            <TableHead>
+              <SortButton field="created_at">Joined Date</SortButton>
+            </TableHead>
+            <TableHead>
+              <SortButton field="projects_count">Projects Count</SortButton>
+            </TableHead>
+            <TableHead>
+              <SortButton field="wedding_date">Latest Wedding Date</SortButton>
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {users?.map((user) => (
+          {sortedUsers.map((user) => (
             <React.Fragment key={user.id}>
               <TableRow>
                 <TableCell>{user.id}</TableCell>
