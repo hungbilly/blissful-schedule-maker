@@ -21,6 +21,15 @@ interface UserData {
   };
 }
 
+interface ProfileWithProjects {
+  id: string;
+  created_at: string;
+  projects: Array<{
+    id: number;
+    wedding_date: string | null;
+  }>;
+}
+
 const AdminDashboard = () => {
   const { toast } = useToast();
   const session = useSession();
@@ -54,7 +63,7 @@ const AdminDashboard = () => {
         throw profilesError;
       }
 
-      return (profiles || []).map((profile) => ({
+      return ((profiles || []) as ProfileWithProjects[]).map((profile) => ({
         id: profile.id,
         created_at: profile.created_at,
         projects: {
