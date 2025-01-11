@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
-import { User } from "@supabase/supabase-js";
 
 interface UserData {
   id: string;
@@ -22,24 +21,16 @@ interface UserData {
   };
 }
 
-interface ProfileWithProjects {
-  id: string;
-  projects: Array<{
-    id: number;
-    wedding_date: string | null;
-  }>;
-}
-
 const AdminDashboard = () => {
   const { toast } = useToast();
 
   const { data: users, isLoading, error } = useQuery({
     queryKey: ["admin-users"],
     queryFn: async () => {
-      // First get all users from auth.users through profiles
+      // Get all profiles
       const { data: profiles, error: profilesError } = await supabase
         .from("profiles")
-        .select("id");
+        .select("id, created_at");
 
       if (profilesError) {
         toast({
@@ -58,34 +49,22 @@ const AdminDashboard = () => {
           .eq("user_id", profile.id);
         return {
           id: profile.id,
+          created_at: profile.created_at,
           projects: projects || [],
         };
       });
 
       const profilesWithProjects = await Promise.all(projectsPromises);
 
-      // Then get user details from auth.users
-      const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers();
-      
-      if (authError) {
-        toast({
-          title: "Error fetching users",
-          description: authError.message,
-          variant: "destructive",
-        });
-        throw authError;
-      }
-
-      // Combine the data
+      // Format the data
       return profilesWithProjects.map((profile) => {
-        const authUser = (authUsers?.users as User[] || []).find(user => user.id === profile.id);
         return {
           id: profile.id,
-          email: authUser?.email || 'N/A',
-          created_at: authUser?.created_at || new Date().toISOString(),
+          email: "Hidden for privacy", // We can't access emails without admin privileges
+          created_at: profile.created_at,
           projects: {
-            count: profile.projects?.length || 0,
-            latest_wedding_date: profile.projects?.[0]?.wedding_date || null,
+            count: profile.projects.length,
+            latest_wedding_date: profile.projects[0]?.wedding_date || null,
           },
         };
       }) as UserData[];
@@ -106,7 +85,7 @@ const AdminDashboard = () => {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Email</TableHead>
+            <TableHead>User ID</TableHead>
             <TableHead>Joined Date</TableHead>
             <TableHead>Projects Count</TableHead>
             <TableHead>Latest Wedding Date</TableHead>
@@ -115,7 +94,7 @@ const AdminDashboard = () => {
         <TableBody>
           {users?.map((user) => (
             <TableRow key={user.id}>
-              <TableCell>{user.email}</TableCell>
+              <TableCell>{user.id}</TableCell>
               <TableCell>
                 {format(new Date(user.created_at), "MMM d, yyyy")}
               </TableCell>
