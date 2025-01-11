@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { supabaseAdmin } from "@/integrations/supabase/adminClient";
 import {
   Table,
   TableBody,
@@ -27,6 +28,7 @@ import { useState } from "react";
 
 interface UserData {
   id: string;
+  email: string;
   created_at: string;
   bride_name: string | null;
   groom_name: string | null;
@@ -50,12 +52,24 @@ const AdminDashboard = () => {
         throw new Error("Unauthorized access");
       }
 
+      // Get all users with their emails first
+      const { data: authUsers, error: authError } = await supabaseAdmin.auth.admin
+        .listUsers();
+
+      if (authError) {
+        toast({
+          title: "Error fetching users",
+          description: authError.message,
+          variant: "destructive",
+        });
+        throw authError;
+      }
+
       // Get all profiles with bride and groom names
       const { data: profiles, error: profilesError } = await supabase
         .from("profiles")
         .select(`
           id,
-          created_at,
           bride_name,
           groom_name
         `);
@@ -69,19 +83,32 @@ const AdminDashboard = () => {
         throw profilesError;
       }
 
-      // Then, for each profile, get their projects
+      // Combine auth users with their profile data
+      const usersWithProfiles = authUsers.users.map(authUser => {
+        const profile = profiles?.find(p => p.id === authUser.id);
+        return {
+          id: authUser.id,
+          email: authUser.email || '',
+          created_at: authUser.created_at,
+          bride_name: profile?.bride_name,
+          groom_name: profile?.groom_name,
+          projects: {
+            count: 0,
+            latest_wedding_date: null,
+          },
+        };
+      });
+
+      // Then, for each user, get their projects
       const usersWithProjects = await Promise.all(
-        (profiles || []).map(async (profile) => {
+        usersWithProfiles.map(async (user) => {
           const { data: projectsData } = await supabase
             .from("projects")
             .select("id, wedding_date")
-            .eq("user_id", profile.id);
+            .eq("user_id", user.id);
 
           return {
-            id: profile.id,
-            created_at: profile.created_at,
-            bride_name: profile.bride_name,
-            groom_name: profile.groom_name,
+            ...user,
             projects: {
               count: projectsData?.length || 0,
               latest_wedding_date: projectsData?.[0]?.wedding_date || null,
@@ -97,7 +124,7 @@ const AdminDashboard = () => {
 
   const handleDeleteUser = async (userId: string) => {
     try {
-      const { error } = await supabase.auth.admin.deleteUser(userId);
+      const { error } = await supabaseAdmin.auth.admin.deleteUser(userId);
       if (error) throw error;
       
       toast({
@@ -117,9 +144,14 @@ const AdminDashboard = () => {
 
   const handleResetPassword = async (userId: string) => {
     try {
-      const { error } = await supabase.auth.admin.generateLink({
+      const user = users?.find(u => u.id === userId);
+      if (!user?.email) {
+        throw new Error("User email not found");
+      }
+
+      const { error } = await supabaseAdmin.auth.admin.generateLink({
         type: 'recovery',
-        id: userId,  // Changed from userId to id
+        email: user.email,
       });
       
       if (error) throw error;
@@ -157,6 +189,7 @@ const AdminDashboard = () => {
         <TableHeader>
           <TableRow>
             <TableHead>User ID</TableHead>
+            <TableHead>Email</TableHead>
             <TableHead>Bride Name</TableHead>
             <TableHead>Groom Name</TableHead>
             <TableHead>Joined Date</TableHead>
@@ -169,6 +202,7 @@ const AdminDashboard = () => {
           {users?.map((user) => (
             <TableRow key={user.id}>
               <TableCell>{user.id}</TableCell>
+              <TableCell>{user.email}</TableCell>
               <TableCell>{user.bride_name || "Not set"}</TableCell>
               <TableCell>{user.groom_name || "Not set"}</TableCell>
               <TableCell>
