@@ -8,6 +8,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { useSession } from "@supabase/auth-helpers-react";
@@ -21,6 +27,10 @@ interface UserData {
     count: number;
     latest_wedding_date: string | null;
   };
+  vendors: Array<{
+    name: string;
+    role: string;
+  }>;
 }
 
 const AdminDashboard = () => {
@@ -54,12 +64,17 @@ const AdminDashboard = () => {
         throw profilesError;
       }
 
-      // Then, for each profile, get their projects
-      const usersWithProjects = await Promise.all(
+      // Then, for each profile, get their projects and vendors
+      const usersWithData = await Promise.all(
         (profiles || []).map(async (profile) => {
           const { data: projectsData } = await supabase
             .from("projects")
             .select("id, wedding_date")
+            .eq("user_id", profile.id);
+
+          const { data: vendorsData } = await supabase
+            .from("vendors")
+            .select("name, role")
             .eq("user_id", profile.id);
 
           return {
@@ -71,11 +86,12 @@ const AdminDashboard = () => {
               count: projectsData?.length || 0,
               latest_wedding_date: projectsData?.[0]?.wedding_date || null,
             },
+            vendors: vendorsData || [],
           };
         })
       );
 
-      return usersWithProjects as UserData[];
+      return usersWithData as UserData[];
     },
     enabled: isAdmin,
   });
@@ -108,23 +124,57 @@ const AdminDashboard = () => {
         </TableHeader>
         <TableBody>
           {users?.map((user) => (
-            <TableRow key={user.id}>
-              <TableCell>{user.id}</TableCell>
-              <TableCell>{user.bride_name || "Not set"}</TableCell>
-              <TableCell>{user.groom_name || "Not set"}</TableCell>
-              <TableCell>
-                {format(new Date(user.created_at), "MMM d, yyyy")}
-              </TableCell>
-              <TableCell>{user.projects.count}</TableCell>
-              <TableCell>
-                {user.projects.latest_wedding_date
-                  ? format(
-                      new Date(user.projects.latest_wedding_date),
-                      "MMM d, yyyy"
-                    )
-                  : "Not set"}
-              </TableCell>
-            </TableRow>
+            <React.Fragment key={user.id}>
+              <TableRow>
+                <TableCell>{user.id}</TableCell>
+                <TableCell>{user.bride_name || "Not set"}</TableCell>
+                <TableCell>{user.groom_name || "Not set"}</TableCell>
+                <TableCell>
+                  {format(new Date(user.created_at), "MMM d, yyyy")}
+                </TableCell>
+                <TableCell>{user.projects.count}</TableCell>
+                <TableCell>
+                  {user.projects.latest_wedding_date
+                    ? format(
+                        new Date(user.projects.latest_wedding_date),
+                        "MMM d, yyyy"
+                      )
+                    : "Not set"}
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell colSpan={6} className="p-0">
+                  <Accordion type="single" collapsible>
+                    <AccordionItem value="vendors">
+                      <AccordionTrigger className="px-4">
+                        View Vendors ({user.vendors.length})
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <div className="px-4 py-2">
+                          {user.vendors.length > 0 ? (
+                            <div className="space-y-2">
+                              {user.vendors.map((vendor, index) => (
+                                <div
+                                  key={index}
+                                  className="flex items-center justify-between border-b border-gray-200 py-2"
+                                >
+                                  <span className="font-medium">{vendor.name}</span>
+                                  <span className="text-gray-600">
+                                    {vendor.role}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="text-gray-500">No vendors found</p>
+                          )}
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </TableCell>
+              </TableRow>
+            </React.Fragment>
           ))}
         </TableBody>
       </Table>
