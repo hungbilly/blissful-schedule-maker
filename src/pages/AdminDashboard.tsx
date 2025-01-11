@@ -27,38 +27,51 @@ const AdminDashboard = () => {
   const { data: users, isLoading, error } = useQuery({
     queryKey: ["admin-users"],
     queryFn: async () => {
-      const { data: users, error } = await supabase
+      // First get all users from auth.users through profiles
+      const { data: profiles, error: profilesError } = await supabase
         .from("profiles")
         .select(`
           id,
-          user:id (
-            email,
-            created_at
-          ),
-          projects:projects (
+          projects (
             id,
             wedding_date
           )
         `);
 
-      if (error) {
+      if (profilesError) {
         toast({
-          title: "Error fetching users",
-          description: error.message,
+          title: "Error fetching profiles",
+          description: profilesError.message,
           variant: "destructive",
         });
-        throw error;
+        throw profilesError;
       }
 
-      return users?.map((user: any) => ({
-        id: user.id,
-        email: user.user.email,
-        created_at: user.user.created_at,
-        projects: {
-          count: user.projects?.length || 0,
-          latest_wedding_date: user.projects?.[0]?.wedding_date || null,
-        },
-      })) as UserData[];
+      // Then get user details from auth.users
+      const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers();
+      
+      if (authError) {
+        toast({
+          title: "Error fetching users",
+          description: authError.message,
+          variant: "destructive",
+        });
+        throw authError;
+      }
+
+      // Combine the data
+      return profiles?.map((profile) => {
+        const authUser = authUsers?.users.find(user => user.id === profile.id);
+        return {
+          id: profile.id,
+          email: authUser?.email || 'N/A',
+          created_at: authUser?.created_at || new Date().toISOString(),
+          projects: {
+            count: profile.projects?.length || 0,
+            latest_wedding_date: profile.projects?.[0]?.wedding_date || null,
+          },
+        };
+      }) as UserData[];
     },
   });
 
