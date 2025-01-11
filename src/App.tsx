@@ -28,24 +28,33 @@ const ProtectedRoute = ({ children, requireAdmin = false }: { children: React.Re
   const session = useSession();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const isAdmin = session?.user?.email === "admin@onair.wedding"; // You can adjust this condition
+  const isAdmin = session?.user?.email === "admin@onair.wedding";
   
   useEffect(() => {
-    if (!session) {
-      toast({
-        title: "Session Expired",
-        description: "Please log in again to continue.",
-        variant: "destructive",
-      });
-      navigate("/", { replace: true });
-    } else if (requireAdmin && !isAdmin) {
-      toast({
-        title: "Access Denied",
-        description: "You don't have permission to access this page.",
-        variant: "destructive",
-      });
-      navigate("/", { replace: true });
-    }
+    const checkSession = async () => {
+      const { data: { session: currentSession }, error } = await supabase.auth.getSession();
+      
+      if (!currentSession || error) {
+        toast({
+          title: "Session Expired",
+          description: "Please log in again to continue.",
+          variant: "destructive",
+        });
+        navigate("/", { replace: true });
+        return;
+      }
+
+      if (requireAdmin && !isAdmin) {
+        toast({
+          title: "Access Denied",
+          description: "You don't have permission to access this page.",
+          variant: "destructive",
+        });
+        navigate("/", { replace: true });
+      }
+    };
+
+    checkSession();
   }, [session, navigate, toast, requireAdmin, isAdmin]);
   
   if (!session || (requireAdmin && !isAdmin)) {
@@ -59,30 +68,42 @@ function App() {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED' && !session) {
-        // Clear any cached data when user signs out or session expires
-        queryClient.clear();
-        toast({
-          title: "Session Ended",
-          description: event === 'SIGNED_OUT' 
-            ? "You have been logged out successfully." 
-            : "Your session has expired. Please log in again.",
-          variant: "destructive",
-        });
-      }
-    });
+    const setupAuthListener = () => {
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+        if (event === 'TOKEN_REFRESHED' && !session) {
+          queryClient.clear();
+          toast({
+            title: "Session Expired",
+            description: "Your session has expired. Please log in again.",
+            variant: "destructive",
+          });
+        } else if (event === 'SIGNED_OUT') {
+          queryClient.clear();
+          toast({
+            title: "Logged Out",
+            description: "You have been logged out successfully.",
+          });
+        }
+      });
 
+      return () => {
+        subscription.unsubscribe();
+      };
+    };
+
+    const unsubscribe = setupAuthListener();
     return () => {
-      subscription.unsubscribe();
+      unsubscribe();
     };
   }, [toast]);
 
   return (
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
-        <SessionContextProvider supabaseClient={supabase} initialSession={null}>
+        <SessionContextProvider 
+          supabaseClient={supabase}
+          initialSession={null}
+        >
           <BrowserRouter>
             <TooltipProvider>
               <Routes>
