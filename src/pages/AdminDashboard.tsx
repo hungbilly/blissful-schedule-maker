@@ -34,20 +34,10 @@ const AdminDashboard = () => {
         throw new Error("Unauthorized access");
       }
 
-      // Get all profiles with their associated projects
+      // Get all profiles
       const { data: profiles, error: profilesError } = await supabase
         .from("profiles")
-        .select(`
-          id,
-          created_at,
-          users:id (
-            email
-          ),
-          projects (
-            id,
-            wedding_date
-          )
-        `);
+        .select("*");
 
       if (profilesError) {
         toast({
@@ -58,19 +48,27 @@ const AdminDashboard = () => {
         throw profilesError;
       }
 
-      // Format the data
-      return (profiles || []).map((profile: any) => {
-        const projects = profile.projects || [];
-        return {
-          id: profile.id,
-          email: profile.users?.email || "N/A",
-          created_at: profile.created_at,
-          projects: {
-            count: projects.length,
-            latest_wedding_date: projects[0]?.wedding_date || null,
-          },
-        };
-      }) as UserData[];
+      // Get projects for each profile
+      const profilesWithProjects = await Promise.all(
+        (profiles || []).map(async (profile) => {
+          const { data: projects } = await supabase
+            .from("projects")
+            .select("id, wedding_date")
+            .eq("user_id", profile.id);
+
+          return {
+            id: profile.id,
+            email: profile.id, // Using ID as email for now since we can't access auth.users
+            created_at: profile.created_at,
+            projects: {
+              count: projects?.length || 0,
+              latest_wedding_date: projects?.[0]?.wedding_date || null,
+            },
+          };
+        })
+      );
+
+      return profilesWithProjects as UserData[];
     },
     enabled: isAdmin,
   });
@@ -93,7 +91,6 @@ const AdminDashboard = () => {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Email</TableHead>
             <TableHead>User ID</TableHead>
             <TableHead>Joined Date</TableHead>
             <TableHead>Projects Count</TableHead>
@@ -103,7 +100,6 @@ const AdminDashboard = () => {
         <TableBody>
           {users?.map((user) => (
             <TableRow key={user.id}>
-              <TableCell>{user.email}</TableCell>
               <TableCell>{user.id}</TableCell>
               <TableCell>
                 {format(new Date(user.created_at), "MMM d, yyyy")}
