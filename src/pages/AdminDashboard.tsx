@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
+import { User } from "@supabase/supabase-js";
 
 interface UserData {
   id: string;
@@ -69,7 +70,7 @@ const AdminDashboard = () => {
 
       // Combine the data
       return (profiles || []).map((profile) => {
-        const authUser = authUsers?.users.find(user => user.id === profile.id);
+        const authUser = (authUsers?.users as User[] || []).find(user => user.id === profile.id);
         return {
           id: profile.id,
           email: authUser?.email || 'N/A',
