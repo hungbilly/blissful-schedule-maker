@@ -15,6 +15,8 @@ import { useSession } from "@supabase/auth-helpers-react";
 interface UserData {
   id: string;
   created_at: string;
+  bride_name: string | null;
+  groom_name: string | null;
   projects: {
     count: number;
     latest_wedding_date: string | null;
@@ -33,10 +35,10 @@ const AdminDashboard = () => {
         throw new Error("Unauthorized access");
       }
 
-      // First, get all profiles
+      // First, get all profiles with bride and groom names
       const { data: profiles, error: profilesError } = await supabase
         .from("profiles")
-        .select("id, created_at");
+        .select("id, created_at, bride_name, groom_name");
 
       if (profilesError) {
         toast({
@@ -58,6 +60,8 @@ const AdminDashboard = () => {
           return {
             id: profile.id,
             created_at: profile.created_at,
+            bride_name: profile.bride_name,
+            groom_name: profile.groom_name,
             projects: {
               count: projectsData?.length || 0,
               latest_wedding_date: projectsData?.[0]?.wedding_date || null,
@@ -90,6 +94,8 @@ const AdminDashboard = () => {
         <TableHeader>
           <TableRow>
             <TableHead>User ID</TableHead>
+            <TableHead>Bride Name</TableHead>
+            <TableHead>Groom Name</TableHead>
             <TableHead>Joined Date</TableHead>
             <TableHead>Projects Count</TableHead>
             <TableHead>Latest Wedding Date</TableHead>
@@ -99,6 +105,8 @@ const AdminDashboard = () => {
           {users?.map((user) => (
             <TableRow key={user.id}>
               <TableCell>{user.id}</TableCell>
+              <TableCell>{user.bride_name || "Not set"}</TableCell>
+              <TableCell>{user.groom_name || "Not set"}</TableCell>
               <TableCell>
                 {format(new Date(user.created_at), "MMM d, yyyy")}
               </TableCell>
