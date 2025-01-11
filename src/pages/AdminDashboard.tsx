@@ -21,15 +21,6 @@ interface UserData {
   };
 }
 
-interface ProfileWithProjects {
-  id: string;
-  created_at: string;
-  projects: Array<{
-    id: number;
-    wedding_date: string | null;
-  }>;
-}
-
 const AdminDashboard = () => {
   const { toast } = useToast();
   const session = useSession();
@@ -42,17 +33,10 @@ const AdminDashboard = () => {
         throw new Error("Unauthorized access");
       }
 
-      // Get all profiles with their projects
+      // First, get all profiles
       const { data: profiles, error: profilesError } = await supabase
         .from("profiles")
-        .select(`
-          id,
-          created_at,
-          projects (
-            id,
-            wedding_date
-          )
-        `);
+        .select("id, created_at");
 
       if (profilesError) {
         toast({
@@ -63,14 +47,26 @@ const AdminDashboard = () => {
         throw profilesError;
       }
 
-      return ((profiles || []) as ProfileWithProjects[]).map((profile) => ({
-        id: profile.id,
-        created_at: profile.created_at,
-        projects: {
-          count: profile.projects?.length || 0,
-          latest_wedding_date: profile.projects?.[0]?.wedding_date || null,
-        },
-      })) as UserData[];
+      // Then, for each profile, get their projects
+      const usersWithProjects = await Promise.all(
+        (profiles || []).map(async (profile) => {
+          const { data: projectsData } = await supabase
+            .from("projects")
+            .select("id, wedding_date")
+            .eq("user_id", profile.id);
+
+          return {
+            id: profile.id,
+            created_at: profile.created_at,
+            projects: {
+              count: projectsData?.length || 0,
+              latest_wedding_date: projectsData?.[0]?.wedding_date || null,
+            },
+          };
+        })
+      );
+
+      return usersWithProjects as UserData[];
     },
     enabled: isAdmin,
   });
