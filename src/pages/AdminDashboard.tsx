@@ -119,7 +119,7 @@ const AdminDashboard = () => {
     try {
       const { error } = await supabase.auth.admin.generateLink({
         type: 'recovery',
-        userId,
+        id: userId,  // Changed from userId to id
       });
       
       if (error) throw error;
