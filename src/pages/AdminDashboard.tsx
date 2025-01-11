@@ -11,6 +11,19 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { useSession } from "@supabase/auth-helpers-react";
+import { Button } from "@/components/ui/button";
+import { Trash2, Key } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useState } from "react";
 
 interface UserData {
   id: string;
@@ -27,8 +40,10 @@ const AdminDashboard = () => {
   const { toast } = useToast();
   const session = useSession();
   const isAdmin = session?.user?.email === "admin@onair.wedding";
+  const [userToDelete, setUserToDelete] = useState<string | null>(null);
+  const [userToResetPassword, setUserToResetPassword] = useState<string | null>(null);
 
-  const { data: users, isLoading, error } = useQuery({
+  const { data: users, isLoading, error, refetch } = useQuery({
     queryKey: ["admin-users"],
     queryFn: async () => {
       if (!isAdmin) {
@@ -80,6 +95,49 @@ const AdminDashboard = () => {
     enabled: isAdmin,
   });
 
+  const handleDeleteUser = async (userId: string) => {
+    try {
+      const { error } = await supabase.auth.admin.deleteUser(userId);
+      if (error) throw error;
+      
+      toast({
+        title: "Success",
+        description: "User has been deleted successfully",
+      });
+      refetch();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete user",
+        variant: "destructive",
+      });
+    }
+    setUserToDelete(null);
+  };
+
+  const handleResetPassword = async (userId: string) => {
+    try {
+      const { error } = await supabase.auth.admin.generateLink({
+        type: 'recovery',
+        userId,
+      });
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Success",
+        description: "Password reset email has been sent to the user",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to send password reset email",
+        variant: "destructive",
+      });
+    }
+    setUserToResetPassword(null);
+  };
+
   if (!isAdmin) {
     return <div className="p-8 text-red-500">Unauthorized: Admin access required</div>;
   }
@@ -104,6 +162,7 @@ const AdminDashboard = () => {
             <TableHead>Joined Date</TableHead>
             <TableHead>Projects Count</TableHead>
             <TableHead>Latest Wedding Date</TableHead>
+            <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -124,10 +183,68 @@ const AdminDashboard = () => {
                     )
                   : "Not set"}
               </TableCell>
+              <TableCell className="space-x-2">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setUserToResetPassword(user.id)}
+                >
+                  <Key className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setUserToDelete(user.id)}
+                >
+                  <Trash2 className="h-4 w-4 text-red-500" />
+                </Button>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
+
+      {/* Delete User Confirmation Dialog */}
+      <AlertDialog open={!!userToDelete} onOpenChange={() => setUserToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the user account
+              and all associated data.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-red-500 hover:bg-red-600"
+              onClick={() => userToDelete && handleDeleteUser(userToDelete)}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Reset Password Confirmation Dialog */}
+      <AlertDialog open={!!userToResetPassword} onOpenChange={() => setUserToResetPassword(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Reset Password</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will send a password reset email to the user. Are you sure you want to proceed?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => userToResetPassword && handleResetPassword(userToResetPassword)}
+            >
+              Send Reset Email
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
