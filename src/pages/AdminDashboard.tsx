@@ -34,10 +34,20 @@ const AdminDashboard = () => {
         throw new Error("Unauthorized access");
       }
 
-      // Get all profiles
+      // Get all profiles with their associated projects
       const { data: profiles, error: profilesError } = await supabase
         .from("profiles")
-        .select("id, created_at");
+        .select(`
+          id,
+          created_at,
+          users:id (
+            email
+          ),
+          projects (
+            id,
+            wedding_date
+          )
+        `);
 
       if (profilesError) {
         toast({
@@ -48,51 +58,21 @@ const AdminDashboard = () => {
         throw profilesError;
       }
 
-      // Get user details from auth
-      const { data: { users: authUsers }, error: authError } = await supabase.auth.admin.listUsers();
-      
-      if (authError) {
-        toast({
-          title: "Error fetching auth users",
-          description: authError.message,
-          variant: "destructive",
-        });
-        throw authError;
-      }
-
-      // Get projects for each profile
-      const projectsPromises = (profiles || []).map(async (profile) => {
-        const { data: projects } = await supabase
-          .from("projects")
-          .select("id, wedding_date")
-          .eq("user_id", profile.id);
-
-        const authUser = authUsers?.find(user => user.id === profile.id);
-        
-        return {
-          id: profile.id,
-          email: authUser?.email || "N/A",
-          created_at: profile.created_at,
-          projects: projects || [],
-        };
-      });
-
-      const profilesWithProjects = await Promise.all(projectsPromises);
-
       // Format the data
-      return profilesWithProjects.map((profile) => {
+      return (profiles || []).map((profile: any) => {
+        const projects = profile.projects || [];
         return {
           id: profile.id,
-          email: profile.email,
+          email: profile.users?.email || "N/A",
           created_at: profile.created_at,
           projects: {
-            count: profile.projects.length,
-            latest_wedding_date: profile.projects[0]?.wedding_date || null,
+            count: projects.length,
+            latest_wedding_date: projects[0]?.wedding_date || null,
           },
         };
       }) as UserData[];
     },
-    enabled: isAdmin, // Only run the query if user is admin
+    enabled: isAdmin,
   });
 
   if (!isAdmin) {
