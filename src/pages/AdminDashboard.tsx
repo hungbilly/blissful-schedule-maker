@@ -39,13 +39,7 @@ const AdminDashboard = () => {
       // First get all users from auth.users through profiles
       const { data: profiles, error: profilesError } = await supabase
         .from("profiles")
-        .select(`
-          id,
-          projects (
-            id,
-            wedding_date
-          )
-        `) as { data: ProfileWithProjects[] | null; error: Error | null };
+        .select("id");
 
       if (profilesError) {
         toast({
@@ -55,6 +49,20 @@ const AdminDashboard = () => {
         });
         throw profilesError;
       }
+
+      // Get projects for each profile
+      const projectsPromises = (profiles || []).map(async (profile) => {
+        const { data: projects } = await supabase
+          .from("projects")
+          .select("id, wedding_date")
+          .eq("user_id", profile.id);
+        return {
+          id: profile.id,
+          projects: projects || [],
+        };
+      });
+
+      const profilesWithProjects = await Promise.all(projectsPromises);
 
       // Then get user details from auth.users
       const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers();
@@ -69,7 +77,7 @@ const AdminDashboard = () => {
       }
 
       // Combine the data
-      return (profiles || []).map((profile) => {
+      return profilesWithProjects.map((profile) => {
         const authUser = (authUsers?.users as User[] || []).find(user => user.id === profile.id);
         return {
           id: profile.id,
