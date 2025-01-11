@@ -21,6 +21,14 @@ interface UserData {
   };
 }
 
+interface ProfileWithProjects {
+  id: string;
+  projects: Array<{
+    id: number;
+    wedding_date: string | null;
+  }>;
+}
+
 const AdminDashboard = () => {
   const { toast } = useToast();
 
@@ -36,7 +44,7 @@ const AdminDashboard = () => {
             id,
             wedding_date
           )
-        `);
+        `) as { data: ProfileWithProjects[] | null; error: Error | null };
 
       if (profilesError) {
         toast({
@@ -60,7 +68,7 @@ const AdminDashboard = () => {
       }
 
       // Combine the data
-      return profiles?.map((profile) => {
+      return (profiles || []).map((profile) => {
         const authUser = authUsers?.users.find(user => user.id === profile.id);
         return {
           id: profile.id,
