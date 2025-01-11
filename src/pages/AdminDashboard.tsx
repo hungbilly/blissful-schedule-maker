@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
+import { useSession } from "@supabase/auth-helpers-react";
 
 interface UserData {
   id: string;
@@ -23,10 +24,16 @@ interface UserData {
 
 const AdminDashboard = () => {
   const { toast } = useToast();
+  const session = useSession();
+  const isAdmin = session?.user?.email === "admin@onair.wedding";
 
   const { data: users, isLoading, error } = useQuery({
     queryKey: ["admin-users"],
     queryFn: async () => {
+      if (!isAdmin) {
+        throw new Error("Unauthorized access");
+      }
+
       // Get all profiles
       const { data: profiles, error: profilesError } = await supabase
         .from("profiles")
@@ -41,14 +48,30 @@ const AdminDashboard = () => {
         throw profilesError;
       }
 
+      // Get user details from auth
+      const { data: { users: authUsers }, error: authError } = await supabase.auth.admin.listUsers();
+      
+      if (authError) {
+        toast({
+          title: "Error fetching auth users",
+          description: authError.message,
+          variant: "destructive",
+        });
+        throw authError;
+      }
+
       // Get projects for each profile
       const projectsPromises = (profiles || []).map(async (profile) => {
         const { data: projects } = await supabase
           .from("projects")
           .select("id, wedding_date")
           .eq("user_id", profile.id);
+
+        const authUser = authUsers?.find(user => user.id === profile.id);
+        
         return {
           id: profile.id,
+          email: authUser?.email || "N/A",
           created_at: profile.created_at,
           projects: projects || [],
         };
@@ -60,7 +83,7 @@ const AdminDashboard = () => {
       return profilesWithProjects.map((profile) => {
         return {
           id: profile.id,
-          email: "Hidden for privacy", // We can't access emails without admin privileges
+          email: profile.email,
           created_at: profile.created_at,
           projects: {
             count: profile.projects.length,
@@ -69,7 +92,12 @@ const AdminDashboard = () => {
         };
       }) as UserData[];
     },
+    enabled: isAdmin, // Only run the query if user is admin
   });
+
+  if (!isAdmin) {
+    return <div className="p-8 text-red-500">Unauthorized: Admin access required</div>;
+  }
 
   if (isLoading) {
     return <div className="p-8">Loading users...</div>;
@@ -85,6 +113,7 @@ const AdminDashboard = () => {
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead>Email</TableHead>
             <TableHead>User ID</TableHead>
             <TableHead>Joined Date</TableHead>
             <TableHead>Projects Count</TableHead>
@@ -94,6 +123,7 @@ const AdminDashboard = () => {
         <TableBody>
           {users?.map((user) => (
             <TableRow key={user.id}>
+              <TableCell>{user.email}</TableCell>
               <TableCell>{user.id}</TableCell>
               <TableCell>
                 {format(new Date(user.created_at), "MMM d, yyyy")}
