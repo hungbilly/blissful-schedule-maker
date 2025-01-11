@@ -35,10 +35,15 @@ const AdminDashboard = () => {
         throw new Error("Unauthorized access");
       }
 
-      // First, get all profiles with bride and groom names
+      // Get all profiles with bride and groom names
       const { data: profiles, error: profilesError } = await supabase
         .from("profiles")
-        .select("id, created_at, bride_name, groom_name");
+        .select(`
+          id,
+          created_at,
+          bride_name,
+          groom_name
+        `);
 
       if (profilesError) {
         toast({
