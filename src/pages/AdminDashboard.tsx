@@ -14,7 +14,6 @@ import { useSession } from "@supabase/auth-helpers-react";
 
 interface UserData {
   id: string;
-  email: string;
   created_at: string;
   projects: {
     count: number;
@@ -34,10 +33,17 @@ const AdminDashboard = () => {
         throw new Error("Unauthorized access");
       }
 
-      // Get all profiles
+      // Get all profiles with their projects
       const { data: profiles, error: profilesError } = await supabase
         .from("profiles")
-        .select("*");
+        .select(`
+          id,
+          created_at,
+          projects (
+            id,
+            wedding_date
+          )
+        `);
 
       if (profilesError) {
         toast({
@@ -48,27 +54,14 @@ const AdminDashboard = () => {
         throw profilesError;
       }
 
-      // Get projects for each profile
-      const profilesWithProjects = await Promise.all(
-        (profiles || []).map(async (profile) => {
-          const { data: projects } = await supabase
-            .from("projects")
-            .select("id, wedding_date")
-            .eq("user_id", profile.id);
-
-          return {
-            id: profile.id,
-            email: profile.id, // Using ID as email for now since we can't access auth.users
-            created_at: profile.created_at,
-            projects: {
-              count: projects?.length || 0,
-              latest_wedding_date: projects?.[0]?.wedding_date || null,
-            },
-          };
-        })
-      );
-
-      return profilesWithProjects as UserData[];
+      return (profiles || []).map((profile) => ({
+        id: profile.id,
+        created_at: profile.created_at,
+        projects: {
+          count: profile.projects?.length || 0,
+          latest_wedding_date: profile.projects?.[0]?.wedding_date || null,
+        },
+      })) as UserData[];
     },
     enabled: isAdmin,
   });
