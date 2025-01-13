@@ -3,17 +3,24 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { VendorCard } from "./VendorCard";
 import { Vendor } from "../project/types";
+import { useSession } from "@supabase/auth-helpers-react";
 
 export const VendorList = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const session = useSession();
 
   const { data: vendors = [], isLoading } = useQuery({
     queryKey: ["vendors"],
     queryFn: async () => {
+      if (!session?.user?.id) {
+        throw new Error("No user session found");
+      }
+
       const { data, error } = await supabase
         .from("vendors")
         .select("*")
+        .eq("user_id", session.user.id)
         .order("name", { ascending: true });
 
       if (error) {
@@ -31,6 +38,7 @@ export const VendorList = () => {
         address: vendor.address,
       })) as Vendor[];
     },
+    enabled: !!session?.user?.id,
   });
 
   const updateVendorMutation = useMutation({
@@ -45,7 +53,8 @@ export const VendorList = () => {
           social_media: data.socialMedia,
           address: data.address,
         })
-        .eq("id", id);
+        .eq("id", id)
+        .eq("user_id", session?.user?.id);
 
       if (error) throw error;
     },
@@ -68,7 +77,11 @@ export const VendorList = () => {
 
   const deleteVendorMutation = useMutation({
     mutationFn: async (id: number) => {
-      const { error } = await supabase.from("vendors").delete().eq("id", id);
+      const { error } = await supabase
+        .from("vendors")
+        .delete()
+        .eq("id", id)
+        .eq("user_id", session?.user?.id);
       if (error) throw error;
     },
     onSuccess: () => {
