@@ -45,14 +45,14 @@ export const AppSidebar = () => {
               <Menu className="h-4 w-4" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-64 p-0 bg-wedding-light">
+          <SheetContent side="left" className="w-64 p-0">
             <SidebarContent />
           </SheetContent>
         </Sheet>
       </div>
 
       {/* Desktop Sidebar - Hidden on mobile, always visible on desktop */}
-      <aside className="hidden md:block fixed left-0 top-0 h-screen w-64 bg-wedding-light border-r border-gray-200">
+      <aside className="hidden md:block fixed left-0 top-0 h-screen w-64 bg-white border-r border-gray-200">
         <SidebarContent />
       </aside>
     </>

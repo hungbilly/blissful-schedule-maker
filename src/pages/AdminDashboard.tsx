@@ -199,95 +199,89 @@ const AdminDashboard = () => {
   );
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex h-screen">
       <AppSidebar />
-      <div className="flex-1 p-8 md:ml-64">
-        <div className="max-w-[1200px] mx-auto">
-          <h1 className="text-2xl font-bold mb-6">User Management</h1>
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
+      <div className="flex-1 p-8 ml-64">
+        <h1 className="text-2xl font-bold mb-6">User Management</h1>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>
+                <SortButton field="id">User ID</SortButton>
+              </TableHead>
+              <TableHead>
+                <SortButton field="bride_name">Bride Name</SortButton>
+              </TableHead>
+              <TableHead>
+                <SortButton field="groom_name">Groom Name</SortButton>
+              </TableHead>
+              <TableHead>
+                <SortButton field="created_at">Joined Date</SortButton>
+              </TableHead>
+              <TableHead>
+                <SortButton field="projects_count">Projects Count</SortButton>
+              </TableHead>
+              <TableHead>
+                <SortButton field="wedding_date">Latest Wedding Date</SortButton>
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {sortedUsers.map((user) => (
+              <React.Fragment key={user.id}>
                 <TableRow>
-                  <TableHead>
-                    <SortButton field="id">User ID</SortButton>
-                  </TableHead>
-                  <TableHead>
-                    <SortButton field="bride_name">Bride Name</SortButton>
-                  </TableHead>
-                  <TableHead>
-                    <SortButton field="groom_name">Groom Name</SortButton>
-                  </TableHead>
-                  <TableHead>
-                    <SortButton field="created_at">Joined Date</SortButton>
-                  </TableHead>
-                  <TableHead>
-                    <SortButton field="projects_count">Projects Count</SortButton>
-                  </TableHead>
-                  <TableHead>
-                    <SortButton field="wedding_date">Latest Wedding Date</SortButton>
-                  </TableHead>
+                  <TableCell>{user.id}</TableCell>
+                  <TableCell>{user.bride_name || "Not set"}</TableCell>
+                  <TableCell>{user.groom_name || "Not set"}</TableCell>
+                  <TableCell>
+                    {format(new Date(user.created_at), "MMM d, yyyy")}
+                  </TableCell>
+                  <TableCell>{user.projects.count}</TableCell>
+                  <TableCell>
+                    {user.projects.latest_wedding_date
+                      ? format(
+                          new Date(user.projects.latest_wedding_date),
+                          "MMM d, yyyy"
+                        )
+                      : "Not set"}
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {sortedUsers.map((user) => (
-                  <React.Fragment key={user.id}>
-                    <TableRow>
-                      <TableCell>{user.id}</TableCell>
-                      <TableCell>{user.bride_name || "Not set"}</TableCell>
-                      <TableCell>{user.groom_name || "Not set"}</TableCell>
-                      <TableCell>
-                        {format(new Date(user.created_at), "MMM d, yyyy")}
-                      </TableCell>
-                      <TableCell>{user.projects.count}</TableCell>
-                      <TableCell>
-                        {user.projects.latest_wedding_date
-                          ? format(
-                              new Date(user.projects.latest_wedding_date),
-                              "MMM d, yyyy"
-                            )
-                          : "Not set"}
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell colSpan={6} className="p-0">
-                        <Accordion type="single" collapsible>
-                          <AccordionItem value="vendors">
-                            <AccordionTrigger className="px-4">
-                              View Vendors ({user.vendors.length})
-                            </AccordionTrigger>
-                            <AccordionContent>
-                              <div className="px-4 py-2">
-                                {user.vendors.length > 0 ? (
-                                  <div className="space-y-2">
-                                    {user.vendors.map((vendor, index) => (
-                                      <div
-                                        key={index}
-                                        className="flex items-center justify-between border-b border-gray-200 py-2"
-                                      >
-                                        <span className="font-medium">
-                                          {vendor.name}
-                                        </span>
-                                        <span className="text-gray-600">
-                                          {vendor.role}
-                                        </span>
-                                      </div>
-                                    ))}
+                <TableRow>
+                  <TableCell colSpan={6} className="p-0">
+                    <Accordion type="single" collapsible>
+                      <AccordionItem value="vendors">
+                        <AccordionTrigger className="px-4">
+                          View Vendors ({user.vendors.length})
+                        </AccordionTrigger>
+                        <AccordionContent>
+                          <div className="px-4 py-2">
+                            {user.vendors.length > 0 ? (
+                              <div className="space-y-2">
+                                {user.vendors.map((vendor, index) => (
+                                  <div
+                                    key={index}
+                                    className="flex items-center justify-between border-b border-gray-200 py-2"
+                                  >
+                                    <span className="font-medium">{vendor.name}</span>
+                                    <span className="text-gray-600">
+                                      {vendor.role}
+                                    </span>
                                   </div>
-                                ) : (
-                                  <p className="text-gray-500">No vendors found</p>
-                                )}
+                                ))}
                               </div>
-                            </AccordionContent>
-                          </AccordionItem>
-                        </Accordion>
-                      </TableCell>
-                    </TableRow>
-                  </React.Fragment>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </div>
+                            ) : (
+                              <p className="text-gray-500">No vendors found</p>
+                            )}
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  </TableCell>
+                </TableRow>
+              </React.Fragment>
+            ))}
+          </TableBody>
+        </Table>
       </div>
     </div>
   );
